@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 300" width="200" height="300">
+  <style>
+    .dot {
+      fill: #F02222;
+      transform-box: fill-box;
+      transform-origin: center;
+      animation: wave 7s infinite ease-in-out;
+    }
+    
+    @keyframes wave {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(0.4); opacity: 0.5; }
+    }
+    
+    /* Staggering the animation to create a diagonal wave effect */
+    .delay-0 { animation-delay: 0.0s; }
+    .delay-1 { animation-delay: 0.15s; }
+    .delay-2 { animation-delay: 0.3s; }
+    .delay-3 { animation-delay: 0.45s; }
+    .delay-4 { animation-delay: 0.6s; }
+    .delay-5 { animation-delay: 0.75s; }
+    .delay-6 { animation-delay: 0.9s; }
+  </style>
+
+  <circle class="dot delay-1" cx="100" cy="50" r="20"/>
+  <circle class="dot delay-0" cx="150" cy="50" r="20"/>
+  
+  <circle class="dot delay-2" cx="100" cy="100" r="20"/>
+  <circle class="dot delay-1" cx="150" cy="100" r="20"/>
+  
+  <circle class="dot delay-4" cx="50" cy="150" r="20"/>
+  <circle class="dot delay-3" cx="100" cy="150" r="20"/>
+  <circle class="dot delay-2" cx="150" cy="150" r="20"/>
+  
+  <circle class="dot delay-5" cx="50" cy="200" r="20"/>
+  <circle class="dot delay-4" cx="100" cy="200" r="20"/>
+  
+  <circle class="dot delay-6" cx="50" cy="250" r="20"/>
+  <circle class="dot delay-5" cx="100" cy="250" r="20"/>
+</svg>

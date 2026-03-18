@@ -1,6 +1,12 @@
-# common-protos
+<p align="center">
+  <img src="./logo.svg" alt="Alis Build logo" width="120" />
+</p>
 
-Shared Protocol Buffers definitions for the Alis Build platform.
+<h1 align="center">common-protos</h1>
+
+<p align="center">
+  Shared Protocol Buffers definitions for the Alis Build platform.
+</p>
 
 This repository is intended to play a similar role to Google's
 [`api-common-protos`](https://github.com/googleapis/api-common-protos), but for
