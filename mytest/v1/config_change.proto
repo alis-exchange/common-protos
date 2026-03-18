@@ -61,11 +61,11 @@ message ConfigChange {
   string new_value = 3;
 
   // The type for this change, either ADDED, REMOVED, or MODIFIED.
-  .mytest.v1.ChangeType change_type = 4;
+  ChangeType change_type = 4;
 
   // Collection of advice provided for this change, useful for determining the
   // possible impact of this change.
-  repeated .mytest.v1.Advice advices = 5;
+  repeated Advice advices = 5;
 }
 
 // Classifies set of possible modifications to an object in the service

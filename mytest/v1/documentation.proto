@@ -106,13 +106,13 @@ message Documentation {
   // A list of documentation rules that apply to individual API elements.
   //
   // **NOTE:** All service configuration rules follow "last one wins" order.
-  repeated .mytest.v1.DocumentationRule rules = 3;
+  repeated DocumentationRule rules = 3;
 
   // The URL to the root of documentation.
   string documentation_root_url = 4;
 
   // The top level pages for the documentation set.
-  repeated .mytest.v1.Page pages = 5;
+  repeated Page pages = 5;
 
   // Specifies the service root url if the default one (the service name
   // from the yaml file) is not suitable. This can be seen in any fully
@@ -168,5 +168,5 @@ message Page {
 
   // Subpages of this page. The order of subpages specified here will be
   // honored in the generated docset.
-  repeated .mytest.v1.Page subpages = 3;
+  repeated Page subpages = 3;
 }

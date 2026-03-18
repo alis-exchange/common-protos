@@ -60,13 +60,13 @@ message Logging {
   // There can be multiple producer destinations, each one must have a
   // different monitored resource type. A log can be used in at most
   // one producer destination.
-  repeated .mytest.v1.Logging.LoggingDestination producer_destinations = 1;
+  repeated LoggingDestination producer_destinations = 1;
 
   // Logging configurations for sending logs to the consumer project.
   // There can be multiple consumer destinations, each one must have a
   // different monitored resource type. A log can be used in at most
   // one consumer destination.
-  repeated .mytest.v1.Logging.LoggingDestination consumer_destinations = 2;
+  repeated LoggingDestination consumer_destinations = 2;
 
   // Configuration of a specific logging destination (the producer project
   // or the consumer project).

@@ -99,7 +99,7 @@ message AuthProvider {
   //      value_prefix: "Bearer "
   //    - header: x-goog-iap-jwt-assertion
   //    - query: access_token
-  repeated .mytest.v1.JwtLocation jwt_locations = 6;
+  repeated JwtLocation jwt_locations = 6;
 }
 
 // User-defined authentication requirements, including support for
@@ -154,10 +154,10 @@ message Authentication {
   // A list of authentication rules that apply to individual API methods.
   //
   // **NOTE:** All service configuration rules follow "last one wins" order.
-  repeated .mytest.v1.AuthenticationRule rules = 3;
+  repeated AuthenticationRule rules = 3;
 
   // Defines a set of authentication providers that a service supports.
-  repeated .mytest.v1.AuthProvider providers = 4;
+  repeated AuthProvider providers = 4;
 }
 
 // Authentication rules for the service.
@@ -176,14 +176,14 @@ message AuthenticationRule {
   string selector = 1;
 
   // The requirements for OAuth credentials.
-  .mytest.v1.OAuthRequirements oauth = 2;
+  OAuthRequirements oauth = 2;
 
   // If true, the service accepts API keys without any other credential.
   // This flag only applies to HTTP and gRPC requests.
   bool allow_without_credential = 5;
 
   // Requirements for additional authentication providers.
-  repeated .mytest.v1.AuthRequirement requirements = 7;
+  repeated AuthRequirement requirements = 7;
 }
 
 // Specifies a location to extract JWT from an API request.

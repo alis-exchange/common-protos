@@ -63,7 +63,7 @@ message Billing {
   // There can be multiple consumer destinations per service, each one must have
   // a different monitored resource type. A metric can be used in at most
   // one consumer destination.
-  repeated .mytest.v1.Billing.BillingDestination consumer_destinations = 8;
+  repeated BillingDestination consumer_destinations = 8;
 
   // Configuration of a specific billing destination (Currently only support
   // bill against consumer project).

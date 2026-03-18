@@ -130,7 +130,7 @@ message ResourceDescriptor {
   //         history: ORIGINALLY_SINGLE_PATTERN
   //       };
   //     }
-  .mytest.v1.ResourceDescriptor.History history = 4;
+  History history = 4;
 
   // The plural name used in the resource name and permission names, such as
   // 'projects' for the resource name of 'projects/{project}' and the permission
@@ -150,7 +150,7 @@ message ResourceDescriptor {
   // Style flag(s) for this resource.
   // These indicate that a resource is expected to conform to a given
   // style. See the specific style flags for additional information.
-  repeated .mytest.v1.ResourceDescriptor.Style style = 10;
+  repeated Style style = 10;
 
   // A description of the historical or future-looking state of the
   // resource pattern.
@@ -224,20 +224,20 @@ message ResourceReference {
   string child_type = 2;
 }
 
-extend .google.protobuf.FieldOptions {
+extend google.protobuf.FieldOptions {
   // An annotation that describes a resource reference, see
   // [ResourceReference][].
-  .mytest.v1.ResourceReference resource_reference = 1055;
+  ResourceReference resource_reference = 1055;
 }
 
-extend .google.protobuf.FileOptions {
+extend google.protobuf.FileOptions {
   // An annotation that describes a resource definition without a corresponding
   // message; see [ResourceDescriptor][].
-  repeated .mytest.v1.ResourceDescriptor resource_definition = 1053;
+  repeated ResourceDescriptor resource_definition = 1053;
 }
 
-extend .google.protobuf.MessageOptions {
+extend google.protobuf.MessageOptions {
   // An annotation that describes a resource definition, see
   // [ResourceDescriptor][].
-  .mytest.v1.ResourceDescriptor resource = 1053;
+  ResourceDescriptor resource = 1053;
 }

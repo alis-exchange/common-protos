@@ -46,7 +46,7 @@ message LogDescriptor {
   // The set of labels that are available to describe a specific log entry.
   // Runtime requests that contain labels not specified here are
   // considered invalid.
-  repeated .mytest.v1.LabelDescriptor labels = 2;
+  repeated LabelDescriptor labels = 2;
 
   // A human-readable description of this log. This information appears in
   // the documentation and can contain details.

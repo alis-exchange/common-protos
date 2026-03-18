@@ -42,7 +42,7 @@ message Usage {
   // A list of usage rules that apply to individual API methods.
   //
   // **NOTE:** All service configuration rules follow "last one wins" order.
-  repeated .mytest.v1.UsageRule rules = 6;
+  repeated UsageRule rules = 6;
 
   // The full resource name of a channel used for sending notifications to the
   // service producer.

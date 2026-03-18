@@ -117,7 +117,7 @@ message Service {
   // author, as the remaining fields will be derived from the IDL during the
   // normalization process. It is an error to specify an API interface here
   // which cannot be resolved against the associated IDL files.
-  repeated .google.protobuf.Api apis = 3;
+  repeated google.protobuf.Api apis = 3;
 
   // A list of all proto message types included in this API service.
   // Types referenced directly or indirectly by the `apis` are automatically
@@ -127,7 +127,7 @@ message Service {
   //
   //     types:
   //     - name: google.protobuf.Int32
-  repeated .google.protobuf.Type types = 4;
+  repeated google.protobuf.Type types = 4;
 
   // A list of all enum types included in this API service.  Enums referenced
   // directly or indirectly by the `apis` are automatically included.  Enums
@@ -136,67 +136,67 @@ message Service {
   //
   //     enums:
   //     - name: google.someapi.v1.SomeEnum
-  repeated .google.protobuf.Enum enums = 5;
+  repeated google.protobuf.Enum enums = 5;
 
   // Additional API documentation.
-  .mytest.v1.Documentation documentation = 6;
+  Documentation documentation = 6;
 
   // API backend configuration.
-  .mytest.v1.Backend backend = 8;
+  Backend backend = 8;
 
   // HTTP configuration.
-  .mytest.v1.Http http = 9;
+  Http http = 9;
 
   // Quota configuration.
-  .mytest.v1.Quota quota = 10;
+  Quota quota = 10;
 
   // Auth configuration.
-  .mytest.v1.Authentication authentication = 11;
+  Authentication authentication = 11;
 
   // Context configuration.
-  .mytest.v1.Context context = 12;
+  Context context = 12;
 
   // Configuration controlling usage of this service.
-  .mytest.v1.Usage usage = 15;
+  Usage usage = 15;
 
   // Configuration for network endpoints.  If this is empty, then an endpoint
   // with the same name as the service is automatically generated to service all
   // defined APIs.
-  repeated .mytest.v1.Endpoint endpoints = 18;
+  repeated Endpoint endpoints = 18;
 
   // Obsolete. Do not use.
   //
   // This field has no semantic meaning. The service config compiler always
   // sets this field to `3`.
-  .google.protobuf.UInt32Value config_version = 20;
+  google.protobuf.UInt32Value config_version = 20;
 
   // Configuration for the service control plane.
-  .mytest.v1.Control control = 21;
+  Control control = 21;
 
   // The Google project that owns this service.
   string producer_project_id = 22;
 
   // Defines the logs used by this service.
-  repeated .mytest.v1.LogDescriptor logs = 23;
+  repeated LogDescriptor logs = 23;
 
   // Defines the metrics used by this service.
-  repeated .mytest.v1.MetricDescriptor metrics = 24;
+  repeated MetricDescriptor metrics = 24;
 
   // Defines the monitored resources used by this service. This is required
   // by the [Service.monitoring][google.api.Service.monitoring] and [Service.logging][google.api.Service.logging] configurations.
-  repeated .mytest.v1.MonitoredResourceDescriptor monitored_resources = 25;
+  repeated MonitoredResourceDescriptor monitored_resources = 25;
 
   // Billing configuration.
-  .mytest.v1.Billing billing = 26;
+  Billing billing = 26;
 
   // Logging configuration.
-  .mytest.v1.Logging logging = 27;
+  Logging logging = 27;
 
   // Monitoring configuration.
-  .mytest.v1.Monitoring monitoring = 28;
+  Monitoring monitoring = 28;
 
   // System parameter configuration.
-  .mytest.v1.SystemParameters system_parameters = 29;
+  SystemParameters system_parameters = 29;
 
   // A unique ID for a specific instance of this message, typically assigned
   // by the client for tracking purpose. Must be no longer than 63 characters
@@ -205,10 +205,10 @@ message Service {
   string id = 33;
 
   // Output only. The source information for this configuration if available.
-  .mytest.v1.SourceInfo source_info = 37;
+  SourceInfo source_info = 37;
 
   // Settings for [Google Cloud Client
   // libraries](https://cloud.google.com/apis/docs/cloud-client-libraries)
   // generated from APIs defined as protocol buffers.
-  .mytest.v1.Publishing publishing = 45;
+  Publishing publishing = 45;
 }

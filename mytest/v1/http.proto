@@ -44,7 +44,7 @@ message Http {
   // A list of HTTP configuration rules that apply to individual API methods.
   //
   // **NOTE:** All service configuration rules follow "last one wins" order.
-  repeated .mytest.v1.HttpRule rules = 1;
+  repeated HttpRule rules = 1;
 
   // When set to true, URL path parameters will be fully URI-decoded except in
   // cases of single segment matches in reserved expansion, where "%2F" will be
@@ -354,7 +354,7 @@ message HttpRule {
     // included in the `pattern` field, such as HEAD, or "*" to leave the
     // HTTP method unspecified for this rule. The wild-card rule is useful
     // for services that provide content to Web (HTML) clients.
-    .mytest.v1.CustomHttpPattern custom = 8;
+    CustomHttpPattern custom = 8;
   }
 
   // The name of the request field whose value is mapped to the HTTP request
@@ -368,7 +368,7 @@ message HttpRule {
   // Additional HTTP bindings for the selector. Nested bindings must
   // not contain an `additional_bindings` field themselves (that is,
   // the nesting may only be one level deep).
-  repeated .mytest.v1.HttpRule additional_bindings = 11;
+  repeated HttpRule additional_bindings = 11;
 
   // Optional. The name of the response field whose value is mapped to the HTTP
   // response body. When omitted, the entire response message will be used

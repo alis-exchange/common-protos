@@ -34,7 +34,7 @@ message LabelDescriptor {
   string key = 1;
 
   // The type of data that can be assigned to the label.
-  .mytest.v1.LabelDescriptor.ValueType value_type = 2;
+  ValueType value_type = 2;
 
   // A human-readable description for the label.
   string description = 3;

@@ -96,11 +96,11 @@ message MetricRule {
 //
 message Quota {
   // List of QuotaLimit definitions for the service.
-  repeated .mytest.v1.QuotaLimit limits = 3;
+  repeated QuotaLimit limits = 3;
 
   // List of MetricRule definitions, each one mapping a selected method to one
   // or more metrics.
-  repeated .mytest.v1.MetricRule metric_rules = 4;
+  repeated MetricRule metric_rules = 4;
 }
 
 // `QuotaLimit` defines a specific limit that applies over a specified duration

@@ -38,35 +38,35 @@ message ClientLibrarySettings {
   string version = 1;
 
   // Launch stage of this version of the API.
-  .mytest.v1.LaunchStage launch_stage = 2;
+  LaunchStage launch_stage = 2;
 
   // When using transport=rest, the client request will encode enums as
   // numbers rather than strings.
   bool rest_numeric_enums = 3;
 
   // Settings for legacy Java features, supported in the Service YAML.
-  .mytest.v1.JavaSettings java_settings = 21;
+  JavaSettings java_settings = 21;
 
   // Settings for C++ client libraries.
-  .mytest.v1.CppSettings cpp_settings = 22;
+  CppSettings cpp_settings = 22;
 
   // Settings for PHP client libraries.
-  .mytest.v1.PhpSettings php_settings = 23;
+  PhpSettings php_settings = 23;
 
   // Settings for Python client libraries.
-  .mytest.v1.PythonSettings python_settings = 24;
+  PythonSettings python_settings = 24;
 
   // Settings for Node client libraries.
-  .mytest.v1.NodeSettings node_settings = 25;
+  NodeSettings node_settings = 25;
 
   // Settings for .NET client libraries.
-  .mytest.v1.DotnetSettings dotnet_settings = 26;
+  DotnetSettings dotnet_settings = 26;
 
   // Settings for Ruby client libraries.
-  .mytest.v1.RubySettings ruby_settings = 27;
+  RubySettings ruby_settings = 27;
 
   // Settings for Go client libraries.
-  .mytest.v1.GoSettings go_settings = 28;
+  GoSettings go_settings = 28;
 }
 
 // Required information for every language.
@@ -76,25 +76,25 @@ message CommonLanguageSettings {
   string reference_docs_uri = 1 [deprecated = true];
 
   // The destination where API teams want this client library to be published.
-  repeated .mytest.v1.ClientLibraryDestination destinations = 2;
+  repeated ClientLibraryDestination destinations = 2;
 }
 
 // Settings for C++ client libraries.
 message CppSettings {
   // Some settings.
-  .mytest.v1.CommonLanguageSettings common = 1;
+  CommonLanguageSettings common = 1;
 }
 
 // Settings for Dotnet client libraries.
 message DotnetSettings {
   // Some settings.
-  .mytest.v1.CommonLanguageSettings common = 1;
+  CommonLanguageSettings common = 1;
 }
 
 // Settings for Go client libraries.
 message GoSettings {
   // Some settings.
-  .mytest.v1.CommonLanguageSettings common = 1;
+  CommonLanguageSettings common = 1;
 }
 
 // Settings for Java client libraries.
@@ -129,7 +129,7 @@ message JavaSettings {
   map<string, string> service_class_names = 2;
 
   // Some settings.
-  .mytest.v1.CommonLanguageSettings common = 3;
+  CommonLanguageSettings common = 3;
 }
 
 // Describes the generator configuration for a method.
@@ -155,7 +155,7 @@ message MethodSettings {
   //            seconds: 360 # 6 minutes
   //          total_poll_timeout:
   //             seconds: 54000 # 90 minutes
-  .mytest.v1.MethodSettings.LongRunning long_running = 2;
+  LongRunning long_running = 2;
 
   // Describes settings to use when generating API methods that use the
   // long-running operation pattern.
@@ -165,7 +165,7 @@ message MethodSettings {
   message LongRunning {
     // Initial delay after which the first poll request will be made.
     // Default value: 5 seconds.
-    .google.protobuf.Duration initial_poll_delay = 1;
+    google.protobuf.Duration initial_poll_delay = 1;
 
     // Multiplier to gradually increase delay between subsequent polls until it
     // reaches max_poll_delay.
@@ -174,24 +174,24 @@ message MethodSettings {
 
     // Maximum time between two subsequent poll requests.
     // Default value: 45 seconds.
-    .google.protobuf.Duration max_poll_delay = 3;
+    google.protobuf.Duration max_poll_delay = 3;
 
     // Total polling timeout.
     // Default value: 5 minutes.
-    .google.protobuf.Duration total_poll_timeout = 4;
+    google.protobuf.Duration total_poll_timeout = 4;
   }
 }
 
 // Settings for Node client libraries.
 message NodeSettings {
   // Some settings.
-  .mytest.v1.CommonLanguageSettings common = 1;
+  CommonLanguageSettings common = 1;
 }
 
 // Settings for Php client libraries.
 message PhpSettings {
   // Some settings.
-  .mytest.v1.CommonLanguageSettings common = 1;
+  CommonLanguageSettings common = 1;
 }
 
 // This message configures the settings for publishing [Google Cloud Client
@@ -200,7 +200,7 @@ message PhpSettings {
 message Publishing {
   // A list of API method settings, e.g. the behavior for methods that use the
   // long-running operation pattern.
-  repeated .mytest.v1.MethodSettings method_settings = 2;
+  repeated MethodSettings method_settings = 2;
 
   // Link to a place that API users can report issues.  Example:
   // https://issuetracker.google.com/issues/new?component=190865&template=1161103
@@ -227,24 +227,24 @@ message Publishing {
   string doc_tag_prefix = 106;
 
   // For whom the client library is being published.
-  .mytest.v1.ClientLibraryOrganization organization = 107;
+  ClientLibraryOrganization organization = 107;
 
   // Client library settings.  If the same version string appears multiple
   // times in this list, then the last one wins.  Settings from earlier
   // settings with the same version string are discarded.
-  repeated .mytest.v1.ClientLibrarySettings library_settings = 109;
+  repeated ClientLibrarySettings library_settings = 109;
 }
 
 // Settings for Python client libraries.
 message PythonSettings {
   // Some settings.
-  .mytest.v1.CommonLanguageSettings common = 1;
+  CommonLanguageSettings common = 1;
 }
 
 // Settings for Ruby client libraries.
 message RubySettings {
   // Some settings.
-  .mytest.v1.CommonLanguageSettings common = 1;
+  CommonLanguageSettings common = 1;
 }
 
 // To where should client libraries be published?
@@ -280,7 +280,7 @@ enum ClientLibraryOrganization {
   STREET_VIEW = 4;
 }
 
-extend .google.protobuf.MethodOptions {
+extend google.protobuf.MethodOptions {
   // A definition of a client library method signature.
   //
   // In client libraries, each proto RPC corresponds to one or more methods
@@ -319,7 +319,7 @@ extend .google.protobuf.MethodOptions {
   repeated string method_signature = 1051;
 }
 
-extend .google.protobuf.ServiceOptions {
+extend google.protobuf.ServiceOptions {
   // The hostname for this service.
   // This should be specified with no prefix or protocol.
   //

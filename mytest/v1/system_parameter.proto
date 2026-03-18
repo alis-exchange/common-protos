@@ -56,7 +56,7 @@ message SystemParameterRule {
   // names are used the behavior is implementation-dependent.
   // If none of the specified names are present the behavior is
   // parameter-dependent.
-  repeated .mytest.v1.SystemParameter parameters = 2;
+  repeated SystemParameter parameters = 2;
 }
 
 // ### System parameter configuration
@@ -95,5 +95,5 @@ message SystemParameters {
   //               http_header: Api-Key2
   //
   // **NOTE:** All service configuration rules follow "last one wins" order.
-  repeated .mytest.v1.SystemParameterRule rules = 1;
+  repeated SystemParameterRule rules = 1;
 }

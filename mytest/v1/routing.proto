@@ -456,10 +456,10 @@ message RoutingRule {
   // `path_template` is not provided), "last one wins" rule
   // determines which Parameter gets used.
   // See the examples for more details.
-  repeated .mytest.v1.RoutingParameter routing_parameters = 2;
+  repeated RoutingParameter routing_parameters = 2;
 }
 
-extend .google.protobuf.MethodOptions {
+extend google.protobuf.MethodOptions {
   // See RoutingRule.
-  .mytest.v1.RoutingRule routing = 72295729;
+  RoutingRule routing = 72295729;
 }

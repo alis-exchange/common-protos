@@ -42,7 +42,7 @@ option java_package = "com.google.api";
 //        type: INT64
 message ProjectProperties {
   // List of per consumer project-specific properties.
-  repeated .mytest.v1.Property properties = 1;
+  repeated Property properties = 1;
 }
 
 // Defines project properties.
@@ -60,7 +60,7 @@ message Property {
   string name = 1;
 
   // The type of this property.
-  .mytest.v1.Property.PropertyType type = 2;
+  PropertyType type = 2;
 
   // The description of the property
   string description = 3;

@@ -58,15 +58,15 @@ message MetricDescriptor {
   // type has a label for the HTTP response code, `response_code`, so
   // you can look at latencies for successful responses or just
   // for responses that failed.
-  repeated .mytest.v1.LabelDescriptor labels = 2;
+  repeated LabelDescriptor labels = 2;
 
   // Whether the metric records instantaneous values, changes to a value, etc.
   // Some combinations of `metric_kind` and `value_type` might not be supported.
-  .mytest.v1.MetricDescriptor.MetricKind metric_kind = 3;
+  MetricKind metric_kind = 3;
 
   // Whether the measurement is an integer, a floating-point number, etc.
   // Some combinations of `metric_kind` and `value_type` might not be supported.
-  .mytest.v1.MetricDescriptor.ValueType value_type = 4;
+  ValueType value_type = 4;
 
   // The units in which the metric value is reported. It is only applicable
   // if the `value_type` is `INT64`, `DOUBLE`, or `DISTRIBUTION`. The `unit`
@@ -192,10 +192,10 @@ message MetricDescriptor {
   string type = 8;
 
   // Optional. Metadata which can be used to guide usage of the metric.
-  .mytest.v1.MetricDescriptor.MetricDescriptorMetadata metadata = 10;
+  MetricDescriptorMetadata metadata = 10;
 
   // Optional. The launch stage of the metric definition.
-  .mytest.v1.LaunchStage launch_stage = 12;
+  LaunchStage launch_stage = 12;
 
   // Read-only. If present, then a [time
   // series][google.monitoring.v3.TimeSeries], which is identified partially by
@@ -207,18 +207,18 @@ message MetricDescriptor {
   // Additional annotations that can be used to guide the usage of a metric.
   message MetricDescriptorMetadata {
     // Deprecated. Must use the [MetricDescriptor.launch_stage][google.api.MetricDescriptor.launch_stage] instead.
-    .mytest.v1.LaunchStage launch_stage = 1 [deprecated = true];
+    LaunchStage launch_stage = 1 [deprecated = true];
 
     // The sampling period of metric data points. For metrics which are written
     // periodically, consecutive data points are stored at this time interval,
     // excluding data loss due to errors. Metrics with a higher granularity have
     // a smaller sampling period.
-    .google.protobuf.Duration sample_period = 2;
+    google.protobuf.Duration sample_period = 2;
 
     // The delay of data points caused by ingestion. Data points older than this
     // age are guaranteed to be ingested and available to be read, excluding
     // data loss due to errors.
-    .google.protobuf.Duration ingest_delay = 3;
+    google.protobuf.Duration ingest_delay = 3;
   }
 
   // The kind of measurement. It describes how the data is reported.

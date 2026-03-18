@@ -31,7 +31,7 @@ message Backend {
   // A list of API backend rules that apply to individual API methods.
   //
   // **NOTE:** All service configuration rules follow "last one wins" order.
-  repeated .mytest.v1.BackendRule rules = 1;
+  repeated BackendRule rules = 1;
 }
 
 // A backend rule provides configuration for an individual API element.
@@ -74,7 +74,7 @@ message BackendRule {
   // operation. The default is no deadline.
   double operation_deadline = 5;
 
-  .mytest.v1.BackendRule.PathTranslation path_translation = 6;
+  PathTranslation path_translation = 6;
 
   // Authentication settings used by the backend.
   //

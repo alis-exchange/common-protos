@@ -85,7 +85,7 @@ message Monitoring {
   // needed for different sets of metrics associated with that monitored
   // resource type. A monitored resource and metric pair may only be used once
   // in the Monitoring configuration.
-  repeated .mytest.v1.Monitoring.MonitoringDestination producer_destinations = 1;
+  repeated MonitoringDestination producer_destinations = 1;
 
   // Monitoring configurations for sending metrics to the consumer project.
   // There can be multiple consumer destinations. A monitored resource type may
@@ -93,7 +93,7 @@ message Monitoring {
   // needed for different sets of metrics associated with that monitored
   // resource type. A monitored resource and metric pair may only be used once
   // in the Monitoring configuration.
-  repeated .mytest.v1.Monitoring.MonitoringDestination consumer_destinations = 2;
+  repeated MonitoringDestination consumer_destinations = 2;
 
   // Configuration of a specific monitoring destination (the producer project
   // or the consumer project).

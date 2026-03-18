@@ -57,7 +57,7 @@ message Visibility {
   // A list of visibility rules that apply to individual API elements.
   //
   // **NOTE:** All service configuration rules follow "last one wins" order.
-  repeated .mytest.v1.VisibilityRule rules = 1;
+  repeated VisibilityRule rules = 1;
 }
 
 // A visibility rule provides visibility configuration for an individual API
@@ -87,32 +87,32 @@ message VisibilityRule {
   string restriction = 2;
 }
 
-extend .google.protobuf.EnumOptions {
+extend google.protobuf.EnumOptions {
   // See `VisibilityRule`.
-  .mytest.v1.VisibilityRule enum_visibility = 72295727;
+  VisibilityRule enum_visibility = 72295727;
 }
 
-extend .google.protobuf.EnumValueOptions {
+extend google.protobuf.EnumValueOptions {
   // See `VisibilityRule`.
-  .mytest.v1.VisibilityRule value_visibility = 72295727;
+  VisibilityRule value_visibility = 72295727;
 }
 
-extend .google.protobuf.FieldOptions {
+extend google.protobuf.FieldOptions {
   // See `VisibilityRule`.
-  .mytest.v1.VisibilityRule field_visibility = 72295727;
+  VisibilityRule field_visibility = 72295727;
 }
 
-extend .google.protobuf.MessageOptions {
+extend google.protobuf.MessageOptions {
   // See `VisibilityRule`.
-  .mytest.v1.VisibilityRule message_visibility = 72295727;
+  VisibilityRule message_visibility = 72295727;
 }
 
-extend .google.protobuf.MethodOptions {
+extend google.protobuf.MethodOptions {
   // See `VisibilityRule`.
-  .mytest.v1.VisibilityRule method_visibility = 72295727;
+  VisibilityRule method_visibility = 72295727;
 }
 
-extend .google.protobuf.ServiceOptions {
+extend google.protobuf.ServiceOptions {
   // See `VisibilityRule`.
-  .mytest.v1.VisibilityRule api_visibility = 72295727;
+  VisibilityRule api_visibility = 72295727;
 }

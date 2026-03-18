@@ -77,7 +77,7 @@ enum FieldBehavior {
   NON_EMPTY_DEFAULT = 7;
 }
 
-extend .google.protobuf.FieldOptions {
+extend google.protobuf.FieldOptions {
   // A designation of a specific field behavior (required, output only, etc.)
   // in protobuf messages.
   //
@@ -90,5 +90,5 @@ extend .google.protobuf.FieldOptions {
   //   google.protobuf.Timestamp expire_time = 1
   //     [(google.api.field_behavior) = OUTPUT_ONLY,
   //      (google.api.field_behavior) = IMMUTABLE];
-  repeated .mytest.v1.FieldBehavior field_behavior = 1052;
+  repeated FieldBehavior field_behavior = 1052;
 }
