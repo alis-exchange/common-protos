@@ -1,0 +1,35 @@
+syntax = "proto3";
+package alis.open.iam.v1;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "open.alis.services/protobuf/alis/open/iam/v1";
+
+// The definition of a role in the context of a product
+message Role {
+  // The name of the role
+  // Format: roles/([a-z][a-zA-Z0-9.]{3,50})
+  string name = 1;
+  // The creation time of the Role.
+  google.protobuf.Timestamp create_time = 2;
+  // The last time the Role was updated.
+  google.protobuf.Timestamp update_time = 3;
+  // Used to perform a consistent read-modify-write.
+  bytes etag = 4;
+  // The title of the role
+  string title = 5;
+  // The description of the role
+  string description = 6;
+  // The permissions that this role grants
+  // Almost always uses the format of the grpc method name
+  // E.g. /alis.open.iam.v1.RolesService/ListRoles and/or /someorg.ab.library.v1.BookService/GetBook
+  repeated string permissions = 7;
+  // The proto message types of the resources' policies that this role can be bound to
+  // E.g. alis.open.iam.v1.Role and/or someorg.ab.library.v1.Book
+  repeated string resource_types = 8;
+  // Whether the role is given to all users by default.
+  // This is used to group RPCs that are available to any user that has access to the deployment.
+  // If this is true, resource_types must be empty.
+  // The alternative would be to create a role that gets assigned to any new users.
+  bool all_users = 9;
+}

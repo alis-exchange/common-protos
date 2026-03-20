@@ -1,0 +1,83 @@
+syntax = "proto3";
+
+package alis.open.support.v1;
+
+import "alis/open/pubsub/v1/pubsub.proto";
+import "google/protobuf/empty.proto";
+
+option go_package = "open.alis.services/protobuf/alis/open/support/v1";
+
+// Service for handling events.
+service EventsService {
+  // Handles an event from pubsub.
+  rpc HandleEvent(alis.open.pubsub.v1.PubSubMessage) returns (google.protobuf.Empty) {}
+}
+
+// Event published when a new issue is created.
+message IssueCreatedEvent {
+  // The fully qualified name of the issue.
+  // Format: Format: issues/*
+  string issue = 1;
+}
+
+// Event published when the requesters of an issue are changed.
+message IssueRequestersChangedEvent {
+  // The fully qualified name of the issue.
+  // Format: Format: issues/*
+  string issue = 1;
+  // The fully qualified names of the previous requesters.
+  // Format: [users/*]
+  repeated string previous_requesters = 2;
+}
+
+// Event published when the assignees of an issue are changed.
+message IssueAssigneesChangedEvent {
+  // The fully qualified name of the issue.
+  // Format: Format: issues/*
+  string issue = 1;
+  // The fully qualified names of the previous assignees.
+  // Format: [users/*]
+  repeated string previous_assignees = 2;
+}
+
+// Event published when the type of an issue is changed.
+message IssueTypeChangedEvent {
+  // The fully qualified name of the issue.
+  // Format: Format: issues/*
+  string issue = 1;
+}
+
+// Event published when an issue is closed.
+message IssueClosedEvent {
+  // The fully qualified name of the issue.
+  // Format: Format: issues/*
+  string issue = 1;
+}
+
+// Event published when an issue is reopened.
+message IssueReopenedEvent {
+  // The fully qualified name of the issue.
+  // Format: Format: issues/*
+  string issue = 1;
+}
+
+// Event published when an issue is put on hold.
+message IssueOnHoldEvent {
+  // The fully qualified name of the issue.
+  // Format: Format: issues/*
+  string issue = 1;
+}
+
+// Event published when an issue is resumed.
+message IssueResumedEvent {
+  // The fully qualified name of the issue.
+  // Format: Format: issues/*
+  string issue = 1;
+}
+
+// Event published when a requester comment is added to an issue.
+message IssueCommentAddedEvent {
+  // The fully qualified name of the issue activity.
+  // Format: "issues/*/activities/*".
+  string issue_activity = 1;
+}

@@ -1,0 +1,184 @@
+syntax = "proto3";
+
+package alis.open.support.v1;
+
+import "alis/open/support/v1/issue.proto";
+import "alis/open/validation/v1/validation.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/field_mask.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "open.alis.services/protobuf/alis/open/support/v1";
+
+// IssueActivitiesService provides RPCs for managing IssueActivity resources.
+service IssueActivitiesService {
+  // Validates any proto message that is used directly or indirectly by this service.
+  // Most common use issue is to validate request messages from a client-side application.
+  rpc ValidateMessage(alis.open.validation.v1.ValidateMessageRequest) returns (alis.open.validation.v1.ValidateMessageResponse) {}
+  // Retrieves the validation rules for any proto message that is used directly or indirectly by this service.
+  // Serves as live auto-documentation of the validation rules in this service.
+  rpc RetrieveRules(alis.open.validation.v1.RetrieveRulesRequest) returns (alis.open.validation.v1.RetrieveRulesResponse) {}
+
+  // Creates a IssueActivity.
+  // Only called from alis-build
+  rpc CreateIssueActivity(CreateIssueActivityRequest) returns (IssueActivity) {}
+  // Gets information about a IssueActivity.
+  rpc GetIssueActivity(GetIssueActivityRequest) returns (IssueActivity) {}
+  // Updates a issue activity.
+  // Only called from alis-build.
+  rpc UpdateIssueActivity(UpdateIssueActivityRequest) returns (IssueActivity) {}
+  // Deletes a IssueActivity.
+  // Only called from alis-build.
+  rpc DeleteIssueActivity(DeleteIssueActivityRequest) returns (google.protobuf.Empty) {}
+  // Lists IssueActivities. Results are sorted by name, ascending.
+  rpc ListIssueActivities(ListIssueActivitiesRequest) returns (ListIssueActivitiesResponse) {}
+
+  // Adds a comment to the issue.
+  // If the Issue is private, only the reporter and assignees can comment.
+  // If the Issue is public, other users in the deployment can comment.
+  rpc CreateComment(CreateCommentRequest) returns (IssueActivity) {}
+  // Update an existing comment.
+  // Only the creator of the comment can update it.
+  rpc UpdateComment(UpdateCommentRequest) returns (IssueActivity) {}
+  // Deletes an existing comment.
+  // Only the creator of the comment can delete it.
+  rpc DeleteComment(DeleteCommentRequest) returns (google.protobuf.Empty) {}
+}
+
+// An Activity represent any changes made within, or comments added to, a Issue over its lifetime.
+message IssueActivity {
+  // The name of the Activity.
+  // Format: "issues/*/activities/*".
+  string name = 1;
+  // Output only. The User who created this Activity or caused the Activity to be created by updating a Issue.
+  Issue.User creator = 2;
+
+  // The full body of the activity
+  repeated Issue.ContentBlock body = 3;
+  // The type of Activity
+  Type type = 5;
+  // Available Activity types
+  enum Type {
+    // Not specified
+    TYPE_UNSPECIFIED = 0;
+    // The requesters on the issue were changed
+    REQUESTERS_CHANGE = 1;
+    // The issue assignees were changed
+    ASSIGNEES_CHANGE = 2;
+    // The issue type was changed
+    TYPE_CHANGE = 3;
+    // reserve 4, 5 and 6 for other field changes
+    // The issue was closed
+    CLOSED = 7;
+    // The closed issue was reopened
+    REOPENED = 8;
+    // The issue was put on hold
+    ON_HOLD = 9;
+    // The on hold issue was resumed
+    RESUMED = 10;
+
+    // reserve 11 and 12 for other state changes
+
+    // A requester comment
+    REQUESTER_COMMENT = 13;
+    // A support comment
+    SUPPORT_COMMENT = 14;
+    // An internal note
+    INTERNAL_COMMENT = 15;
+  }
+  // Output only. The time when this Activity was created.
+  google.protobuf.Timestamp create_time = 98;
+  // Output only . The time when this Activity was last updated.
+  google.protobuf.Timestamp update_time = 99;
+}
+
+// The request message for the CreateIssueActivity method.
+message CreateIssueActivityRequest {
+  // The parent resource of the IssueActivity.
+  // Format: "issues/*".
+  string parent = 1;
+  // The IssueActivity to create.
+  IssueActivity issue_activity = 2;
+}
+
+// The request message for the GetIssueActivity method.
+message GetIssueActivityRequest {
+  // The unique name of the IssueActivity.
+  // Format: "issues/*/activities/*".
+  string name = 1;
+  // The fields to return in snake_issue.
+  // All fields are returned if not set.
+  google.protobuf.FieldMask read_mask = 2;
+}
+
+// The request message for the DeleteIssueActivity method.
+message UpdateIssueActivityRequest {
+  // The IssueActivity to update.
+  IssueActivity issue_activity = 1;
+  // The fields to update in snake_issue.
+  // All fields are updated if not set.
+  google.protobuf.FieldMask update_mask = 2;
+}
+
+// The request message for the DeleteIssueActivity method.
+message DeleteIssueActivityRequest {
+  // The unique name of the IssueActivity.
+  // Format: "issues/*/activities/*".
+  string name = 1;
+}
+
+// The request message for the ListIssueActivities method.
+message ListIssueActivitiesRequest {
+  // The parent resource of the IssueActivity.
+  // Format: "issues/*".
+  string parent = 1;
+  // The maximum number of IssueActivities to return.
+  int32 page_size = 2;
+  // A page token, received from a previous ListIssueActivities call.
+  string page_token = 3;
+  // The fields to return in snake_issue.
+  // All fields are returned if not set.
+  google.protobuf.FieldMask read_mask = 4;
+  // The filter to apply
+  string filter = 5;
+  // The order to sort the results by
+  // Default is descending
+  //
+  // Format: "field_name {asc|desc}"
+  //
+  // Only update_time is supported at the moment.
+  string order_by = 6;
+}
+
+// The response message for the ListIssueActivities method.
+message ListIssueActivitiesResponse {
+  // The IssueActivities.
+  repeated IssueActivity issue_activities = 1;
+  // A token to retrieve the next page of results.
+  string next_page_token = 2;
+}
+
+// The request message for the CreateComment method.
+message CreateCommentRequest {
+  // The parent resource of the IssueActivity.
+  // Format: "issues/*".
+  string parent = 1;
+  // The full body of the activity
+  repeated Issue.ContentBlock body = 2;
+}
+
+// The request message for the UpdateComment method.
+message UpdateCommentRequest {
+  // The unique name of the IssueActivity.
+  // Format: "issues/*/activities/*".
+  string name = 1;
+  // The full body of the activity
+  repeated Issue.ContentBlock body = 2;
+}
+
+// The request message for the DeleteComment method.
+message DeleteCommentRequest {
+  // The unique name of the IssueActivity.
+  // Format: "issues/*/activities/*".
+  string name = 1;
+}

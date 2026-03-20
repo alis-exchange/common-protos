@@ -1,0 +1,120 @@
+syntax = "proto3";
+
+package alis.open.iam.v1;
+
+import "alis/open/iam/v1/iam.proto";
+import "google/iam/v1/iam_policy.proto";
+import "google/iam/v1/policy.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/field_mask.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "open.alis.services/protobuf/alis/open/iam/v1";
+
+// GroupsService provides RPCs for managing group resources.
+service GroupsService {
+  // Gets the IAM policy for a resource implemented in this service.
+  rpc GetIamPolicy(google.iam.v1.GetIamPolicyRequest) returns (google.iam.v1.Policy) {}
+  // Sets the IAM policy for a resource implemented in this service.
+  rpc SetIamPolicy(google.iam.v1.SetIamPolicyRequest) returns (google.iam.v1.Policy) {}
+  // Returns permissions that a caller has on the specified resource.
+  rpc TestIamPermissions(google.iam.v1.TestIamPermissionsRequest) returns (google.iam.v1.TestIamPermissionsResponse) {}
+  // Adds principals or updates the roles existing principals have on an IAM Policy protected resource.
+  rpc AddIamBindings(AddIamBindingsRequest) returns (google.iam.v1.Policy) {}
+  // Removes principals or some of the roles they have on an IAM Policy protected resource.
+  rpc RemoveIamBindings(RemoveIamBindingsRequest) returns (google.iam.v1.Policy) {}
+
+  // Gets information about a Group.
+  rpc GetGroup(GetGroupRequest) returns (Group) {}
+  // Creates a new Group.
+  rpc CreateGroup(CreateGroupRequest) returns (Group) {}
+  // Updates a Group.
+  rpc UpdateGroup(UpdateGroupRequest) returns (Group) {}
+  // Deletes a Group.
+  rpc DeleteGroup(DeleteGroupRequest) returns (google.protobuf.Empty) {}
+  // Lists Groups. Results are sorted by name, ascending.
+  rpc ListGroups(ListGroupsRequest) returns (ListGroupsResponse) {}
+
+  // Syncs the specified group to its list of users
+  rpc SyncGroup(SyncGroupRequest) returns (SyncGroupResponse) {}
+}
+
+// A group of users
+message Group {
+  // The unique name of the Group which cannot be changed.
+  // Format: groups/([a-z0-9-]{2,50})
+  string name = 1;
+  // The display name of the group
+  string display_name = 2;
+  // The description of the group
+  string description = 3;
+
+  // The time the group was last updated
+  google.protobuf.Timestamp update_time = 98;
+  // The time the group was created
+  google.protobuf.Timestamp create_time = 99;
+}
+
+// The request message for the GetGroup method.
+message GetGroupRequest {
+  // The unique name of the Group.
+  // Format: groups/([a-z0-9-]{2,50})
+  string name = 1;
+  // The fields to return in snake_case.
+  // All fields are returned if not set.
+  google.protobuf.FieldMask read_mask = 2;
+}
+
+// The request message for the CreateGroup method.
+message CreateGroupRequest {
+  // The user to create
+  Group group = 1;
+}
+
+// Request message for the UpdateGroup method.
+message UpdateGroupRequest {
+  // The group to update
+  Group group = 1;
+  // The set of fields that should be updated
+  google.protobuf.FieldMask update_mask = 2;
+}
+
+// The request message for the DeleteGroup method.
+message DeleteGroupRequest {
+  // The unique name of the Group.
+  // Format: groups/([a-z0-9-]{2,50})
+  string name = 1;
+}
+
+// The request message for the ListGroups method.
+message ListGroupsRequest {
+  // Reserve first field for parent resource.
+  reserved 1;
+  // The maximum number of Groups to return.
+  int32 page_size = 2;
+  // A page token, received from a previous ListGroups call.
+  string page_token = 3;
+  // The fields to return in snake_case.
+  // All fields are returned if not set.
+  google.protobuf.FieldMask read_mask = 4;
+  // The filter to apply.
+  string filter = 5;
+}
+
+// The response message for the ListGroups method.
+message ListGroupsResponse {
+  // The Groups.
+  repeated Group groups = 1;
+  // A token to retrieve the next page of results.
+  string next_page_token = 2;
+}
+
+// The request message for the SyncGroup method.
+message SyncGroupRequest {
+  // The group to sync
+  // Format: groups/*
+  string group = 1;
+}
+
+// The response message for the SyncGroup method.
+message SyncGroupResponse {}

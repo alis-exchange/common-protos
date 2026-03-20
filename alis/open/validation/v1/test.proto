@@ -1,0 +1,122 @@
+syntax = "proto3";
+package alis.open.validation.v1;
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/field_mask.proto";
+import "google/protobuf/timestamp.proto";
+import "google/type/date.proto";
+
+option go_package = "open.alis.services/protobuf/alis/open/validation/v1";
+
+// TODO: Add service description
+service BookService {
+  // Get a Book resource
+  rpc GetBook(GetBookRequest) returns (Book) {}
+  // Create a new Book resource
+  rpc CreateBook(CreateBookRequest) returns (Book) {}
+  // Update a Book resource
+  rpc UpdateBook(UpdateBookRequest) returns (Book) {}
+  // Delete a Book
+  rpc DeleteBook(DeleteBookRequest) returns (google.protobuf.Empty) {}
+  // Lists Book resources
+  rpc ListBooks(ListBooksRequest) returns (ListBooksResponse) {}
+}
+
+// Definition of a Book resource
+message Book {
+  // The name of the Book.
+  // Format: "books/*".
+  string name = 1;
+  // The display name of the Book.
+  string display_name = 2;
+  // The author of the Book.
+  string author = 3;
+  // The publication date of the Book.
+  google.type.Date publication_date = 4;
+  // The last time the Book was updated.
+  google.protobuf.Timestamp update_time = 5;
+  // The page count of the Book.
+  int32 page_count = 6;
+  // The type of the Book.
+  Type type = 7;
+}
+
+enum Type {
+  TYPE_UNSPECIFIED = 0;
+  ANONYMOUS = 1;
+  CHILDREN = 2;
+  ADULT = 3;
+}
+
+// The request message for the GetBook method
+message GetBookRequest {
+  // The name of the Book to retrieve.
+  // Format: "books/*"
+  string name = 1;
+  // The fields to return in snake_case, as defined in the proto
+  // e.g. &field_mask.FieldMask{Paths: []string{"name", "display_name"}} --> File{Name, DisplayName}
+  // All fields are returned if not provided
+  google.protobuf.FieldMask read_mask = 2;
+}
+
+// The request message for the CreateBook method
+message CreateBookRequest {
+  reserved 1; // No parent.
+
+  // The Book to create.
+  Book book = 2;
+}
+
+// The request message for the UpdateBook method
+message UpdateBookRequest {
+  // The Book to update.
+  // The Book's `name` field is used to identify the Book to update.
+  Book book = 1;
+
+  // The list of fields to update.
+  google.protobuf.FieldMask update_mask = 2;
+}
+
+// The request message for the DeleteBook method
+message DeleteBookRequest {
+  // The name of the Book to delete.
+  // Format: "books/*"
+  string name = 1;
+}
+
+// The request message for the ListBooks method
+message ListBooksRequest {
+  reserved 1; // No parent.
+
+  // The maximum number of Books to return. The service may return fewer than
+  // this value.
+  // If unspecified, at most 50 Book will be returned.
+  // The maximum value is 1000; values above 1000 will be coerced to 1000.
+  int32 page_size = 2;
+
+  // A page token, received from a previous `ListBooks` call.
+  // Provide this to retrieve the subsequent page.
+  //
+  // When paginating, all other parameters provided to `ListBooks` must match
+  // the call that provided the page token.
+  string page_token = 3;
+
+  // The fields to return in snake_case, as defined in the proto
+  // e.g. &field_mask.FieldMask{Paths: []string{"name", "display_name"}} --> File{Name, DisplayName}
+  // All fields are returned if not provided
+  google.protobuf.FieldMask read_mask = 4;
+}
+
+// The response message for the ListBooks method
+message ListBooksResponse {
+  // The list of Books returned
+  repeated Book books = 1;
+
+  // A token, which can be sent as `page_token` to retrieve the next page.
+  // If this field is omitted, there are no subsequent pages.
+  string next_page_token = 2;
+  // The fields to return in snake_case, as defined in the proto
+  // e.g. &field_mask.FieldMask{Paths: []string{"name", "display_name"}} --> File{Name, DisplayName}
+  // All fields are returned if not provided
+  google.protobuf.FieldMask read_mask = 3;
+}

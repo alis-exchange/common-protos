@@ -1,0 +1,63 @@
+syntax = "proto3";
+
+package alis.open.notifications.v1;
+
+import "alis/open/validation/v1/validation.proto";
+import "google/iam/v1/iam_policy.proto";
+
+option go_package = "open.alis.services/protobuf/alis/open/notifications/v1";
+
+// NotificationsService provides RPCs for sending notifications to users or topics.
+service NotificationsService {
+  // Validates any proto message that is used directly or indirectly by this service.
+  // Most common use issue is to validate request messages from a client-side application.
+  rpc ValidateMessage(alis.open.validation.v1.ValidateMessageRequest) returns (alis.open.validation.v1.ValidateMessageResponse) {}
+  // Retrieves the validation rules for any proto message that is used directly or indirectly by this service.
+  // Serves as live auto-documentation of the validation rules in this service.
+  rpc RetrieveRules(alis.open.validation.v1.RetrieveRulesRequest) returns (alis.open.validation.v1.RetrieveRulesResponse) {}
+
+  // Returns permissions that a caller has on the specified resource.
+  rpc TestIamPermissions(google.iam.v1.TestIamPermissionsRequest) returns (google.iam.v1.TestIamPermissionsResponse) {}
+
+  // Sends a Firebase Cloud Messaging(FCM) message to a user or topic.
+  rpc SendFcmMessage(SendFcmMessageRequest) returns (SendFcmMessageResponse) {}
+  // Sends a batch of Firebase Cloud Messaging(FCM) messages to users or topics.
+  rpc BatchSendFcmMessages(BatchSendFcmMessagesRequest) returns (BatchSendFcmMessagesResponse) {}
+}
+
+// Request message for the SendFcmMessage method.
+message SendFcmMessageRequest {
+  // The target of the message.
+  oneof target {
+    // Format: users/{userId}
+    string user = 1;
+  }
+  // The title of the message.
+  string title = 3;
+  // The body of the message.
+  string body = 4;
+  // An optional image to include in the message.
+  string image = 5;
+  // An optional data payload to include in the message.
+  map<string, string> data = 6;
+  // An optional URL to send along with the message.
+  string uri = 7;
+}
+
+// Response message for the SendFcmMessage method.
+message SendFcmMessageResponse {
+  // Message IDs of the messages sent.
+  repeated string message_ids = 1;
+}
+
+// Request message for the  BatchSendFcmMessages method.
+message BatchSendFcmMessagesRequest {
+  // The messages to send.
+  repeated SendFcmMessageRequest requests = 1;
+}
+
+// Response message for the  BatchSendFcmMessages method.
+message BatchSendFcmMessagesResponse {
+  // Message IDs of the messages sent.
+  repeated string message_ids = 1;
+}

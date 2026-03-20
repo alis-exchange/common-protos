@@ -1,0 +1,258 @@
+syntax = "proto3";
+
+package alis.open.support.v1;
+
+import "alis/open/validation/v1/validation.proto";
+import "google/protobuf/field_mask.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "open.alis.services/protobuf/alis/open/support/v1";
+
+// GuidesService provides RPCs for managing Guide resources.
+service GuidesService {
+  // Validates any proto message that is used directly or indirectly by this service.
+  // Most common use case is to validate request messages from a client-side application.
+  rpc ValidateMessage(alis.open.validation.v1.ValidateMessageRequest) returns (alis.open.validation.v1.ValidateMessageResponse) {}
+  // Retrieves the validation rules for any proto message that is used directly or indirectly by this service.
+  // Serves as live auto-documentation of the validation rules in this service.
+  rpc RetrieveRules(alis.open.validation.v1.RetrieveRulesRequest) returns (alis.open.validation.v1.RetrieveRulesResponse) {}
+
+  // Gets information about a Guide.
+  rpc GetGuide(GetGuideRequest) returns (Guide) {}
+  // Lists Guides. Results are sorted by name, ascending.
+  rpc ListGuides(ListGuidesRequest) returns (ListGuidesResponse) {}
+
+  // SyncGuide synchronizes the published guide from alis-build so its available in this deployment.
+  rpc SyncGuide(SyncGuideRequest) returns (Guide) {}
+}
+
+// A Guide represents preemptive support that is provided
+// by the Product team to aid users in their usage of the Product.
+message Guide {
+  // The name of the guide
+  // Format: guides/*
+  string name = 1;
+  // Title of the Guide
+  string title = 2;
+  // The subtitle of the Guide
+  string subtitle = 3;
+  // The Guide contents
+  repeated ContentBlock contents = 5;
+  // A ContentBlock defines various content types
+  // that may be used as part of the Guides.
+  message ContentBlock {
+    // The type of the content block
+    Type type = 1;
+    // The potential types of content blocks
+    enum Type {
+      // TYPE_UNSPECIFIED
+      TYPE_UNSPECIFIED = 0;
+      // A title
+      TITLE = 1;
+      // A subtitle
+      SUBTITLE = 2;
+      // A heading
+      HEADING = 3;
+      // Body text
+      TEXT_BODY = 4;
+      // A standalone image
+      IMAGE = 5;
+      // A standalone video
+      VIDEO = 6;
+      // A divider which can be used to seperate elements of the page.
+      DIVIDER = 7;
+      // Provides a user-specified preview of a URL
+      LINK_PREVIEW = 8;
+      // Footnote that can be placed at the end of a section
+      FOOTNOTE = 9;
+      // A diagram, specified using valid syntax
+      DIAGRAM = 10;
+      // A syntax-highlighted code block for the set of supported languages
+      CODE_BLOCK = 11;
+    }
+    // The block containing the content
+    oneof block {
+      // A title
+      Title title = 2;
+      // A Subtitle
+      Subtitle subtitle = 3;
+      // A heading
+      Heading heading = 4;
+      // Body text
+      TextBody text_body = 5;
+      // A standalone image
+      Image image = 6;
+      // A standalone video
+      Video video = 7;
+      // A divider which can be used to seperate elements of the page.
+      Divider divider = 8;
+      // Provides a user-specified preview of a URL
+      LinkPreview link_preview = 9;
+      // Footnote that can be placed at the end of a section
+      Footnote footnote = 10;
+      // A diagram, specified using valid syntax
+      Diagram diagram = 11;
+      // A syntax-highlighted code block for the set of supported languages
+      CodeBlock code_block = 12;
+    }
+
+    // A title
+    message Title {
+      // The title text content
+      string text = 1;
+    }
+    // A Subtitle
+    message Subtitle {
+      // The subtitle text content
+      string text = 1;
+    }
+    // A Heading
+    message Heading {
+      // The heading text content
+      string text = 1;
+    }
+    // Body text
+    message TextBody {
+      // The text body content
+      // Supports standard markdown format.
+      string text = 1;
+    }
+    // A standalone image
+    message Image {
+      // The image source url
+      string source_uri = 1;
+      // An optional caption to the image
+      string caption = 2;
+    }
+    // A standalone video
+    message Video {
+      // The video source url.
+      //
+      // Currently only support Youtube links
+      string source_uri = 1;
+      // An optional caption to the video
+      string caption = 2;
+    }
+    // A divider which can be used to seperate elements of the page.
+    message Divider {}
+    // Provides a user-specified preview of a URL
+    message LinkPreview {
+      // The URI that will be directed to on open
+      string uri = 1;
+      // An avatar to use, if not specified, will default to the Alis dots
+      string avatar_uri = 2;
+      // A title to use
+      string title = 3;
+      // A blurb of body text that can be used to give a description to the link.
+      string body = 4;
+    }
+    // Footnote that can be placed at the end of a section
+    message Footnote {
+      // The footnote content
+      // Supports standard markdown format.
+      string text = 1;
+    }
+    // A diagram, specified using valid syntax
+    message Diagram {
+      // Valid Mermaid Syntax (https://mermaid.js.org/intro/syntax-reference.html)
+      // that will be used to render the diagram.
+      string mermaid_diagram_code = 1;
+      // A string version of the rendered diagram as valid html or SVG.
+      //
+      // This is stored such that client-side usage does not need to
+      // install Mermaid and render the code themselves.
+      string mermaid_rendered_diagram = 2;
+    }
+    // A syntax-highlighted code block for the set of supported languages
+    message CodeBlock {
+      // The language of the code
+      Language language = 1;
+      // The set of available languages
+      enum Language {
+        // Unspecified
+        LANGUAGE_UNSPECIFIED = 0;
+        // Go
+        GO = 1;
+        // Protocol buffer 3
+        PROTO = 2;
+        // Python
+        PYTHON = 3;
+        // Vue
+        VUE = 4;
+        // Typescript
+        TYPESCRIPT = 5;
+        // LATEX
+        LATEX = 6;
+        // Hashicorp HCL
+        HCL = 7;
+        // JSON
+        JSON = 8;
+        // YAML
+        YAML = 9;
+        // Plain text
+        TEXT = 10;
+      }
+      // The code to that will be displayed in the code block.
+      string code = 2;
+      // A string version of the syntax-highlighted code rendered as valid html.
+      //
+      // This is stored such that client-side usage does not need to
+      // install a syntax highlighter and render the html themselves.
+      string syntax_highlighted_code = 3;
+    }
+  }
+
+  // Time the page was created
+  google.protobuf.Timestamp create_time = 98;
+  // Time the page was updated
+  google.protobuf.Timestamp update_time = 99;
+}
+
+// The request message for the GetGuide method.
+message GetGuideRequest {
+  // The unique name of the Guide.
+  // Format: guides/*
+  string name = 1;
+  // The fields to return in snake_case.
+  // All fields are returned if not set.
+  google.protobuf.FieldMask read_mask = 2;
+}
+
+// The request message for the ListGuides method.
+message ListGuidesRequest {
+  // Reserved for the parent resource of the Guide if ever needed.
+
+  // The maximum number of Guides to return.
+  int32 page_size = 2;
+  // A page token, received from a previous ListGuides call.
+  string page_token = 3;
+  // The fields to return in snake_case.
+  // All fields are returned if not set.
+  google.protobuf.FieldMask read_mask = 4;
+  // The filter to apply
+  string filter = 5;
+  // The order to sort the results by
+  // Default is descending
+  //
+  // Format: "field_name {asc|desc}"
+  //
+  // Only update_time is supported at the moment.
+  string order_by = 6;
+}
+
+// The response message for the ListGuides method.
+message ListGuidesResponse {
+  // The Guides.
+  repeated Guide guides = 1;
+  // A token to retrieve the next page of results.
+  string next_page_token = 2;
+}
+
+// The request message for the SyncGuide method.
+message SyncGuideRequest {
+  // The name of the guide to sync
+  string name = 1;
+  // The new values of the guide.
+  // If empty, the guide is removed.
+  Guide guide = 2;
+}

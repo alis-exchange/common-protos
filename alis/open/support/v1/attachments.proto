@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+package alis.open.support.v1;
+
+option go_package = "open.alis.services/protobuf/alis/open/support/v1";
+
+// The service that manages uploading public attachments for use
+// in the context of Support resources.
+service PublicAttachmentsService {
+  // Upload an image attachment of a maximum 4mb.
+  rpc UploadImage(UploadImageRequest) returns (UploadImageResponse) {}
+
+  // TODO: Can expand to have signed upload urls for other kinds of files...
+}
+
+// The request message for the `UploadImage` method.
+message UploadImageRequest {
+  // The image data as bytes.
+  bytes data = 1;
+  // The image mime type.
+  //
+  // The current types supported are:
+  // - image/jpeg,
+  // - image/jpg
+  // - image/x-png,
+  // - image/png,
+  // - image/gif
+  string mime_type = 2;
+}
+
+// The response message for the `UploadImage` method.
+message UploadImageResponse {
+  // The uri link to the original image.
+  string public_uri = 1;
+}

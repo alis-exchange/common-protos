@@ -1,0 +1,21 @@
+syntax = "proto3";
+package alis.open.config.v1;
+
+import "alis/open/iam/v1/role.proto";
+
+option go_package = "open.alis.services/protobuf/alis/open/config/v1";
+
+// The definition of a product config which is passed in as an environment variable
+message ProductConfig {
+  // The name of the product
+  // Format: organisations/([a-z][a-z0-9]{2,9})/products/([a-z]{2})
+  string name = 1;
+  // The id of the product
+  string id = 2;
+  // The google project id of the product
+  string project_id = 3;
+  // The google project number of the product
+  string project_number = 4;
+  // The iam roles defined for the product
+  repeated alis.open.iam.v1.Role roles = 5;
+}

@@ -1,0 +1,354 @@
+syntax = "proto3";
+
+package alis.open.in.v1;
+
+import "alis/open/cx/v1/cx.proto";
+import "alis/open/px/v1/px.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "open.alis.services/protobuf/alis/open/in/v1";
+
+// Instrument defines a financial instrument
+// as a resource in the IN domain.
+message Instrument {
+  // The Instrument name is the unique identifier
+  // across organisations. The Instrument ID must be a valid Bloomberg
+  // or custom FIGI, as defined by www.openfigi.com.
+  //
+  // Format: instruments/{instrumentID}
+  // Example: "instruments/BBG000B9XRY4"
+  string name = 1;
+  // Figi Type. Either a global or custom FIGI,
+  // else set to unspecified
+  FigiType figi_type = 2;
+  // Human readable display name of the instrument.
+  string display_name = 3;
+  // Security Description of the instrument.
+  string description = 4;
+  // Market Sector
+  // The asset class/category of the particular instrument
+  // Format: EQUITY, MONEY_MARKET, etc.
+  MarketSector market_sector = 5;
+  // The instrument market sector
+  // Consistent with the OpenFIGI definitions at https://www.openfigi.com/api/enumValues/v3/marketSecDes
+  enum MarketSector {
+    // Market Sector not specified
+    MARKET_SECTOR_UNSPECIFIED = 0;
+    // Commodities
+    COMMODITY = 1;
+    // Corporate Bonds
+    CORPORATE = 2;
+    // Currency
+    CURRENCY = 3;
+    // Equity
+    EQUITY = 4;
+    // Market index
+    INDEX = 5;
+    // Money Market
+    MONEY_MARKET = 6;
+    // Government Bonds
+    GOVERNMENT = 7;
+    // Mortgage Backed
+    MTGE = 8;
+    // Municipal Bonds
+    MUNI = 9;
+    // Preferred Stock
+    PFD = 10;
+  }
+  // Description of the specific instrument type within its market sector.
+  // This typically depends on the market sector and is fairly flexible
+  // Possible values defined at https://www.openfigi.com/api/enumValues/v3/securityType
+  string security_type = 6;
+  // Instrument classifications
+  Classifications classifications = 7;
+  // A set of classifications specific to the instrument.
+  message Classifications {
+    // Bloomberg Industry Group
+    // Bloomberg Industry Classification System) level I classification of the security
+    // based on its business or economic function and characteristics
+    string bloomberg_industry_sector = 1;
+    // Bloomberg Industry Group
+    // Bloomberg Industry Classification System) level II classification of the security
+    // based on its business or economic function and characteristics
+    string bloomberg_industry_group = 2;
+    // Bloomberg Industry SubGroup
+    // Bloomberg Industry Classification System) level III classification of the security
+    // based on its business or economic function and characteristics
+    string bloomberg_industry_subgroup = 3;
+    // GICS Sector name
+    // A text description indicating GICS sector classification. GICS (Global Industry
+    // Classification Standard) is an industry classification standard developed by
+    // MSCI in collaboration with Standard & Poors (S&P).
+    string gics_sector = 4;
+    // Primary Global Industry Classification Standard (GICS) Industry Group Description.
+    // GICS Classifies companies with increasing granularity by Sector, Industry Group, Industry and Sub-Industry.
+    string gics_industry = 5;
+    // GICS Sub_industry
+    string gics_subindustry = 6;
+    // Investment theme
+    // This theme attribute provides a flexible and lightweight way for the user to classify / group
+    // instruments into user specified themes or ideas.  The available themes are set by the
+    // user and are not shared between instrument deployments.  Given that this is a classification,
+    // each instrument can only belong to a single theme at any point in time.
+    string theme = 7;
+    // Instrument sector
+    // This is a generic sector field and not necessarily linked to a classification system.
+    string sector = 8;
+    // Instrument industry
+    // This is a generic industry field and not necessarily linked to a classification system.
+    string industry = 9;
+    // Name of the sector that the research entity is classified into.
+    // The list of sector classifiers may be found on the Morningstar Mapping Reference endpoint on Morningstar Equity API.
+    // https://equityapi.morningstar.com/DataCatalog.aspx?catalogid=38
+    string morningstar_sector = 10;
+    // Name of the industry group that the research entity is classified into.
+    // The list of industry group classifiers may be found on the Morningstar Mapping Reference endpoint on Morningstar Equity API.
+    // https://equityapi.morningstar.com/DataCatalog.aspx?catalogid=38
+    string morningstar_industry_group = 11;
+    // Name of the industry that the research entity is classified into.
+    // The list of industry classifiers may be found on the Morningstar Mapping Reference endpoint on Morningstar Equity API.
+    // https://equityapi.morningstar.com/DataCatalog.aspx?catalogid=38
+    string morningstar_industry = 12;
+    // ICB Industry
+    // The Industry Classification Benchmark (ICB) is a globally recognized
+    // standard for categorizing companies and securities.
+    string icb_industry = 13;
+  }
+  // External identifiers for the instrument.
+  ExternalIDs external_ids = 8;
+  // External identifiers
+  message ExternalIDs {
+    // FIGI as defined by www.openfigi.com.
+    string figi = 1;
+    // Composite Financial Instrument Global Identifier - The Composite Financial Instrument Global Identifier
+    // (FIGI) enables users to link multiple FIGIs at the trading venue level within the same country or market
+    // in order to obtain an aggregated view for an instrument within that country or market.
+    string composite_figi = 2;
+    // Share Class Financial Instrument Global Identifier - A Share Class level Financial Instrument Global Identifier
+    // is assigned to an instrument that is traded in more than one country. This enables users to link multiple
+    // Composite FIGIs for the same instrument in order to obtain an aggregated view for that instrument across all
+    // countries (globally).
+    string share_class_figi = 3;
+    // ISIN
+    // An International Securities Identification Number (ISIN) is a code that uniquely identifies a specific
+    // securities issue.
+    string isin = 4;
+    // SEDOL (Stock Exchange Daily Official List)
+    // a list of security identifiers used in the United Kingdom and Ireland for clearing purposes.
+    // The numbers are assigned by the London Stock Exchange, on request by the security issuer.
+    string sedol = 5;
+    // CUSIP
+    // a nine-digit numeric (e.g. 037833100 for Apple) or nine-character alphanumeric (e.g. 38259P508 for Google)
+    // code that identifies a North American financial security for the purposes of facilitating clearing and
+    // settlement of trades.
+    // https://en.wikipedia.org/wiki/CUSIP
+    string cusip = 6;
+    // RIC (Reuters instrument code)
+    // is a ticker-like code used by Refinitiv to identify financial instruments and indices.
+    // https://en.wikipedia.org/wiki/Reuters_Instrument_Code
+    string ric = 7;
+    // Primary RIC (Reuters instrument code)
+    // is a ticker-like code used by Refinitiv to identify financial instruments and indices.
+    // https://en.wikipedia.org/wiki/Reuters_Instrument_Code
+    string primary_ric = 8;
+    // Bloomberg Ticker
+    // a string of characters or numbers to identify a company or entity uniquely in Bloomberg.
+    string bloomberg_ticker = 9;
+    // MSCI Security Code is a unique identifier assigned to each security by MSCI.
+    string msci_sec_code = 10;
+    // A Central Index Key or CIK number is a number given to an individual, company, or foreign government by
+    // the United States Securities and Exchange Commission. The number is used to identify its filings in
+    // several online databases, including EDGAR.
+    string cik = 11;
+    // InvestOne Id
+    // InvestOne is an investment accounting solution for institutional asset managers.
+    string invest_one = 12;
+    // Morningstar SecId
+    string morningstar_sec_id = 13;
+    // Morningstar CompanyId
+    string morningstar_company_id = 14;
+    // MCH Id
+    // MCH (Multi-Currency Horizon) is an investment accounting solution for institutional asset managers.
+    string mch = 15;
+    // Multifonds Id
+    // Multifonds is an investment accounting solution for institutional asset managers.
+    string multifonds = 16;
+    // Fundamental Id
+    // Fundamental is an investment accounting solution for institutional asset managers.
+    string fundamental = 17;
+    // Morgan Stanley Id
+    // Morgan Stanley is an investment trading solution provider for institutional asset managers.
+    string morgan_stanley = 18;
+    // JSE Alpha Code
+    // The ticker used by the Johannesburg Stock Exchange
+    string jse_alpha_code = 19;
+    // Refinitiv PermID
+    // PermIDs are open, permanent and universal identifiers where underlying attributes capture the
+    // context of the identity they each represent.
+    // https://permid.org/
+    string perm_id = 20;
+    // Datastream Symbol
+    string datastream_symbol = 21;
+    // IEX Identifier
+    string iex_id = 22;
+    // Portfolio Exchange Branch is the unique identifier keeping
+    // track of tickerised Portfolio Branches.
+    // A particular Portfolio Branch may be tickerised and created
+    // as an instrument in IN. This identifier is used to link the
+    // instrument bak to the Portfolio Branch in Portfolio Exchange.
+    //
+    // Format: "portfolios/{portfolioID}/branches/{branchID}"
+    // Example: "portfolios/PXPK9F123456/branches/example_branch"
+    string portfolio_exchange_branch = 23;
+    // Research Figi represents the instrument that should be referenced for investment research purposes.
+    // For example: Even though the actual instrument that is held in a given portfolio is the ADR BBG013CYP248. The instrument to reference for investment research purposes should be the actual referenced Equity BBG000BC9LX8.
+    string research_figi = 24;
+  }
+  // Exchange Code
+  // Code for the trading venue or environment on which
+  // the instrument trades. If an exchange is specified,
+  // the code will be for the specified exchange.
+  // Format: US, UN, SJ etc.
+  string exch_code = 9;
+  // Currency
+  // The 3-letter currency code defined in ISO 4217.
+  // Currency in which the security was issued.
+  // Equities: Trading currency for the security.
+  // Fixed Income: Provides the currency in which
+  // the bond was issued, not necessarily the currency
+  // in which the bond trades or pays its coupons.
+  string currency_code = 10;
+  // The ISO country code
+  // (-- api-linter: core::0143::standardized-codes=disabled
+  //     aip.dev/not-precedent: 'Country' is a well defined attributes within Finance. --)
+  string country_code = 11;
+
+  // Name of the issuing entity of the security.
+  string issuer = 12;
+
+  // Compliance attributes (deprecated)
+  reserved 13;
+
+  // Trading attributes (deprecated)
+  reserved 14;
+
+  // Display Ticker
+  // Used for display purposes only
+  // For source specific tickers and identifiers refer to the external_ids attribute.
+  string ticker = 15;
+
+  // Research related fields on the instrument (deprecated)
+  reserved 16;
+
+  // Website
+  string website_uri = 17;
+  // Boolean indicating whether the instrument has a Figi equal to its composite Figi
+  bool is_composite_figi = 18;
+  // Boolean indicating whether the instrument has a Figi equal to its shareClass Figi
+  bool is_share_class_figi = 19;
+  // Time the Instrument was last updated
+  google.protobuf.Timestamp update_time = 20;
+  // A user-defined field to determine if the instrument is being
+  // actively used. (deprecated)
+  reserved 21;
+
+  // Exchange identifiers
+  ExchangeIdentifiers exchange_identifiers = 22;
+  // Exchange identifiers
+  message ExchangeIdentifiers {
+    // Exchange MIC
+    // The Market Identifier Code (MIC) (ISO 10383) is a unique identification code
+    // used to identify securities trading exchanges, regulated and non-regulated
+    // trading markets. The MIC is a four alphanumeric character code, and is
+    // defined in ISO 10383.
+    string mic = 1;
+    // Exchange operating mic
+    string operating_mic = 12;
+    // Bloomberg Exchange Code
+    string bloomberg_exchange_code = 2;
+    // Morningstar Exchange Code
+    string morningstar_exchange_code = 3;
+  }
+
+  // Engines
+  Engines engines = 23;
+  // Instrument details required for common Alis Engines
+  message Engines {
+    // Portfolio Exchange Engine details
+    alis.open.px.v1.Instrument px = 1;
+    // Compliance Exchange Engine details
+    alis.open.cx.v1.Instrument cx = 2;
+  }
+
+  // Custom attributes
+  // USE WITH CAUTION.
+  // NB: There are no validations on this field, values are fully managed by the user.
+  // AN EXAMPLE:
+  // The usage of this field could be to capture custom classifications:
+  // The key of the map could be the classification group name (say "sets"), and the value could be the name of the   assigned element.
+  // An example map entry in this case would be:
+  // < "sets/rezco_asset_class", "sets/rezco_asset_class/elements/customEquity23">
+  map<string, string> custom_attributes = 24;
+
+  // Source Meta
+  map<string, SourceMetaData> source_meta = 99;
+  // This represents the attribute level source details
+  message SourceMetaData {
+    // Source the attribute
+    Source source = 1;
+    // Time Updated
+    google.protobuf.Timestamp update_time = 2;
+  }
+}
+
+// The FIGI type.
+enum FigiType {
+  // Figi Type is not provided
+  FIGI_TYPE_UNSPECIFIED = 0;
+  // Global FIGI
+  GLOBAL = 1;
+  // Custom generated figi, not available on www.openfigi.com, yet...
+  CUSTOM = 2;
+}
+
+// Data sources
+enum Source {
+  // Source not specified by the user.
+  SOURCE_UNSPECIFIED = 0;
+  // The user record.  This is used for fields with no source dimension.
+  // All instruments will therefore have at least USER source entry.
+  USER = 1;
+  // Openfigi
+  OPENFIGI = 2;
+  // PermID
+  PERMID = 3;
+  // Datastream
+  DATASTREAM = 4;
+  // Bloomberg
+  BLOOMBERG = 5;
+  // The originator of the instrument
+  ORIGINATOR = 6;
+  // IEX
+  // https://iexcloud.io
+  IEX = 7;
+  // Morningstar
+  // https://edw.morningstar.com/Stock.aspx?ClientId=rezco
+  // https://equityapi.morningstar.com/DataCatalog.aspx
+  MORNINGSTAR = 8;
+  // Source that utilises the existing instrument dataset and Generative AI to populate reference data.
+  AI = 9;
+}
+
+// The state of the instrument.
+enum State {
+  // State not specified by the user.
+  STATE_UNSPECIFIED = 0;
+  // The instrument is active.
+  ACTIVE = 1;
+  // The instrument is archived. This state is specified if a user
+  // has archived the instrument.
+  ARCHIVED = 2;
+  // The instrument is stale. This state is specified if IN
+  // has not received an update for the instrument in a while.
+  STALE = 3;
+}

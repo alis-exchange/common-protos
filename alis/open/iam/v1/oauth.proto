@@ -1,0 +1,240 @@
+syntax = "proto3";
+
+package alis.open.iam.v1;
+
+import "alis/open/iam/v1/user.proto";
+import "google/protobuf/duration.proto";
+
+option go_package = "open.alis.services/protobuf/alis/open/iam/v1";
+
+// Optional IAM config to use on a product deployment which, if set, will create an alis managed oauth reverse proxy endpoint
+// This endpoint can be used by backend-for-frontend services to authenticate users
+message IamConfig {
+  // The set of valid oauth providers
+  AuthProviders auth_providers = 1;
+  // Definition of the Oauth providers for the Config
+  message AuthProviders {
+    // Google oauth provider
+    OauthProvider google = 1;
+    // Microsoft oauth provider
+    OauthProvider microsoft = 2;
+    // Email auth provider
+    EmailAuthProvider email = 3;
+    // Linked auth provider
+    OauthProvider linkedin = 4;
+    // Apple auth provider
+    AppleAuthProvider apple = 5;
+  }
+  // Specification of self signup requirements
+  //
+  // If empty, then self signup is not allowed.
+  SelfSignupSpec self_signup_spec = 2;
+  // The description of self signup
+  message SelfSignupSpec {
+    // The domains and associated providers (optional)
+    // which are allowed to self signup.
+    //
+    // If no DomainProviders are specified, self signup is not allowed.
+    repeated DomainProvider domain_providers = 1;
+    // Definition of a Domain Provider that allows
+    // a mapping between a domain and Identity Provider.
+    //
+    // This allows auto redirect to the relevant IdP when a user
+    // from the specific domain signs up
+    message DomainProvider {
+      // The relevant domain which is allowed to self signup
+      // "*" indicates all domains are allowed.
+      string domain = 1;
+      // The associated Identity Provider (IdP)
+      //
+      // In the case that the IdP is:
+      // 	UNSPECIFIED - will provide options of available IdPs for sign up
+      //	(Any specified) - will automatically redirect to the relevant IdP for sign up
+      //
+      // In the case that the domain is specified as '*'
+      // then this field needs to be UNSPECIFIED
+      alis.open.iam.v1.IdentityProvider identity_provider = 2;
+      // Whether to force users to provide their credentials when signing in.
+      //
+      // The default (false) behaviour is that users are allowed to select
+      // and account from a corporate identity for which they are already
+      // signed in for. Some organisations may however require users to
+      // follow an entire authentication flow when signing in,
+      // rather than just selecting the relevant account from the
+      // already signed in corporate identities.
+      bool force_login = 3;
+    }
+    // The default roles assigned to a user when they self sign up
+    // Format: ["roles/*", ...]
+    repeated string default_roles = 2;
+  }
+  // The uri to the logo to use on the signin & signup pages.
+  // Suggested that the image has aspect ratio 1:1 (eg 32x32, 64x64, ...)
+  // Format: https://...
+  string logo_uri = 3;
+  // Once a user has successfully been authenticated using the relevant
+  // auth provider, various cookies will be set that will be used for
+  // authenticating any calls that the user makes to the API.
+  //
+  // Cookies are set BY a specific host and FOR a specific domain.
+  //
+  // The host and domain combination can be best
+  // explained using the following examples:
+  //
+  //	 Host: app.example.com
+  //	 Domain: Unspecified
+  //		In this example, the authentication is hosted on
+  //		app.example.com and, since the domain is not
+  //		specified, the domain will default to the host. This means
+  //		that the auth cookies will only be valid for
+  //		app.example.com and can NOT be used by any other
+  //		domains, such as reports.example.com
+  //
+  //	 Host: one.app.example.com
+  //	 Domain: app.example.com
+  //		In this example, the authentication is hosted on
+  //		one.app.example.com and the domain specified is one
+  //		level higher, ie. app.example.com. This means that
+  //		the auth cookies will be valid for <b>any</b> sub-domains of
+  //		app.example.com, such as
+  //		one.app.example.com, two.app.example.com,
+  //		anything.app.example.com.
+  //      The cookies are however NOT valid for any other sub-domain of
+  //		example.com, such as reports.example.com
+  //
+  //	 Host: abc.app.example.com
+  //	 Domain: example.com
+  // 		In this example, the authentication is hosted on
+  // 		abc.app.example.com and the domain specified is at
+  // 		the top most level, ie. example.com. This means that
+  // 		the auth cookies will be valid for <b>any</b> sub-domains of
+  // 		example.com, such as abc.app.example.com,
+  // 		xyz.app.example.com,
+  // 		anything.app.example.com
+  // 		As well as:
+  // 		some.reports.example.com,
+  // 		reports.example.com, example.com, etc.
+  repeated CookieDomain cookie_domains = 4;
+  // The definition of the cookie domain
+  message CookieDomain {
+    // The host refers to the sub-domain which will
+    // the authentication, ie. require users to sign in or sign up.
+    string host = 1;
+    // The domain refers to the domain for
+    // which the auth cookies are valid.
+    //
+    // By default, the domain is set to the host, but may
+    // be specified to use a higher level domain.
+    string domain = 2;
+    // The same site setting to use for the refresh_token and id_token cookies.
+    // If none is specified, lax is used.
+    // For embedded applications, like the excel addin, none must be used.
+    SameSite same_site = 3;
+    // The enum for the SameSite setting
+    enum SameSite {
+      // Unspecified
+      SAME_SITE_UNSPECIFIED = 0;
+      // The cookie is sent in the request
+      // if the request is for the same site
+      // as the cookie.
+      SAME_SITE_STRICT = 1;
+      // The cookie is sent in the request
+      // if the request is for the same site
+      // as the cookie, or if the request is
+      // from a top-level navigation.
+      SAME_SITE_LAX = 2;
+      // The cookie is sent in the request
+      // regardless of the site.
+      SAME_SITE_NONE = 3;
+    }
+  }
+  // The google group that all users that have Google as their identity provider are added to.
+  // If empty, no group is used.
+  // If specified, the members of this group will be kept in sync with the users that have Google as their identity provider.
+  //
+  // Example: builders@alis.exchange
+  string google_group = 5;
+}
+
+// The UI config is used by the Vue Console to dynamically configure the UI
+message UiConfig {
+  // TODO: Ruan to populate
+}
+
+// Definition of an OAuth provider
+message OauthProvider {
+  // The client id of the oauth provider.
+  string client_id = 1;
+  // The client secret of the oauth provider.
+  string client_secret = 2;
+}
+
+// Email provider
+message EmailAuthProvider {
+  // The email address that the email will be received _from_.
+  // E.g. noreply@alis.build
+  string from_email = 1;
+  // In order to enable sign up using email, a server is required
+  // to send the emails on your behalf.
+  Server server = 2;
+  // The available servers.
+  message Server {
+    // Usage of the SendGrid Email API to send
+    // through the sign in information.
+    Sendgrid sendgrid = 1;
+  }
+  // Definition of the Sendgrid email server
+  message Sendgrid {
+    // The SendGrid API key to use.
+    //
+    // The key should be created (https://app.sendgrid.com/settings/api_keys)
+    // to have Restriced Access and needs to have the following permissions:
+    //   - Mail Send
+    string api_key = 1;
+    // The template to use for sending the email
+    oneof template {
+      // The SendGrid Dynamic Template ID to use.
+      // Create template at https://mc.sendgrid.com/dynamic-templates.
+      //
+      // In order for the template to work, it should include
+      // the following data variables:
+      //   - data.signInUrl
+      //
+      // The `data.signInUrl` can be added to a button for example that
+      // allows the user to click to.
+      string dynamic_template_id = 2;
+      // TODO: other templates like html
+    }
+  }
+
+  // The time that needs to pass before a user can request another email.
+  // Default is none, but highly recommended to set to prevent spam.
+  google.protobuf.Duration throttle_duration = 3;
+
+  // The duration that a user must is auto signed in for after clicking the sign in link.
+  // This corresponds directly to the expiry date on the refresh token.
+  // If not set, a user is signed in for 8 hours.
+  google.protobuf.Duration signed_in_duration = 4;
+}
+
+// Apple provider
+message AppleAuthProvider {
+  // The team id of the apple provider.
+  string team_id = 1;
+  // The client id of the oauth provider.
+  string client_id = 2;
+  // The client secret of the oauth provider.
+  string client_secret = 3;
+  // The key id of the private/secret key.
+  string key_id = 4;
+}
+
+// Structure of the alis.build generated refresh token
+message RefreshToken {
+  // The provider's refresh token
+  string token = 1;
+  // The provider
+  alis.open.iam.v1.IdentityProvider provider = 2;
+  // The redirect uri used to get the refresh token
+  string redirect_uri = 3;
+}

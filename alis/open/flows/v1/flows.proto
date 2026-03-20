@@ -1,0 +1,204 @@
+syntax = "proto3";
+
+package alis.open.flows.v1;
+
+import "alis/open/pubsub/v1/pubsub.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/field_mask.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "open.alis.services/protobuf/alis/open/flows/v1";
+
+// Manages Flow resources with an API service.
+//
+// When an API wants to communicate more details on the progress or steps while running,
+// this service would be used by clients to retrieve the Flow resources which will provide
+// additional details on the underlying business logic.
+service FlowsService {
+  // Get a Flow resource
+  rpc GetFlow(GetFlowRequest) returns (Flow) {}
+  // Lists Flows.
+  rpc ListFlows(ListFlowsRequest) returns (ListFlowsResponse) {}
+  // Streams Flows.
+  rpc StreamFlows(StreamFlowsRequest) returns (stream Flow) {}
+  // Generate a tree of Flows and Steps.
+  // This method returns a single Flow resource but with the Flow children populated.
+  //
+  // The response also includes the next immediate children of the leaf nodes(steps at the max depth).
+  // This can be used to generate the next level of the tree on demand.
+  rpc GenerateFlowTree(GenerateFlowTreeRequest) returns (GenerateFlowTreeResponse) {}
+
+  // Handles an event from Pub/Sub
+  rpc HandleEvent(alis.open.pubsub.v1.PubSubMessage) returns (google.protobuf.Empty) {}
+  // Handles a dead letter event from Pub/Sub
+  rpc HandleDeadLetter(alis.open.pubsub.v1.PubSubMessage) returns (google.protobuf.Empty) {}
+}
+
+// A Flow represents the entire journey of an API request, from its initial receipt to the final
+// response generation. It encapsulates the sequence of operations and transformations that
+// occur during the processing of the request.
+message Flow {
+  // Identifies the particular flow message.
+  // Format: flows/0af7651916cd43dd8448eb211c80319c (32 lowercase hex characters)
+  string name = 1;
+  // The fully qualified name of the method that produces the flow.
+  // Example: alis.os.resources.products.v1.ProductsService/CreateProduct
+  string source = 2;
+  // A reference to the parent of the Flow.
+  // Within a current flow the header may contain the relevant parent in the header: `x-alis-flow-parent`
+  // Format: {flow_id}-{step_id}
+  // Header example: 0af7651916cd43dd8448eb211c80319c-0, represents step with id 0
+  string parent_id = 3;
+
+  reserved 4, 5, 6;
+
+  // A sequence of steps
+  repeated Step steps = 7;
+  // A Step is a single, distinct action or operation that contributes to the
+  // overall Flow. It's a building block of the larger process, representing
+  // a specific stage or task within the API's business logic.
+  message Step {
+    // The unique name of the step.
+    // The Id is provided by the user at runtime and may be used to create structure
+    // within a set of steps, for example:
+    //  - 1 Prepare data
+    //  - 1.1 Approved by Operator
+    //  - 1.2 Approved by Manager
+    //  - 1 Validate data
+    //  - etc.
+    // Example: my_subprocess
+    // Example: 1.1
+    string id = 1;
+    // Title of the step.
+    string title = 2;
+    // A short description of the step
+    string description = 3;
+    // The state of the step
+    State state = 4;
+    // State enum.
+    enum State {
+      // State is not specified
+      STATE_UNSPECIFIED = 0;
+      // The flow has been queued
+      QUEUED = 1;
+      // The flow is in progress
+      IN_PROGRESS = 2;
+      // The flow has been cancelled
+      CANCELLED = 3;
+      // The flow is complete
+      COMPLETED = 4;
+      // An internal error occurred provisioning or updating the flow
+      FAILED = 5;
+      // The flow is awaiting human review or input
+      AWAITING_INPUT = 6;
+    }
+    reserved 5, 6, 7;
+
+    // Flow children originating from this step.
+    // A step may have multiple children, each representing a different path or outcome.
+    //
+    // This field is OUTPUT ONLY and is not persisted in the database.
+    // It is only populated by the GenerateFlowTree method.
+    repeated Flow children = 8;
+    // The time at which the Step was created.
+    google.protobuf.Timestamp create_time = 9;
+    // The time at which the Step was updated.
+    google.protobuf.Timestamp update_time = 10;
+  }
+
+  // The time at which the Flow was created.
+  google.protobuf.Timestamp create_time = 97;
+  // The time at which the Flow was created.
+  google.protobuf.Timestamp update_time = 98;
+  // The time at which the Flow was published.
+  google.protobuf.Timestamp publish_time = 99;
+}
+
+// Request message for [alis.open.flows.v1.FlowsService/GetFlow]
+message GetFlowRequest {
+  // The name of the Flow resource
+  string name = 1;
+  // The fields to return in snake_case, as defined in the proto
+  // All fields are returned if not provided
+  google.protobuf.FieldMask read_mask = 2;
+}
+
+// Request message for [alis.open.flows.v1.FlowsService/ListFlows]
+message ListFlowsRequest {
+  // The name of the parent flow.
+  // If not set, fetches all root flows.
+  string parent = 1;
+  // The maximum number of flows to return.
+  // The service may return fewer than this value.
+  // If unspecified, at most 1000 flows will be returned.
+  // The maximum value is 1000; values above 1000 will be coerced to 1000.
+  int32 page_size = 2;
+  // The page token to use when requesting the next page of results.
+  // This is typically received from a previous `ListFlows` call.
+  // Provide this to retrieve the subsequent page.
+  //
+  // When paginating, all other parameters provided to `ListFlows` must match
+  // the call that provided the page token.
+  string page_token = 3;
+  // The fields to return in snake_case, as defined in the proto
+  // All fields are returned if not provided
+  google.protobuf.FieldMask read_mask = 4;
+  // Optional filter string to filter results.
+  string filter = 5;
+}
+
+// Response message for [alis.open.flows.v1.FlowsService/ListFlows]
+message ListFlowsResponse {
+  // The list of Flows.
+  repeated alis.open.flows.v1.Flow flows = 1;
+  // The next page token.
+  // If empty, there are no more pages.
+  string next_page_token = 2;
+}
+
+// Request message for [alis.open.flows.v1.FlowsService/StreamFlows]
+message StreamFlowsRequest {
+  // The name of the parent flow.
+  // If not set, fetches all root flows.
+  string parent = 1;
+  // The fields to return in snake_case, as defined in the proto
+  // All fields are returned if not provided
+  google.protobuf.FieldMask read_mask = 2;
+}
+
+// Request message for [alis.open.flows.v1.FlowsService/GenerateFlowTree]
+message GenerateFlowTreeRequest {
+  // The fully qualified name of the parent Flow resource
+  // Format: flows/{flow_id}
+  // Example: flows/0af7651916cd43dd8448eb211c80319c
+  string name = 1;
+  // The maximum depth of the tree to generate.
+  // The service may return fewer than this value.
+  // If unspecified, all levels up to a max of 20 will be returned.
+  int32 max_depth = 2;
+  // The fields to return in snake_case, as defined in the proto
+  // All fields are returned if not provided
+  google.protobuf.FieldMask read_mask = 3;
+  // Optional filter string to filter results.
+  string filter = 4;
+}
+
+// Response message for [alis.open.flows.v1.FlowsService/GenerateFlowTree]
+message GenerateFlowTreeResponse {
+  // The root Flow.
+  alis.open.flows.v1.Flow flow = 1;
+  // Steps with children.
+  // This field returns the next immediate children of the leaf nodes(steps at the max depth).
+  // This can be used to generate the next level of the tree on demand.
+  repeated StepChildren step_children = 2;
+  // Step children.
+  // Provides the children of a step.
+  message StepChildren {
+    // The id of the step
+    // Format: {flow_id}-{step_id}
+    string id = 1;
+    // The names of the children
+    // Format: [flows/{flow_id}]
+    repeated string children = 2;
+  }
+}

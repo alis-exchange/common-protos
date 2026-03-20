@@ -1,0 +1,320 @@
+syntax = "proto3";
+
+package alis.open.support.v1;
+
+import "alis/open/iam/v1/iam.proto";
+import "alis/open/validation/v1/validation.proto";
+import "google/iam/v1/iam_policy.proto";
+import "google/iam/v1/policy.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/field_mask.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "open.alis.services/protobuf/alis/open/support/v1";
+
+// IssuesService provides RPCs for managing Issue resources.
+service IssuesService {
+  // Validates any proto message that is used directly or indirectly by this service.
+  // Most common use issue is to validate request messages from a client-side application.
+  rpc ValidateMessage(alis.open.validation.v1.ValidateMessageRequest) returns (alis.open.validation.v1.ValidateMessageResponse) {}
+  // Retrieves the validation rules for any proto message that is used directly or indirectly by this service.
+  // Serves as live auto-documentation of the validation rules in this service.
+  rpc RetrieveRules(alis.open.validation.v1.RetrieveRulesRequest) returns (alis.open.validation.v1.RetrieveRulesResponse) {}
+
+  // Gets the IAM policy for a resource implemented in this service.
+  rpc GetIamPolicy(google.iam.v1.GetIamPolicyRequest) returns (google.iam.v1.Policy) {}
+  // Sets the IAM policy for a resource implemented in this service.
+  rpc SetIamPolicy(google.iam.v1.SetIamPolicyRequest) returns (google.iam.v1.Policy) {}
+  // Returns permissions that a caller has on the specified resource.
+  rpc TestIamPermissions(google.iam.v1.TestIamPermissionsRequest) returns (google.iam.v1.TestIamPermissionsResponse) {}
+  // Adds principals or updates the roles existing principals have on an IAM Policy protected resource.
+  rpc AddIamBindings(alis.open.iam.v1.AddIamBindingsRequest) returns (google.iam.v1.Policy) {}
+  // Removes principals or some of the roles they have on an IAM Policy protected resource.
+  rpc RemoveIamBindings(alis.open.iam.v1.RemoveIamBindingsRequest) returns (google.iam.v1.Policy) {}
+
+  // Creates a new Issue.
+  rpc CreateIssue(CreateIssueRequest) returns (Issue) {}
+  // Updates a Issue.
+  // Only called from alis-build.
+  rpc UpdateIssue(UpdateIssueRequest) returns (Issue) {}
+  // Gets information about a Issue.
+  rpc GetIssue(GetIssueRequest) returns (Issue) {}
+  // Lists Issues. Results are sorted by name, ascending.
+  rpc ListIssues(ListIssuesRequest) returns (ListIssuesResponse) {}
+  // Deletes a Issue.
+  // Only called from alis-build.
+  rpc DeleteIssue(DeleteIssueRequest) returns (google.protobuf.Empty) {}
+  // Edit all the details of a newly created issue
+  // Used by requesters to update the issue while no activities have been created under the issue
+  rpc EditNewIssue(EditNewIssueRequest) returns (Issue) {}
+  // Cancel a new issue. This will delete the issue, so support will not even see it in closed issues.
+  rpc CancelNewIssue(CancelNewIssueRequest) returns (google.protobuf.Empty) {}
+  // Set the assignee of an issue
+  rpc SetIssueAssignee(SetIssueAssigneeRequest) returns (Issue) {}
+  // Set issue viewers. This will allow the specified users to view the issue in the case of a private issue.
+  // The method appends the viewers to the existing list of viewers.
+  rpc AddIssueViewers(AddIssueViewersRequest) returns (Issue) {}
+  // Remove issue viewers. This will remove the specified users from the list of users who can view the issue.
+  rpc RemoveIssueViewers(RemoveIssueViewersRequest) returns (Issue) {}
+}
+
+// An Issue represents support that is requested by a user of a Product.
+message Issue {
+  // The resource name for the Issue.
+  // Format: issues/*
+  string name = 1;
+  // The short description of the Issue. 63 characters or less
+  string display_name = 2;
+  // A detailed description of the Issue.
+  repeated ContentBlock description = 3;
+  // ContentBlock in the context of a Issue or Issue Activity
+  message ContentBlock {
+    // The type of the content block
+    Type type = 1;
+    // The potential types of content blocks
+    enum Type {
+      // TYPE_UNSPECIFIED
+      TYPE_UNSPECIFIED = 0;
+      // Body text
+      TEXT_BODY = 1;
+      // A standalone image
+      IMAGE = 2;
+      // A standalone video
+      VIDEO = 3;
+      // A code snippet
+      // CODE_SNIPPET = 4;
+    }
+    // The block containing the content
+    oneof block {
+      // Body text
+      TextBody text_body = 2;
+      // A standalone image
+      Image image = 3;
+      // A standalone video
+      Video video = 4;
+    }
+    // Body text
+    message TextBody {
+      // The text body content
+      // Supports standard markdown format.
+      string text = 1;
+    }
+    // A standalone image
+    message Image {
+      // The image source url
+      string source_uri = 1;
+      // An optional caption to the image
+      string caption = 2;
+    }
+    // A standalone video
+    message Video {
+      // The video source url.
+      string source_uri = 1;
+      // An optional caption to the video
+      string caption = 2;
+    }
+  }
+  // The user specified Issue category,
+  // kept simple for user to have broad categories.
+  Category category = 4;
+  // Available Issue categories.
+  enum Category {
+    // Not specified
+    CATEGORY_UNSPECIFIED = 0;
+    // The user is experiencing a bug in the product functionality
+    BUG = 1;
+    // A question from the user
+    QUESTION = 2;
+    // User has a request, e.g. a feature request or request for training.
+    REQUEST = 3;
+  }
+  // The internal type categorisation of the Issue, which is set by the team
+  // based on the content of the Issue.
+  Type type = 5;
+  // Available types.
+  enum Type {
+    // Not specified
+    TYPE_UNSPECIFIED = 0;
+    // Console/service is unreachable.
+    UNREACHABLE_SERVICE = 2;
+    // One/more GA features are unusable and an acceptable workaround is not possible.
+    // The acceptability of a workaround is determined by the type of bug and the willingness of the user to use the workaround.
+    GA_BUG = 4;
+    // Nothing is necessarily wrong in the service, but the user needs urgent assistence. E.g. accidental deletion of resources.
+    // Too many of these issues from one user could result in the user being "blacklisted" and not being allowed to request support for some time period.
+    URGENT_SUPPORT = 6;
+    // One/more GA features are unusable, and an acceptable workaround is possible.
+    // The acceptability of a workaround is determined by the type of bug and the willingness of the user to use the workaround.
+    WORKAROUNDABLE_GA_BUG = 8;
+    // One/more preview features are unusable and an acceptable workaround is not possible.
+    PREVIEW_BUG = 10;
+    // One/more preview features are unusable, and an acceptable workaround is possible.
+    WORKAROUNDABLE_PREVIEW_BUG = 12;
+    // User has difficulty in using/understanding the service, but can wait an hour/more if there are other more urgent issues.
+    SUPPORT = 14;
+    // The user is formally requesting training on using the entire or a part of the service.
+    TRAINING = 16;
+    // User has general questions.
+    GENERAL = 18;
+    // User has a feature request.
+    FEATURE_REQUEST = 20;
+    // Reserving enums for future values that have priorities that fall between the current defined values.
+    // reserved 1,3,5,7,9,11,13,15;
+  }
+  // The current state of the Issue.
+  State state = 6;
+  // The available Issue states
+  enum State {
+    // Issue is in an unknown state. Not allowed
+    STATE_UNSPECIFIED = 0;
+    // The Issue is open (can be a new unassigned Issue or a Issue being worked on)
+    OPEN = 1;
+    // The Issue has been put on hold by support, meaning it won't be looked at for a day or more
+    ON_HOLD = 2;
+    // The Issue has been resolved.
+    // Closed does not imply that a successful solution was provided.
+    // The Issue may be closed if changing requirements render the Issue irrelevant.
+    CLOSED = 3;
+  }
+  // The user that reported the issue.
+  User reporter = 7;
+  // The builder or support agent assigned to manage this issue.
+  User assignee = 8;
+  // The user that reported the issue.
+  message User {
+    // The unique name of the User which cannot be changed.
+    // Format: users/([a-z0-9-]{2,50})
+    string name = 1;
+    // The email of the User. Alis will never overwrite this field.
+    string email = 2;
+    // The given name of the User.
+    string given_name = 3;
+    // The family name of the User.
+    string family_name = 4;
+    // The picture of the User.
+    // Format: https://...
+    string picture = 5;
+  }
+  // Visibility of the issue.
+  // If not specified, the default is ISSUE_VISIBILITY_PRIVATE
+  IssueVisibility visibility = 9;
+  // Visibility of the issue
+  enum IssueVisibility {
+    // Issue visibility is not specified.
+    ISSUE_VISIBILITY_UNSPECIFIED = 0;
+    // The issue is visible only to the reporter, assignee and allowed users.
+    ISSUE_VISIBILITY_PRIVATE = 1;
+    // The issue is visible to all users.
+    // This also allows other users to comment on the issue.
+    ISSUE_VISIBILITY_PUBLIC = 2;
+  }
+
+  // Output only. The time this Issue was created.
+  google.protobuf.Timestamp create_time = 99;
+  // Output only. The time this Issue was last updated.
+  google.protobuf.Timestamp update_time = 100;
+
+  // The Issue can still be expanded to include functionality like:
+  //      - Group usage: split issues to different groups
+  //      - Realistic SLA tracking: True time taken to solve the issue (ignoring action required by requester)
+}
+
+// The request message for the CreateIssue method.
+message CreateIssueRequest {
+  // The Issue to create.
+  Issue issue = 1;
+}
+
+// The request message for the UpdateIssue method.
+message UpdateIssueRequest {
+  // The Issue to update with all of its fields.
+  // The Issue's `name` field is used to identify the Issue to update.
+  Issue issue = 1;
+  // The fields to update in snake_issue.
+  // All fields are updated if not set.
+  google.protobuf.FieldMask update_mask = 2;
+}
+
+// The request message for the GetIssue method.
+message GetIssueRequest {
+  // The unique name of the Issue.
+  // Format: issues/*
+  string name = 1;
+  // The fields to return in snake_issue.
+  // All fields are returned if not set.
+  google.protobuf.FieldMask read_mask = 2;
+}
+
+// The request message for the ListIssues method.
+message ListIssuesRequest {
+  // The maximum number of Issues to return.
+  int32 page_size = 1;
+  // A page token, received from a previous ListIssues call.
+  string page_token = 2;
+  // The fields to return in snake_issue.
+  // All fields are returned if not set.
+  google.protobuf.FieldMask read_mask = 3;
+  // A filter to apply to the list of Issues.
+  string filter = 4;
+  // The order to sort the results by
+  // Default is descending
+  //
+  // Format: "field_name {asc|desc}"
+  //
+  // Only update_time is supported at the moment.
+  string order_by = 5;
+}
+
+// The response message for the ListIssues method.
+message ListIssuesResponse {
+  // The Issues.
+  repeated Issue issues = 1;
+  // A token to retrieve the next page of results.
+  string next_page_token = 2;
+}
+
+// The request message for the DeleteIssue method
+message DeleteIssueRequest {
+  // The unique name of the Issue.
+  // Format: issues/*
+  string name = 1;
+}
+
+// The request message for the EditNewIssue method
+message EditNewIssueRequest {
+  // The Issue to update with all of its fields, similar to a create method
+  // The Issue's `name` field is used to identify the Issue to update.
+  Issue issue = 1;
+}
+
+// The request message for the CancelNewIssueRequest method
+message CancelNewIssueRequest {
+  // The issue to cancel
+  string issue = 1;
+}
+
+// The request message for the SetIssueAssignee method
+message SetIssueAssigneeRequest {
+  // The Issue to update with the new requesters
+  string issue = 1;
+  // The new assignee for the issue
+  Issue.User assignee = 2;
+}
+
+// The request message for the AddIssueViewers method
+message AddIssueViewersRequest {
+  // The Issue to update with the new requesters
+  string issue = 1;
+  // The viewers for the issue.
+  // Format: users/([a-z0-9-]{2,50})
+  repeated string viewers = 2;
+}
+
+// The request message for the RemoveIssueViewers method
+message RemoveIssueViewersRequest {
+  // The Issue to update with the new requesters
+  string issue = 1;
+  // The viewers for the issue.
+  // Format: users/([a-z0-9-]{2,50})
+  repeated string viewers = 2;
+}

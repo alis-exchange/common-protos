@@ -1,0 +1,68 @@
+syntax = "proto3";
+package alis.open.validation.v1;
+
+option go_package = "open.alis.services/protobuf/alis/open/validation/v1";
+
+service ValidationService {
+  // Retrieve the validation rules for a given message type.
+  rpc RetrieveRules(RetrieveRulesRequest) returns (RetrieveRulesResponse) {}
+  // Validates if the given bytes are valid for the given message type.
+  // If the bytes cannot be marshalled into the message type, the rpc will return an error instead of the violations.
+  rpc ValidateMessage(ValidateMessageRequest) returns (ValidateMessageResponse) {}
+}
+
+message RetrieveRulesRequest {
+  // REQUIRED: The message type to retrieve rules for.
+  // E.g. "alis.os.processes.v1.CreateProcess"
+  string msg_type = 1;
+}
+
+message RetrieveRulesResponse {
+  // The rules for the message type.
+  repeated Rule rules = 1;
+}
+
+message ValidateMessageRequest {
+  // REQUIRED: The message type to validate.
+  // E.g. "alis.os.processes.v1.CreateProcess"
+  string msg_type = 1;
+  // REQUIRED: The msg to validate
+  bytes msg = 2;
+  // Optional list of fields to validate. If empty, all fields will be validated.
+  // If a rule contains more than one field_path, all field_paths must be in this list for the rule to be applied.
+  repeated string field_paths = 3;
+}
+
+message ValidateMessageResponse {
+  // The list of rules violated
+  repeated Rule violated_rules = 1;
+  // The list of fields with violations
+  repeated FieldViolation violated_fields = 2;
+}
+
+message Rule {
+  // Unique identifier for the rule which reads like code
+  // Examples:
+  // regex(F(name), S("^[a-z][a-z0-9_]*$"))
+  // length(F(name), I(1), I(64))
+  // or(regex(name, "^[a-z][a-z0-9_]*$"), regex(name, "^[A-Z][A-Z0-9_]*$"))
+  // not(regex(name, "^[a-z][a-z0-9_]*$")).if(e-eq(state,"ACTIVE"))
+  // and(regex(name, "^[a-z][a-z0-9_]*$"), length(name, 1, 64))
+  // nested(subm,update_mask)
+  string id = 1;
+  // Clear description of the rule that can be understood by non-technical users.
+  string description = 2;
+  // The field_paths that are evaluated together to determine if the rule is met.
+  // For most cases, this will be a single field_path.
+  // An example of a rule with multiple field paths is a rule that requires that the sum of two fields is less than a third field.
+  repeated string field_paths = 3;
+  // A list of nested rules that this rule consists of.
+  repeated Rule nested_rules = 4;
+}
+
+message FieldViolation {
+  // The field path that has a violation
+  string field_path = 1;
+  // The rules that were violated on this field
+  repeated Rule violated_rules = 2;
+}

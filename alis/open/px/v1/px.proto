@@ -1,0 +1,707 @@
+syntax = "proto3";
+
+package alis.open.px.v1;
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
+import "google/type/date.proto";
+import "google/type/timeofday.proto";
+
+option go_package = "open.alis.services/protobuf/alis/open/px/v1";
+
+// Instrument is an extension of the IN Instrument resource, and is used to hold additional
+// attributes that are not defined in IN, but are useful in PX.
+//
+// For an instrument to be used in PX, it must be defined in IN
+message Instrument {
+  // The instrument name as defined within the IN product.
+  // Format: instruments/{instrument_id}. {instrument_id} must be a valid Global FIGI,
+  // or a valid custom instrument ID.
+  string name = 1;
+  // Use Bloomberg as a source for this instrument.
+  //
+  // This field is deprecated, please use `points_sync_config` instead.
+  bool bloomberg_source_enabled = 2 [deprecated = true];
+  // Instrument's currency code
+  string currency_code = 3;
+  // An instrument to use as the price proxy
+  // Format: instruments/{instrument}
+  string price_proxy = 4;
+  // An instrument to use as the total return proxy
+  // Format: instruments/{instrument}
+  string total_return_proxy = 5;
+  // A branch to use for lookthroughs
+  // Format portfolios/{portfolio}/branches/{branch}
+  //
+  // Deprecated: Use lookthrough_config instead
+  string lookthrough_mapping = 6 [deprecated = true];
+  // Instrument that this instrument should be aggregated to
+  // If this is set, the position's weight_close and quantity_close
+  // will be aggregated to the supplied instrument on days calculation
+  //
+  // Format instrument/{instrument}
+  string aggregation_mapping = 7;
+  // Instrument display name
+  string display_name = 8;
+  // Instrument's asset classification as defined by different asset/fund managers
+  AssetClassification asset_classification = 9 [deprecated = true];
+  // Asset classification
+  message AssetClassification {
+    // State street specific asset classification
+    StateStreet state_street = 1;
+    // State street specific asset classification
+    message StateStreet {
+      // The instrument's asset category as defined by State Street
+      AssetCategory asset_category = 1;
+      // State Street Asset categories
+      enum AssetCategory {
+        // Category unspecified
+        ASSET_CATEGORY_UNSPECIFIED = 0;
+        // Cash
+        CASH = 1;
+        // Options
+        OPTIONS = 2;
+        // Asset
+        ASSET = 3;
+        // Cash Equivalent
+        CASH_EQUIVALENT = 4;
+        // Equity
+        EQUITY = 5;
+        // Fixed Income
+        FIXED_INCOME = 6;
+        // Liabilities
+        LIABILITIES = 7;
+        // Future
+        FUTURE = 8;
+        // Foreign Exchange
+        FOREIGN_EXCHANGE = 9;
+      }
+    }
+
+    // JTC specific asset classification
+    JTC jtc = 2;
+    // JTC specific asset classification
+    message JTC {
+      // The instrument's asset group as defined by JTC
+      AssetGroup asset_group = 2;
+      // JTC Asset groups
+      enum AssetGroup {
+        // Asset group unspecified
+        ASSET_GROUP_UNSPECIFIED = 0;
+        // Auction Rate Preferred Stock
+        AP = 1;
+        // Corporate Bond
+        B = 2;
+        // Bankers Acceptance
+        BA = 3;
+        // Benchmark
+        BR = 4;
+        // Cash
+        CA = 5;
+        // Convertible Bond
+        CB = 6;
+        // Currency Contract
+        CC = 7;
+        // Certificate of Deposit
+        CD = 8;
+        // Capital Fixed Expense
+        CF = 9;
+        // Contract for Difference (Don't use)
+        CFD = 10;
+        // Capital Assets
+        CL = 11;
+        // Capital Management Expense
+        CM = 12;
+        // Commercial Paper
+        CP = 13;
+        // Currency Swaps (Old)
+        CS = 14;
+        // Non-Scheduled Capital Fixed Expense
+        CT = 15;
+        // Currency Security
+        CU = 16;
+        // Non-Scheduled Capital Mgmt Expense
+        CV = 17;
+        // Currency Swaps (New)
+        CW = 18;
+        // Digital Asset
+        DA = 19;
+        // Deep Discounted Bond
+        DD = 20;
+        // Deferred Expense
+        DE = 21;
+        // Demand Note
+        DN = 22;
+        // Credit Default Swap
+        DW = 23;
+        // Euro Dollar
+        ED = 24;
+        // Complex Derivative
+        EI = 25;
+        // Complex Portfolio
+        EP = 26;
+        // Equalisation
+        EQU = 27;
+        // Future (Old)
+        F = 28;
+        // Foreign Bond
+        FB = 29;
+        // Forward Exchange Contract - Short
+        FC = 30;
+        // Fixed Expense
+        FE = 31;
+        // FHLMC
+        FH = 32;
+        // Forward Exchange Contract - Long
+        FL = 33;
+        // FNMA
+        FM = 34;
+        // Foreign Stock
+        FS = 35;
+        // Future (New)
+        FT = 36;
+        // Government Bond
+        G = 37;
+        // GNMA1
+        G1 = 38;
+        // GNMA2
+        G2 = 39;
+        // Gilt Bond
+        GI = 40;
+        // Index
+        I = 41;
+        // Installment Bond
+        IB = 42;
+        // Investment Contract
+        IC = 43;
+        // IO-ETTE Bond
+        IE = 44;
+        // Inflation Indexed
+        II = 45;
+        // Interest Only Bond
+        IO = 46;
+        // Installment Receipt
+        IR = 47;
+        // Interest Rate Swaps (Old)
+        IS = 48;
+        // Non-Scheduled Fixed Expense
+        IT = 49;
+        // Non-Scheduled Management Expense
+        IV = 50;
+        // Interest Rate Swaps (New)
+        IW = 51;
+        // Junior Note
+        JN = 52;
+        // Loan
+        LOA = 53;
+        // Limited Partnership
+        LPS = 54;
+        // Municipal Bond
+        M = 55;
+        // Miscellaneous Asset
+        MA = 56;
+        // Mutual Bond Fund
+        MB = 57;
+        // Margin Deposits
+        MD = 58;
+        // Management Fee
+        ME = 59;
+        // Mutual Fund
+        MF = 60;
+        // Money Market
+        MM = 61;
+        // Master Notes
+        MN = 62;
+        // Mortgage Related
+        MR = 63;
+        // Master Portfolio
+        MS = 64;
+        // Option
+        O = 65;
+        // Other Expense
+        OE = 66;
+        // Preferred Stock
+        P = 67;
+        // Investment Pools
+        PL = 68;
+        // Principal Only Bond
+        PO = 69;
+        // Property
+        PRO = 70;
+        // Right
+        R = 71;
+        // REMIC
+        RE = 72;
+        // Revolving Loan
+        RL = 73;
+        // Repurchase Agreement
+        RP = 74;
+        // Reverse Repo
+        RR = 75;
+        // Common Stock
+        S = 76;
+        // Stepped Bond
+        SB = 77;
+        // Stepped Municipal Bond
+        SM = 78;
+        // Senior Note
+        SN = 79;
+        // Time Deposit
+        TD = 80;
+        // Treasury Bill
+        TI = 81;
+        // Inflation Linked Bond (TIPS)
+        TIP = 82;
+        // Term Loan
+        TL = 83;
+        // Treasury Note
+        TN = 84;
+        // Treasury Bond
+        TO = 85;
+        // Total Return Swaps
+        TW = 86;
+        // Units
+        UN = 87;
+        // Warrant
+        W = 88;
+        // Waiver, Reimbursement, Recoupment Expense
+        WE = 89;
+        // Other Security
+        XX = 90;
+        // Yankee Dollar
+        YD = 91;
+      }
+    }
+  }
+  // The instrument's lookthrough configuration
+  // The instrument is considered to have a valid lookthrough mapping
+  // if either the default_map or the branch_level_maps are set.
+  // If both are set, the default_map will only be used for branches not specified in the branch_level_maps.
+  LookthroughConfig lookthrough_config = 10;
+  // The instrument's lookthrough configuration
+  message LookthroughConfig {
+    // A branch to use for deployment level look-through
+    // Format portfolios/{portfolio}/branches/{branch}
+    string default_map = 1;
+    // Look-through mapping overrides for specific branches
+    // Format Map(key=portfolios/{portfolio}/branches/{branch}, value=portfolios/{portfolio}/branches/{branch})
+    //
+    // If this is not set, the default_map will be used for all branches
+    // If both this and the default_map are set, the default_map will only be used for branches not specified in this map
+    map<string, string> branch_level_maps = 2;
+  }
+  // The instrument is a cash placeholder
+  // Cash placeholders are used to represent cash and cash equivalents in a portfolio.
+  // When this is set to true, PX will maintain it's price at 1.0 and will calculate it's
+  // price return as the change in FX rate to the portfolio's base currency.
+  bool is_cash_placeholder = 11;
+  // The instrument's state
+  State state = 12;
+  // The instrument's state
+  enum State {
+    // The instrument's state is unspecified
+    // This is the default value and will be used if the state is not set.
+    STATE_UNSPECIFIED = 0;
+    // The instrument is active
+    // This means that the instrument is held in one or more portfolios at a certain point in time.
+    // These instruments should always have points data available for the period(s) they are active.
+    ACTIVE = 1;
+
+    // TODO: Add more states, e.g. inactive, archived, etc.
+  }
+  // Metadata about the points data for the instrument
+  // This is used to determine which points data to sync for the instrument.
+  // This is typically only set if a new instrument came into the universe and we need to sync full history points data for it.
+  // If this is empty/nil, the points sync service will determine the start and end dates to sync.
+  //
+  // The metadata is cleared once the points data has been synced.
+  //
+  // Key is the string representation of the `Source` enum from which the points data is synced
+  // Example: DATASTREAM, BLOOMBERG, REZCO_FA, JSE_BONDS
+  //  - In Golang:
+  //     source := pb.Source_DATASTREAM.String()
+  //
+  map<string, PointsMetadata> points_meta = 13 [deprecated = true];
+  // This field is deprecated
+  //
+  // Metadata about the branches where the instrument is active
+  // This is typically only set if a new instrument came into the universe and we need to sync full history points data for it
+  // and refresh the days for the branches where it is active.
+  // The sync service will refresh days for these branches once points data is synced.
+  // If this is empty/nil, no branches will be refreshed.
+  //
+  // The metadata is cleared once the branches are refreshed.
+  //
+  // Key is the fully qualified branch name(portfolios/{portfolio}/branches/{branch}), value is the metadata for that branch.
+  map<string, BranchMetadata> branches_meta = 14 [deprecated = true];
+  // Metadata about a branch where the instrument is active
+  message BranchMetadata {
+    // The date the instrument first became active in the branch
+    // If this is not set, the start date is determined by the days service.
+    google.type.Date start_date = 1;
+    // The date the instrument last became active in the branch
+    // If this is not set, the end date is determined by the days service.
+    google.type.Date end_date = 2;
+  }
+  // Metadata about the sources from which the instrument has been synced
+  repeated Source synced_sources = 15;
+  // PX Branch that the instrument is mapped to
+  // Format: portfolios/{portfolio}/branches/{branch}
+  // Example: portfolios/123/branches/456
+  //
+  // Once an instrument is mapped to a PX branch, it cannot be changed.
+  string px_branch = 16;
+  // Preferred source priority override.
+  // If this is set, the specified priority will be used when fetching points data for the instrument.
+  // If not specified, the default PX priority will be used.
+  // Not implemented yet.
+  repeated Source preferred_source_priority = 17;
+  // Config for syncing points data from different sources
+  // Determines which sources to sync points data from and how to sync it.
+  //
+  // If this is not set, the points sync service will use the default config.
+  PointsSyncConfig points_sync_config = 18;
+  // Points sync config
+  message PointsSyncConfig {
+    // Points sync config for Datastream
+    DatastreamConfig datastream_config = 1;
+    // Points sync config for Datastream
+    message DatastreamConfig {
+      // Sync enabled
+      bool enabled = 1;
+      // Metadata used when syncing points data
+      PointsMetadata points_meta = 9;
+    }
+    // Points sync config for Bloomberg
+    BloombergConfig bloomberg_config = 2;
+    // Points sync config for Bloomberg
+    message BloombergConfig {
+      // Sync enabled
+      bool enabled = 1;
+      // The time after which the instrument should be synchronised.
+      // This enables users to specify that the instrument should be synchronised
+      // after a particular time of day, for example the time at which Bloomberg publishes
+      // the pricing data.
+      //
+      // The instrument will be synchronised at the next scheduled synchronisation
+      // after the specified time of day.
+      //
+      // Depending on the schedule of the synchronisation, the instrument may be
+      // up to 12 hours after the specified time of day.
+      //
+      // By default, the instrument will be synchronised at the earliest
+      // daily synchronisation.
+      google.type.TimeOfDay sync_activation_time = 2;
+      // Metadata used when syncing points data
+      PointsMetadata points_meta = 9;
+    }
+    // Points sync config for Alis PX
+    AlisPxConfig alis_px_config = 3;
+    // Points sync config for Alis PX
+    message AlisPxConfig {
+      // Sync enabled
+      bool enabled = 1;
+
+      // Metadata used when syncing points data
+      PointsMetadata points_meta = 9;
+    }
+    // Points sync config for JSE
+    JseConfig jse_config = 4;
+    // Points sync config for JSE
+    message JseConfig {
+      // Sync enabled
+      bool enabled = 1;
+      // Metadata used when syncing points data
+      PointsMetadata points_meta = 9;
+    }
+    // Points sync config for Rezco Fund Accounting
+    RezcoFaConfig rezco_fa_config = 5;
+    // Points sync config for Rezco Fund Accounting
+    message RezcoFaConfig {
+      // Sync enabled
+      bool enabled = 1;
+      // Metadata used when syncing points data
+      PointsMetadata points_meta = 9;
+    }
+  }
+  // Health check config, specifies how to run health checks for the instrument
+  HealthCheckConfig health_check_config = 19;
+  // Health check config, specifies how to run health checks for the instrument
+  //  - Which fields are important
+  //  - What frequency
+  message HealthCheckConfig {
+    // Points fields to exclude
+    // If not specified or empty, all relevant points fields will be included
+    repeated string excluded_points_fields = 1;
+    // Fill forward max days
+    // The maximum number of days allowed to fill forward points data
+    // If not specified a default of 7 days is set as the maximum
+    google.protobuf.UInt32Value max_fill_forward_days = 2;
+    // Include weekends when checking for filled forward points data
+    // If not specified a default of false is set
+    google.protobuf.BoolValue include_weekends = 3;
+  }
+  // Instrument Health state
+  InstrumentHealthState health_state = 20;
+  // Unique Entity Tag(ETag) used for optimistic concurrency control as a way to help prevent simultaneous updates from overwriting each other.
+  string e_tag = 97;
+  // Time the Instrument was last updated
+  google.protobuf.Timestamp update_time = 98;
+
+  // Metadata about the points data for the instrument
+  message PointsMetadata {
+    // The date from which to sync points data
+    // If this is not set, the start date is determined by the sync service.
+    google.type.Date start_date = 1;
+    // The date to which to sync points data
+    // If this is not set, the end date is determined by the sync service.
+    google.type.Date end_date = 2;
+  }
+}
+
+// Instrument Health State
+message InstrumentHealthState {
+  // Resulting top level state of the health check
+  HealthCheckResult result = 1;
+  // The reason the instrument is invalid
+  string reason = 2;
+  // Notes on the invalid position
+  // May contain additional information on why the position is invalid and how to resolve the issue
+  string notes = 3;
+
+  // Reference data checks
+  ReferenceDataCheck reference_data_check = 21;
+  // Points coverage checks
+  PointsCoverageCheck points_coverage_check = 22;
+  // Points quality checks
+  PointsQualityCheck points_quality_check = 23;
+
+  // Checks for an instrument's reference data (e.g. name, currency code, etc.)
+  message ReferenceDataCheck {
+    // Resulting top level state of the health check
+    HealthCheckResult result = 1;
+    // The reason the instrument is invalid
+    string reason = 2;
+    // Notes on the invalid position
+    // May contain additional information on why the position is invalid and how to resolve the issue
+    string notes = 3;
+
+    // Checks if the instrument exists in alis.IN
+    InstrumentExistsCheck instrument_exists = 21;
+    // Checks if the instrument's currency code is set and valid;
+    CurrencyCodeValidCheck currency_code_valid = 22;
+    // Checks if the instrument's points sync prerequisites are met for each source
+    // This includes checking if the instrument has a valid dataset mapping for each source.
+    // This is driven by the points sync config.
+    SourcePrerequisitesCheck source_prerequisites = 23;
+    // Instrument exists check
+    message InstrumentExistsCheck {
+      // Resulting top level state of the health check
+      HealthCheckResult result = 1;
+      // The reason the instrument is invalid
+      string reason = 2;
+      // Notes on the invalid position
+      // May contain additional information on why the position is invalid and how to resolve the issue
+      string notes = 3;
+    }
+
+    // Currency code valid check
+    message CurrencyCodeValidCheck {
+      // Resulting top level state of the health check
+      HealthCheckResult result = 1;
+      // The reason the instrument is invalid
+      string reason = 2;
+      // Notes on the invalid position
+      // May contain additional information on why the position is invalid and how to resolve the issue
+      string notes = 3;
+    }
+
+    // A generic field to check for everything we need to get data from a certain source e.g. DSCodes, Dataset maps, etc.
+    message SourcePrerequisitesCheck {
+      // Resulting top level state of the health check
+      HealthCheckResult result = 1;
+      // The reason the instrument is invalid
+      string reason = 2;
+      // Notes on the invalid position
+      // May contain additional information on why the position is invalid and how to resolve the issue
+      string notes = 3;
+      // Source check
+      // Checks if the instrument has a valid dataset mapping for each source
+      repeated SourceCheck source_checks = 4;
+      // Source check
+      message SourceCheck {
+        // Resulting top level state of the health check
+        HealthCheckResult result = 1;
+        // The reason the instrument is invalid
+        string reason = 2;
+        // Notes on the invalid position
+        // May contain additional information on why the position is invalid and how to resolve the issue
+        string notes = 3;
+        // Source
+        Source source = 4;
+      }
+    }
+  }
+  // Checks for an instrument's points coverage (e.g. price, total return, etc.)
+  // Check for points' completeness. This may include missing points, missing fields in points, etc.
+  message PointsCoverageCheck {
+    // Resulting top level state of the health check
+    HealthCheckResult result = 1;
+    // The reason the instrument is invalid
+    string reason = 2;
+    // Notes on the invalid position
+    // May contain additional information on why the position is invalid and how to resolve the issue
+    string notes = 3;
+
+    // Check for missing points
+    MissingPointsCheck missing_points = 21;
+    // Check for missing points
+    message MissingPointsCheck {
+      // Resulting top level state of the health check
+      HealthCheckResult result = 1;
+      // The reason the instrument is invalid
+      string reason = 2;
+      // Notes on the invalid position
+      // May contain additional information on why the position is invalid and how to resolve the issue
+      string notes = 3;
+      // Missing points
+      // Fully qualified point name
+      // Format: [instruments/{instrument}/points/{point}]
+      repeated string missing_points = 4;
+      // Total points count
+      int32 total_points_count = 5;
+    }
+
+    // Check for missing fields in points
+    MissingFieldsCheck missing_fields = 22;
+    // Check for missing fields in points
+    message MissingFieldsCheck {
+      // Resulting top level state of the health check
+      HealthCheckResult result = 1;
+      // The reason the instrument is invalid
+      string reason = 2;
+      // Notes on the invalid position
+      // May contain additional information on why the position is invalid and how to resolve the issue
+      string notes = 3;
+      // Points with missing fields
+      repeated PointMissingFields points_missing_fields = 4;
+      // Points with missing fields
+      message PointMissingFields {
+        // Fully qualified point name
+        // Format: [instruments/{instrument}/points/{point}]
+        string point = 1;
+        // Missing fields
+        // Format: [price_unadjusted, total_return_usd, ...]
+        repeated string missing_fields = 2;
+      }
+      // Total points count
+      int32 total_points_count = 5;
+    }
+  }
+  // Checks for an instrument's points accuracy (e.g. price, total return, etc.)
+  // Check for points' accuracy. This may include points that are stale, have zero prices, zero adjustment factors, etc.
+  // It also checks for variation of points' values across different sources.
+  // This may include points that have different prices, different adjustment factors, etc, over a certain threshold.
+  message PointsQualityCheck {
+    // Resulting top level state of the health check
+    HealthCheckResult result = 1;
+    // The reason the instrument is invalid
+    string reason = 2;
+    // Notes on the invalid position
+    // May contain additional information on why the position is invalid and how to resolve the issue
+    string notes = 3;
+
+    // Fill forwarded points check
+    FillForwardedPointsCheck fill_forwarded_points = 21;
+    // Fill forwarded points check
+    // Checks for any points that have been filled forward
+    message FillForwardedPointsCheck {
+      // Resulting top level state of the health check
+      HealthCheckResult result = 1;
+      // The reason the instrument is invalid
+      string reason = 2;
+      // Notes on the invalid position
+      // May contain additional information on why the position is invalid and how to resolve the issue
+      string notes = 3;
+      // Fill forwarded points
+      // Fully qualified point name
+      // Format: [instruments/{instrument}/points/{point}]
+      repeated string fill_forwarded_points = 4;
+      // Total points count
+      int32 total_points_count = 5;
+    }
+
+    // Zero Returns points check
+    ZeroReturnsPointsCheck zero_returns_points = 22;
+    // Zero Returns points check
+    // Checks for cases where the price changes but the total return does not
+    message ZeroReturnsPointsCheck {
+      // Resulting top level state of the health check
+      HealthCheckResult result = 1;
+      // The reason the instrument is invalid
+      string reason = 2;
+      // Notes on the invalid position
+      // May contain additional information on why the position is invalid and how to resolve the issue
+      string notes = 3;
+      // Points with zero return fields
+      repeated PointZeroReturnFields points_zero_return_fields = 4;
+      // Points with zero return fields
+      message PointZeroReturnFields {
+        // Fully qualified point name
+        // Format: [instruments/{instrument}/points/{point}]
+        string point = 1;
+        // Zero return fields
+        // Format: [total_return_usd, total_return_eur, ...]
+        repeated string zero_return_fields = 2;
+      }
+      // Total points count
+      int32 total_points_count = 5;
+    }
+
+    // TODO: Points fields variation e.g. huge jump in price etc
+    // TODO: Adjustment factor change
+  }
+
+  // Time the Instrument was last updated
+  google.protobuf.Timestamp update_time = 98;
+
+  // Result of the health check
+  enum HealthCheckResult {
+    // Unspecified result
+    HEALTH_CHECK_RESULT_UNSPECIFIED = 0;
+    // Check passed with no warnings. Green
+    PASS = 1;
+    // Check passed with warnings. Amber
+    PASS_WITH_WARNINGS = 2;
+    // Check failed. Red
+    FAIL = 3;
+  }
+}
+
+// Data sources
+enum Source {
+  // Source not specified by the user.
+  SOURCE_UNSPECIFIED = 0;
+  // Custom Uploaded Data e.g. Portfolio Manager, User etc.
+  CUSTOM = 1;
+  // Datastream
+  DATASTREAM = 2;
+  // Bloomberg
+  BLOOMBERG = 3;
+  // Openfigi
+  OPENFIGI = 4;
+  // JSE
+  JSE = 5;
+  // Alis IN Instruments
+  ALIS_IN = 6;
+  // Alis PX Custom Instruments/Points
+  // This is a special source that is used to indicate that the instrument/point was created by Alis PX
+  // and not by a user.
+  //
+  // A good example is Points for custom instruments that are cash placeholders
+  ALIS_PX = 7;
+  // Rezco Fund Accounting
+  REZCO_FA = 8;
+  // Morningstar
+  MORNINGSTAR = 9;
+}

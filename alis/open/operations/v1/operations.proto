@@ -1,0 +1,91 @@
+syntax = "proto3";
+
+package alis.open.operations.v1;
+
+import "google/protobuf/any.proto";
+import "google/protobuf/timestamp.proto";
+import "google/rpc/status.proto";
+
+option go_package = "open.alis.services/protobuf/alis/open/operations/v1";
+
+// This resource represents a long-running operation that is the result of a
+// network API call.
+message Operation {
+  // The server-assigned name, which is only unique within the same service that
+  // originally returns it. If you use the default HTTP mapping, the
+  // `name` should be a resource name ending with `operations/{unique_id}`.
+  string name = 1;
+
+  // Service-specific metadata associated with the operation.  It typically
+  // contains progress information and common metadata such as create time.
+  // Some services might not provide such metadata.  Any method that returns a
+  // long-running operation should document the metadata type, if any.
+  google.protobuf.Any metadata = 2;
+
+  // If the value is `false`, it means the operation is still in progress.
+  // If `true`, the operation is completed, and either `error` or `response` is
+  // available.
+  bool done = 3;
+
+  // The operation result, which can be either an `error` or a valid `response`.
+  // If `done` == `false`, neither `error` nor `response` is set.
+  // If `done` == `true`, exactly one of `error` or `response` is set.
+  oneof result {
+    // The error result of the operation in case of failure or cancellation.
+    google.rpc.Status error = 4;
+
+    // The normal response of the operation in case of success.  If the original
+    // method returns no data on success, such as `Delete`, the response is
+    // `google.protobuf.Empty`.  If the original method is standard
+    // `Get`/`Create`/`Update`, the response should be the resource.  For other
+    // methods, the response should have the type `XxxResponse`, where `Xxx`
+    // is the original method name.  For example, if the original method name
+    // is `TakeSnapshot()`, the inferred response type is
+    // `TakeSnapshotResponse`.
+    google.protobuf.Any response = 5;
+  }
+
+  // The method in which the operation was initiated.
+  // e.g. /alis.open.iam.v1.UsersService/SyncUser
+  // Useful for searching for operations related to a specific method.
+  string method = 6;
+
+  reserved 7, 8;
+
+  // The checkpoint of the operation.
+  // Useful for pausing and resuming the operation.
+  string checkpoint = 9;
+
+  // The internal state of the operation.
+  // Not returned to a client that requests the operation.
+  // Not limited to protocol buffer messages, e.g. could also use normal go structs via the encoding/gob package.
+  bytes internal_state = 10;
+
+  // The runner of the operation
+  oneof runner {
+    // The Google Cloud Task running the operation.
+    // Useful for tracking/canceling the operation.
+    CloudTask cloud_task = 11;
+  }
+
+  // A Google Cloud Task used to run an operation
+  message CloudTask {
+    // The full name of the task
+    // Format: projects/{project}/locations/{location}/queues/{queue}/tasks/{task}
+    string name = 1;
+    // The time the task is scheduled to run
+    google.protobuf.Timestamp schedule_time = 2;
+    // The time the task was created
+    google.protobuf.Timestamp create_time = 3;
+    // Whether the task is currently running
+    bool running = 4;
+    // The target host setup for the task to make requests to.
+    // Normally https://internal-gateway-{projectNr}.{region}.run.app
+    string target_host = 5;
+  }
+
+  // The time the operation was created.
+  google.protobuf.Timestamp create_time = 98;
+  // The time the operation was last updated.
+  google.protobuf.Timestamp update_time = 99;
+}

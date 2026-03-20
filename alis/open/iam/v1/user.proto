@@ -1,0 +1,527 @@
+syntax = "proto3";
+
+package alis.open.iam.v1;
+
+import "alis/open/iam/v1/iam.proto";
+import "alis/open/validation/v1/validation.proto";
+import "google/iam/v1/iam_policy.proto";
+import "google/iam/v1/policy.proto";
+import "google/protobuf/any.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/field_mask.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "open.alis.services/protobuf/alis/open/iam/v1";
+
+// UsersService provides RPCs for managing User resources.
+service UsersService {
+  // Validates any proto message that is used directly or indirectly by this service.
+  // Most common use case is to validate request messages from a client-side application.
+  rpc ValidateMessage(alis.open.validation.v1.ValidateMessageRequest) returns (alis.open.validation.v1.ValidateMessageResponse) {}
+  // Retrieves the validation rules for any proto message that is used directly or indirectly by this service.
+  // Serves as live auto-documentation of the validation rules in this service.
+  rpc RetrieveRules(alis.open.validation.v1.RetrieveRulesRequest) returns (alis.open.validation.v1.RetrieveRulesResponse) {}
+
+  // Gets the IAM policy for a resource implemented in this service.
+  rpc GetIamPolicy(google.iam.v1.GetIamPolicyRequest) returns (google.iam.v1.Policy) {}
+  // Sets the IAM policy for a resource implemented in this service.
+  rpc SetIamPolicy(google.iam.v1.SetIamPolicyRequest) returns (google.iam.v1.Policy) {}
+  // Returns permissions that a caller has on the specified resource.
+  rpc TestIamPermissions(google.iam.v1.TestIamPermissionsRequest) returns (google.iam.v1.TestIamPermissionsResponse) {}
+  // Adds principals or updates the roles existing principals have on an IAM Policy protected resource.
+  rpc AddIamBindings(AddIamBindingsRequest) returns (google.iam.v1.Policy) {}
+  // Removes principals or some of the roles they have on an IAM Policy protected resource.
+  rpc RemoveIamBindings(RemoveIamBindingsRequest) returns (google.iam.v1.Policy) {}
+
+  // Gets information about a User.
+  rpc GetUser(GetUserRequest) returns (User) {}
+  // Creates a new User.
+  rpc CreateUser(CreateUserRequest) returns (User) {}
+  // Updates a User.
+  rpc UpdateUser(UpdateUserRequest) returns (User) {}
+  // Deletes a User.
+  rpc DeleteUser(DeleteUserRequest) returns (google.protobuf.Empty) {}
+  // Lists Users. Results are sorted by name, ascending.
+  rpc ListUsers(ListUsersRequest) returns (ListUsersResponse) {}
+
+  // Retrieve a User by their email.
+  rpc RetrieveUserByEmail(RetrieveUserByEmailRequest) returns (User) {}
+
+  // Look up a User based on a search text.
+  //
+  // This method retrieves a set of results, which are Users, based on the request.
+  // The lookup for these Users are done across the given_name, family_name, email and contact number.
+  rpc LookupUser(LookupUserRequest) returns (LookupUserResponse) {}
+  // Retrieves the set of Users requested, with only a
+  // subset of the User information returned.
+  //
+  // This is equivalent to a BatchGet method, but only a subset of the User information,
+  // which does not contain any sensitive information such as email or group configurations.
+  //
+  // Differs from the RetrieveMaskedUsers method in that it returns only
+  // the Users that were specified in the request.
+  rpc BatchRetrieveMaskedUsers(BatchRetrieveMaskedUsersRequest) returns (BatchRetrieveMaskedUsersResponse) {}
+  // Retrieves all Users that match the filter criteria, if specified,
+  // with only a subset of the User information.
+  //
+  // This is equivalent to a List method, but only a subset of the User information,
+  // which does not contain any sensitive information such as email or group configurations.
+  //
+  // Differs from the BatchRetrieveMaskedUsers method in that it returns all
+  // the Users that match the filter, if the filter is specified.
+  //
+  // This is useful for displaying a list of Users without revealing sensitive information like email.
+  rpc RetrieveMaskedUsers(RetrieveMaskedUsersRequest) returns (RetrieveMaskedUsersResponse) {}
+  // Retrieves a User with some of their details hidden.
+  // This is useful for displaying a User without revealing sensitive information like email.
+  // Both name and email can be used to retrieve the User.
+  rpc RetrieveMaskedUser(RetrieveMaskedUserRequest) returns (MaskedUser) {}
+
+  // Edits a User's non-auth related information like family name and picture.
+  rpc EditUserInfo(EditUserInfoRequest) returns (User) {}
+  // Edits a User's metadata
+  rpc EditUserMetadata(EditUserMetadataRequest) returns (User) {}
+
+  // Retrieves the currently signed in user.
+  // This is useful for client-side applications to get the signed in user's information.
+  rpc RetrieveMyUser(RetrieveMyUserRequest) returns (User) {}
+
+  // Edits the info of the currently signed in user.
+  // This is useful for client-side applications to edit the signed in user's information.
+  // Allows the user to edit their given_name, family_name, picture, contact_number, position, education, linkedin_uri and metadata.
+  rpc EditMyInfo(EditMyInfoRequest) returns (User) {}
+
+  // Edits the metadata of the currently signed in user.
+  // This is useful for client-side applications to edit the signed in user's metadata.
+  rpc EditMyMetadata(EditMyMetadataRequest) returns (User) {}
+
+  // Removes the currently signed in user.
+  // This is useful if a user wants to delete their account.
+  rpc RemoveMyUser(RemoveMyUserRequest) returns (google.protobuf.Empty) {}
+
+  // Syncs all google User's to the google group configured in the IamConfig.
+  // Will not delete service accounts.
+  rpc SyncToGoogleGroup(SyncToGoogleGroupRequest) returns (SyncToGoogleGroupResponse) {}
+
+  // Sets the user's profile picture
+  rpc SetUserPicture(SetUserPictureRequest) returns (SetUserPictureResponse) {}
+}
+
+// The request message for the `UploadImage` method.
+message SetUserPictureRequest {
+  // The user to set the picture for
+  // Format: users/*
+  string user = 1;
+  // The image data as bytes.
+  bytes data = 2;
+  // The image mime type.
+  //
+  // The current types supported are:
+  // - image/jpeg,
+  // - image/jpg
+  // - image/png,
+  string mime_type = 3;
+}
+
+// The response message for the `UploadImage` method.
+message SetUserPictureResponse {
+  // The uri link to the original image.
+  string public_uri = 1;
+}
+
+// A User of a deployment
+message User {
+  // The unique name of the User which cannot be changed.
+  // Format: users/([a-z0-9-]{2,50})
+  string name = 1;
+  // The email of the User.
+  string email = 4;
+  // The given name of the User
+  string given_name = 7;
+  // The family name of the User
+  string family_name = 8;
+  // The picture of the User
+  // Format: https://...
+  string picture = 9;
+
+  // The contact number of the User
+  string contact_number = 10;
+  // Current position
+  // Example: Senior Build Engineer at Alis Exchange.
+  string position = 13;
+  // Education
+  // Example: PhD in Astrophysics
+  string education = 14;
+  // LinkedIn profile
+  // Example: https://www.linkedin.com/in/jankrynauw/
+  string linkedin_uri = 15;
+
+  // Whether the User's email has been verified.
+  // The email might be masked if synched from alis but the User has not signed in yet.
+  // The email might also be unverified if the User self-signed up with email but has not
+  // yet signed in with a link sent to their email.
+  bool verified_email = 5;
+  // The default identity provider of the User
+  // When a user enters their email to sign in, the default identity provider is used to redirect them
+  // or send them an email link.
+  IdentityProvider identity_provider = 6;
+
+  // The last google group (if any) that the User was synched to.
+  // This field is used to track if there are any Users that have not yet been
+  // successfully synched to the relevant google group since it was added/changed in the config
+  string google_group = 12;
+
+  // Any metadata about the User. The user can edit this using EditMyInfo.
+  google.protobuf.Any metadata = 11;
+  // Any internal metadata about the User. The user can not edit this, but can see it.
+  google.protobuf.Any internal_metadata = 19;
+
+  // The creation time of the User.
+  google.protobuf.Timestamp create_time = 2;
+  // The last time the User was updated.
+  google.protobuf.Timestamp update_time = 3;
+  // The last time the user signed in.
+  // This does not include refreshing of tokens.
+  google.protobuf.Timestamp last_sign_in_time = 16;
+  // The last time the user's access token was refreshed.
+  // Since this is done every 5 minutes, it is a good indicator of the user's activity.
+  google.protobuf.Timestamp last_refresh_time = 20;
+
+  // The google identity of the user if any.
+  GoogleIdentity google_identity = 17;
+  // Definition of Google Identity
+  message GoogleIdentity {
+    // The google id of the user.
+    string id = 1;
+  }
+
+  // The microsoft identity of the user if any.
+  MicrosoftIdentity microsoft_identity = 18;
+  // Definition of Microsoft Identity
+  message MicrosoftIdentity {
+    // The microsoft id of the user.
+    string id = 1;
+  }
+
+  // The linkedin identity of the user if any.
+  LinkedinIdentity linkedin_identity = 21;
+  // Definition of Linkedin Identity
+  message LinkedinIdentity {
+    // The linkedin id of the user.
+    string id = 1;
+  }
+
+  // The subscriptions that the user is part of
+  repeated Subscription subscriptions = 22;
+  // Definition of Subscription
+  message Subscription {
+    // The name of the subscription
+    // Format: accounts/*/customers/*/subscriptions/*
+    string name = 1;
+    // The code of the plan that is part of the subscription
+    string plan = 2;
+  }
+
+  // The ids of the groups the user is part of
+  repeated string group_ids = 23;
+
+  // The apple identity of the user if any.
+  AppleIdentity apple_identity = 24;
+  // Definition of Apple Identity
+  message AppleIdentity {
+    // The apple id of the user.
+    string id = 1;
+  }
+
+  // The details of each account this user belongs to if multiple accounts are
+  // supported. Key is the account id.
+  map<string, Account> accounts = 99;
+  message Account {
+    // The seat the user has for each of the product's offerings.
+    map<int32, Seat> seats = 1;
+    // A seat
+    message Seat {
+      // The plan of the account for this offering.
+      int32 plan = 1;
+      // The seat the user has for this offering.
+      int32 seat = 2;
+    }
+  }
+  // Entity tag
+  string etag = 97;
+}
+
+// Available identity providers.
+enum IdentityProvider {
+  // Unspecified identity provider.
+  IDENTITY_PROVIDER_UNSPECIFIED = 0;
+  // Google identity provider.
+  GOOGLE = 1;
+  // Microsoft identity provider.
+  MICROSOFT = 2;
+  // Email identity provider.
+  EMAIL = 3;
+  // LinkedIn identity provider.
+  LINKEDIN = 4;
+  // Apple identity provider.
+  APPLE = 5;
+}
+
+// The request message for the GetUser method.
+message GetUserRequest {
+  // The unique name of the User.
+  // Format: users/([a-z0-9-]{2,50})
+  string name = 1;
+  // The fields to return in snake_case.
+  // All fields are returned if not set.
+  google.protobuf.FieldMask read_mask = 2;
+}
+
+// The request message for the CreateUser method.
+message CreateUserRequest {
+  // The user to create
+  // Email is the only required field.
+  User user = 1;
+}
+
+// Request message for the UpdateUser method.
+message UpdateUserRequest {
+  // The user to update
+  User user = 1;
+  // The set of fields that should be updated
+  google.protobuf.FieldMask update_mask = 2;
+}
+
+// The request message for the DeleteUser method.
+message DeleteUserRequest {
+  // The unique name of the User.
+  // Format: users/([a-z0-9-]{2,50})
+  string name = 1;
+}
+
+// The request message for the ListUsers method.
+message ListUsersRequest {
+  // Reserve first field for parent resource.
+  reserved 1;
+  // The maximum number of Users to return.
+  int32 page_size = 2;
+  // A page token, received from a previous ListUsers call.
+  string page_token = 3;
+  // The fields to return in snake_case.
+  // All fields are returned if not set.
+  google.protobuf.FieldMask read_mask = 4;
+  // The filter to apply.
+  string filter = 5;
+}
+
+// The response message for the ListUsers method.
+message ListUsersResponse {
+  // The Users.
+  repeated User users = 1;
+  // A token to retrieve the next page of results.
+  string next_page_token = 2;
+}
+
+// The request message for the RetrieveUserByEmail method.
+message RetrieveUserByEmailRequest {
+  // The email of the User.
+  string email = 1;
+  // The fields to return in snake_case.
+  // All fields are returned if not set.
+  google.protobuf.FieldMask read_mask = 2;
+}
+
+// Request message for the BatchRetrieveMaskedUsers method.
+message BatchRetrieveMaskedUsersRequest {
+  // The names of the Users to retrieve.
+  // A maximum of 1000 Users can be retrieved in a single batch.
+  // Format: [users/*, users/*, ...]
+  repeated string users = 1;
+  // Fields to retrieve from the Resource. Defaults to all fields.
+  google.protobuf.FieldMask read_mask = 2;
+}
+
+// Response message for the BatchRetrieveMaskedUsers method.
+message BatchRetrieveMaskedUsersResponse {
+  // The list of Users.
+  repeated MaskedUser masked_users = 1;
+}
+
+// Request message for the LookupUser method.
+message LookupUserRequest {
+  // The text that will be used to filter the set of Users.
+  //
+  // Example: "rua"
+  // Will attempt to get all the Users that contain
+  // the text 'rua' across the various fields in
+  // the User resource
+  string search_text = 1;
+}
+
+// Response message for the LookupUser method.
+message LookupUserResponse {
+  // The list of results which match the search text
+  repeated Result results = 1;
+  // Definition of a result
+  message Result {
+    // The full name of the User
+    //
+    // Format: users/{user}
+    string user = 1;
+    // The display name of the User.
+    // Concatenated given_name and family_name
+    string display_name = 2;
+    // Masked primary email address
+    // Eg. ru***@alisx.com
+    string masked_email = 3;
+  }
+}
+
+// The request message for the RetrieveMaskedUsers method.
+message RetrieveMaskedUsersRequest {
+  // Reserve first field for parent resource.
+  reserved 1;
+  // The maximum number of Users to return.
+  int32 page_size = 2;
+  // A page token, received from a previous RetrieveMaskedUsers call.
+  string page_token = 3;
+  // The fields to return in snake_case.
+  // All fields are returned if not set.
+  google.protobuf.FieldMask read_mask = 4;
+  // The filter to apply.
+  string filter = 5;
+}
+
+// The response message for the RetrieveMaskedUsers method.
+message RetrieveMaskedUsersResponse {
+  // The Users with their emails masked.
+  repeated MaskedUser users = 1;
+  // A token to retrieve the next page of results.
+  string next_page_token = 2;
+}
+
+// The request message for the RetrieveMaskedUser method.
+message RetrieveMaskedUserRequest {
+  oneof identifier {
+    // The unique name of the User.
+    // Format: users/([a-z0-9-]{2,50})
+    string user = 1;
+    // The email of the User.
+    string email = 2;
+  }
+}
+
+// A User of a deployment with their email masked.
+message MaskedUser {
+  // The unique name of the User which cannot be changed.
+  // Format: users/([a-z0-9-]{2,50})
+  string name = 1;
+  // The creation time of the User.
+  google.protobuf.Timestamp create_time = 2;
+  // The last time the User was updated.
+  google.protobuf.Timestamp update_time = 3;
+  // The email of the User. Alis will never overwrite this field.
+  string masked_email = 4;
+  // The identity provider of the User.
+  IdentityProvider identity_provider = 6;
+  // The given name of the User.
+  string given_name = 7;
+  // The family name of the User.
+  string family_name = 8;
+  // The picture of the User.
+  // Format: https://...
+  string picture = 9;
+  // Current position
+  // Example: Senior Build Engineer at Alis Exchange.
+  string position = 10;
+  // Education
+  // Example: PhD in Astrophysics
+  string education = 11;
+  // LinkedIn profile
+  // Example: https://www.linkedin.com/in/jankrynauw/
+  string linkedin_uri = 12;
+}
+
+// The request message for the EditUserInfo method.
+message EditUserInfoRequest {
+  // The unique name of the User.
+  // Format: users/([a-z0-9-]{2,50})
+  string user = 1;
+  // The given name of the User
+  string given_name = 2;
+  // The family name of the User
+  string family_name = 3;
+  // The profile picture of the User
+  // Format: https://...
+  string picture = 4;
+  // The contact number of the User
+  string contact_number = 5;
+  // Current position
+  // Example: Senior Build Engineer at Alis Exchange.
+  string position = 6;
+  // Education
+  // Example: PhD in Astrophysics
+  string education = 7;
+  // LinkedIn profile
+  // Example: https://www.linkedin.com/in/jankrynauw/
+  string linkedin_uri = 8;
+
+  // The set of fields that should be updated
+  google.protobuf.FieldMask update_mask = 99;
+}
+
+// The request message for the EditUserMetadata method.
+message EditUserMetadataRequest {
+  // The unique name of the User.
+  // Format: users/([a-z0-9-]{2,50})
+  string user = 1;
+  // The metadata to update.
+  google.protobuf.Any metadata = 2;
+}
+
+// The request message for the RetrieveMyUser method.
+message RetrieveMyUserRequest {}
+
+// The request message for the EditMyInfo method.
+message EditMyInfoRequest {
+  // The given name of the User
+  string given_name = 1;
+  // The family name of the User
+  string family_name = 2;
+  // The profile picture of the User
+  // Format: https://...
+  string picture = 3;
+  // The contact number of the User
+  string contact_number = 4;
+  // Current position
+  // Example: Senior Build Engineer at Alis Exchange.
+  string position = 5;
+  // Education
+  // Example: PhD in Astrophysics
+  string education = 6;
+  // LinkedIn profile
+  // Example: https://www.linkedin.com/in/jankrynauw/
+  string linkedin_uri = 7;
+  // The set of fields that should be updated
+  google.protobuf.FieldMask update_mask = 10;
+}
+
+// The request message for the EditMyMetadata method.
+message EditMyMetadataRequest {
+  // The metadata to update.
+  google.protobuf.Any metadata = 1;
+}
+
+// The request message for the RemoveMyUser method.
+message RemoveMyUserRequest {}
+
+// The request message for the SyncToGoogleGroup method.
+message SyncToGoogleGroupRequest {}
+
+// The response message for the SyncToGoogleGroup method.
+message SyncToGoogleGroupResponse {
+  // The number of Users that were added.
+  int32 nr_added = 1;
+  // The number of Users that were removed.
+  int32 nr_removed = 2;
+}
