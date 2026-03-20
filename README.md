@@ -1,59 +1,55 @@
-<p align="center">
-  <img src="./logo.svg" alt="Alis Build logo" width="120" />
-</p>
+# common-protos
 
-<h1 align="center">common-protos</h1>
+Shared Protocol Buffers definitions used by Alis Build, plus a small set of
+vendored upstream proto dependencies that our APIs import directly.
 
-<p align="center">
-  Shared Protocol Buffers definitions for the Alis Build platform.
-</p>
+## At a Glance
 
-This repository is intended to play a similar role to Google's
-[`api-common-protos`](https://github.com/googleapis/api-common-protos), but for
-Alis Build services and APIs. It is the central place for protobuf types that
-need to be shared across multiple services, SDKs, and generated clients.
+This repository now has three distinct roles:
 
-## Purpose
+| Namespace | Ownership | Purpose |
+| --- | --- | --- |
+| `alis/` | Alis Build | First-party shared APIs and extensions |
+| `google/` | Google | Vendored Google API and common support protos |
+| `lf/` | Linux Foundation | Vendored Agent2Agent protocol definitions |
 
-Use this repository for protobuf definitions that are:
+The important distinction is that not every proto in this repository is
+authored here. Some packages are maintained upstream and mirrored locally so
+that code generation and dependency resolution stay simple and reproducible.
 
-- shared by more than one service
-- part of public or cross-team API contracts
-- useful as common building blocks for generated clients and tooling
+## What Lives Here
 
-Examples include common resource messages, shared service definitions, request
-and response types, annotations, metadata, and platform-wide event models.
+### First-party protos
 
-## Repository Scope
+These are the packages that belong to Alis Build and should evolve here:
 
-This repository should contain common protobuf packages only.
+- `alis/a2a/...`
+- `alis/open/...`
+- `common/...`
 
-Service-specific APIs that are not reused across the platform should generally
-live with the owning service unless there is a clear reason to centralize them
-here.
+### Vendored upstream protos
 
-## Current Packages
+These are included because our first-party APIs import them:
 
-The first package in this repository is:
+- `google/`: Google API annotations, common types, IAM, RPC, logging, and long
+  running operations protos commonly used across Cloud-style APIs
+- `lf/`: Linux Foundation Agent2Agent (`A2A`) protocol definitions used as the
+  baseline contract for agent interoperability
+
+## Current Example
+
+One of the main first-party packages in the repo is:
 
 ```text
 alis/a2a/extension/history/v1/history.proto
 ```
 
-It defines the `alis.a2a.extension.history.v1` package and the
-`A2AHistoryService`, along with shared resource and request/response messages
-for A2A history and event retrieval.
+That package builds on both first-party and vendored definitions, including
+imports from `lf/a2a/v1` and `google/api`.
 
-As the repository grows, packages should remain versioned and organized by
-domain.
+## Working Model
 
-## Usage
-
-Consumers can vendor this repository, add it as a git submodule, or reference
-it during protobuf code generation as an include path. The repository root is
-intended to be used as a `protoc` include root.
-
-Typical `protoc` usage looks like:
+Treat the repository root as the `protoc` include root:
 
 ```bash
 protoc -I . \
@@ -62,29 +58,32 @@ protoc -I . \
   alis/a2a/extension/history/v1/history.proto
 ```
 
-Adjust language-specific plugins and output flags for your environment.
+If a proto imports:
 
-## Dependencies
+- `google/api/...`, resolve it from this repo's `google/` tree
+- `lf/a2a/v1/...`, resolve it from this repo's `lf/` tree
+- `alis/...`, resolve it from this repo's first-party packages
 
-The current proto imports definitions from:
+## Contribution Rules
 
-- Google protobuf and IAM protos
-- `alis/open/iam/v1`
-- `lf/a2a/v1`
+Change the namespace you own:
 
-Those dependencies need to be available on the `protoc` include path when
-generating code.
+- Update `alis/` and other first-party packages here as part of normal API work.
+- Treat `google/` and `lf/` as vendored upstream sources unless there is a very
+  deliberate reason to patch them locally.
+- If an upstream dependency is refreshed, keep the README for that namespace in
+  sync with the source and intent of the imported package set.
 
-## Versioning
+## Compatibility
 
-Follow standard protobuf API compatibility practices:
+For first-party packages in this repo:
 
 - prefer additive changes
 - avoid reusing field numbers
 - version packages when making breaking changes
 - document deprecations before removal
 
-## Status
+For vendored upstream packages:
 
-The repository has started with the A2A history extension package and is
-expected to grow into the shared protobuf source for Alis Build platform APIs.
+- preserve upstream package names and import paths
+- avoid local edits that drift from the upstream source unnecessarily
