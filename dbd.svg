@@ -102,9 +102,9 @@
     <animate attributeName="fill" 
              values="#ccc;#ccc;#F02222;#F02222;#4285F4;#4285F4" 
              keyTimes="0;0.333;0.334;0.666;0.667;1" 
-             dur="4s" 
+             dur="7s" 
              repeatCount="indefinite" />
-    <animateMotion dur="4s" 
+    <animateMotion dur="7s" 
                    repeatCount="indefinite" 
                    path="M 0,110 L 20,118 L 40,124 L 60,129 L 80,130 L 100,128 L 120,124 L 140,117 L 160,109 L 180,101 L 200,95 L 220,91 L 240,90 L 260,92 L 280,97 L 300,105 L 320,112 L 340,120 L 360,126 L 380,129 L 400,130 L 420,127 L 440,122 L 460,114 L 480,107 L 500,99 L 520,94 L 540,90 L 560,91 L 580,94 L 600,99 L 620,107 L 640,114 L 660,121 L 680,127 L 700,130 L 720,129 L 740,125 L 760,118 L 780,110 L 800,104 L 820,97 L 840,92 L 860,90 L 880,91 L 900,95" />
   </circle>
