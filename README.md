@@ -1,17 +1,52 @@
+<p align="center">
+  <img src="./logo.svg" alt="common-protos logo" width="120" />
+</p>
+<p align="center">
+  <strong>Shared contracts, upstream where needed, first-party where it matters.</strong>
+</p>
+
 # common-protos
 
 Shared Protocol Buffers definitions used by Alis Build, plus a small set of
 vendored upstream proto dependencies that our APIs import directly.
 
+## Protocol Buffers in the Define, Build & Deploy framework
+
+<p align="center">
+  <img src="./dbd.svg" alt="Define Build Deploy framework" width="100%" />
+</p>
+
+Within the Alis Build platform, Protocol Buffers sit at the heart of the
+Define, Build & Deploy (`DBD`) framework. They are the contract that turns an
+idea into a shared system boundary before business logic is written or
+infrastructure is provisioned.
+
+In `Define`, protobuf schemas force clarity around domain objects, request and
+response shapes, service methods, and the flow of state through a system. That
+upfront precision keeps innovation grounded in a durable contract instead of
+letting interfaces drift as implementation pressure mounts.
+
+In `Build`, those same definitions reduce startup friction. Teams can generate
+client and server code, align across services, and build against stable
+interfaces without re-negotiating data structures in every codebase.
+
+In `Deploy`, protobuf contracts help keep runtime integrations predictable.
+When services, events, and supporting infrastructure are all shaped around the
+same schema-first model, deployment becomes safer, easier to automate, and more
+consistent across environments.
+
+This repository exists to support that lifecycle: define the contract once,
+build from it confidently, and deploy with fewer surprises.
+
 ## At a Glance
 
 This repository now has three distinct roles:
 
-| Namespace | Ownership | Purpose |
-| --- | --- | --- |
-| `alis/` | Alis Build | First-party shared APIs and extensions |
-| `google/` | Google | Vendored Google API and common support protos |
-| `lf/` | Linux Foundation | Vendored Agent2Agent protocol definitions |
+| Namespace | Ownership        | Purpose                                       |
+| --------- | ---------------- | --------------------------------------------- |
+| `alis/`   | Alis Build       | First-party shared APIs and extensions        |
+| `google/` | Google           | Vendored Google API and common support protos |
+| `lf/`     | Linux Foundation | Vendored Agent2Agent protocol definitions     |
 
 The important distinction is that not every proto in this repository is
 authored here. Some packages are maintained upstream and mirrored locally so
