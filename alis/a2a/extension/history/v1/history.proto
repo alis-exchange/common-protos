@@ -16,7 +16,7 @@ import "google/protobuf/timestamp.proto";
 
 import "lf/a2a/v1/a2a.proto";
 
-option go_package = "github.com/alis-exchange/common-protos.git/alis/a2a/extension/history/v1";
+option go_package = "go.alis.build/a2a/extension/history";
 
 // Request to appending an event.
 message AppendThreadEventRequest {
