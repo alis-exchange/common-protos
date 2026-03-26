@@ -1,0 +1,116 @@
+syntax = "proto3";
+
+package alis.a2a.extension.scheduler.v1;
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/field_mask.proto";
+import "google/iam/v1/policy.proto";
+import "google/iam/v1/iam_policy.proto";
+import "alis/open/iam/v1/iam.proto";
+import "google/protobuf/empty.proto";
+
+// Manages scheduled invocations of an A2A agent via Cron Jobs
+service SchedulerService {
+    // Gets the IAM policy for a resource implemented in this service.
+    rpc GetIamPolicy(google.iam.v1.GetIamPolicyRequest) returns (google.iam.v1.Policy) {}
+    // Sets the IAM policy for a resource implemented in this service.
+    rpc SetIamPolicy(google.iam.v1.SetIamPolicyRequest) returns (google.iam.v1.Policy) {}
+    // Adds principals or updates the roles existing principals have on an IAM Policy protected resource.
+    rpc AddIamBindings(alis.open.iam.v1.AddIamBindingsRequest) returns (google.iam.v1.Policy) {}
+    // Removes principals or some of the roles they have on an IAM Policy protected resource.
+    rpc RemoveIamBindings(alis.open.iam.v1.RemoveIamBindingsRequest) returns (google.iam.v1.Policy) {}
+
+    // Creates a Cron.
+    rpc CreateCron(CreateCronRequest) returns (Cron) {}
+    // Lists all Crons.
+    rpc ListCrons(ListCronsRequest) returns (ListCronsResponse) {}
+    // Gets a Cron.
+    rpc GetCron(GetCronRequest) returns (Cron) {}
+    // Updates a Cron.
+    rpc UpdateCron(UpdateCronRequest) returns (Cron) {}
+    // Deletes a Cron.
+    rpc DeleteCron(DeleteCronRequest) returns (google.protobuf.Empty) {}
+    // Runs a Cron. This ignores any schedule details and runs the Cron immediately.
+    rpc RunCron(RunCronRequest) returns (RunCronResponse) {}
+}
+
+// A Cron resource representing a scheduled CRON job.
+message Cron {
+    // The resource name of the Cron.
+    // Format: crons/{cron_id}
+    string name = 1;
+    // The prompt that the agent will be invoked with when the Cron runs.
+    string prompt = 2;
+    // A schedule defined using the unix-cron string format (* * * * *).
+    // See https://docs.cloud.google.com/scheduler/docs/configuring/cron-job-schedules for details.
+    string schedule = 3;
+    // Timezone to be used in interpreting schedule. Must be part of the tz database. 
+    // See https://en.wikipedia.org/wiki/List_of_tz_database_time_zones for list of valid values.
+    // Example: Europe/London, America/New_York, etc.
+    string timezone = 4;
+    // When this Cron was created.
+    google.protobuf.Timestamp create_time = 98;
+    // When this Cron was last updated.
+    google.protobuf.Timestamp update_time = 99;
+}
+
+// Request to the CreateCron method.
+message CreateCronRequest {
+    // The cron to create.
+    Cron cron = 1;
+}
+
+// Request to the UpdateCron method.
+message UpdateCronRequest {
+  // The Cron to update.
+  Cron cron = 1;
+  // The set of fields that should be updated.
+  google.protobuf.FieldMask update_mask = 2;
+}
+
+// Request to the GetCron method.
+message GetCronRequest {
+    // The resource name of the Cron to retrieve.
+    string name = 1;
+    // A read mask to specify which fields to return.
+    // If not specified, view will determine the fields returned.
+    google.protobuf.FieldMask read_mask = 3;
+}
+
+// Request to the DeleteCron method.
+message DeleteCronRequest {
+    // The resource name of the Cron to delete.
+    string name = 1;
+}
+
+// Request to the ListCrons method.
+message ListCronsRequest {
+    // Reserved for future use.
+    reserved 1;
+    // The maximum number of Crons to return.
+    int32 page_size = 2;
+    // A page token to retrieve the next page of results.
+    string page_token = 3;
+    // A read mask to specify which fields to return.
+    // If not specified, view will determine the fields returned.
+    google.protobuf.FieldMask read_mask = 4;
+}
+
+// Response to the ListCrons method.
+message ListCronsResponse {
+    // The list of Crons.
+    repeated Cron crons = 1;
+    // A token to retrieve the next page of results.
+    string next_page_token = 2;
+}
+
+// Request to the RunCron method.
+message RunCronRequest {
+    // ID of the Cron to run.
+    string id = 1;
+}
+
+// Response to RunCron.
+message RunCronResponse {
+    // Empty, reserved for future use.
+}
