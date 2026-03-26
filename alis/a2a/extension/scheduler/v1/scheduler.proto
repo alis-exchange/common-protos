@@ -9,6 +9,8 @@ import "google/iam/v1/iam_policy.proto";
 import "alis/open/iam/v1/iam.proto";
 import "google/protobuf/empty.proto";
 
+option go_package = "go.alis.build/a2a/extension/scheduler";
+
 // Manages scheduled invocations of an A2A agent via Cron Jobs
 service SchedulerService {
     // Gets the IAM policy for a resource implemented in this service.
