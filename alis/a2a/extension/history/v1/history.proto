@@ -10,6 +10,8 @@ import "alis/open/iam/v1/iam.proto";
 import "google/protobuf/empty.proto";
 import "lf/a2a/v1/a2a.proto";
 
+option go_package = "go.alis.build/a2a/extension/history";
+
 // Manages persisted A2A conversation threads and their events, including
 // thread listing, event appends, event streaming, and IAM policy access.
 service ThreadService {
