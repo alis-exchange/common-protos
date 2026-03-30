@@ -41,19 +41,36 @@ message Cron {
     // The resource name of the Cron.
     // Format: crons/{cron_id}
     string name = 1;
-    // The prompt that the agent will be invoked with when the Cron runs.
+    // The prompt payload that the agent will be invoked with when the Cron runs.
     string prompt = 2;
-    // A schedule defined using the unix-cron string format (* * * * *).
+    // The unix-cron string format expression (* * * * *) for recurring jobs.
+    // Required when using type='TYPE_CRON'.
     // See https://docs.cloud.google.com/scheduler/docs/configuring/cron-job-schedules for details.
-    string schedule = 3;
-    // Timezone to be used in interpreting schedule. Must be part of the tz database. 
+    string expr = 3;
+    // Timezone to be used in interpreting the cron expr. Must exist within the tz database. 
+    // Required when using type='TYPE_CRON'.
     // See https://en.wikipedia.org/wiki/List_of_tz_database_time_zones for list of valid values.
     // Example: Europe/London, America/New_York, etc.
     string timezone = 4;
+    // The specified (once-off) timestamp for when this Cron will be invoked.
+    // Required when using type='TYPE_AT'.
+    google.protobuf.Timestamp at = 5;
+    // The Cron type.
+    Type type = 6;
     // When this Cron was created.
     google.protobuf.Timestamp create_time = 98;
     // When this Cron was last updated.
     google.protobuf.Timestamp update_time = 99;
+
+     // Cron Type definition.
+    enum Type {
+        // Unspecified type
+        TYPE_UNSPECIFIED = 0;
+        // CRON type. Must be used for tasks that run on a recurring schedule.
+        TYPE_CRON = 1;
+        // AT type. Must be used for once-off, non-recurring tasks that run at a specified time only.
+        TYPE_AT = 2;
+    }
 }
 
 // Request to the CreateCron method.
