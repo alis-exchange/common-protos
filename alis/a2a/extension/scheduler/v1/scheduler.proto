@@ -57,6 +57,10 @@ message Cron {
     google.protobuf.Timestamp at = 5;
     // The Cron type.
     Type type = 6;
+    // Cron owner.
+    // Format: users/*
+    string owner = 7;
+
     // When this Cron was created.
     google.protobuf.Timestamp create_time = 98;
     // When this Cron was last updated.
