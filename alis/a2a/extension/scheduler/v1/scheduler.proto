@@ -4,24 +4,12 @@ package alis.a2a.extension.scheduler.v1;
 
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/field_mask.proto";
-import "google/iam/v1/policy.proto";
-import "google/iam/v1/iam_policy.proto";
-import "alis/open/iam/v1/iam.proto";
 import "google/protobuf/empty.proto";
 
 option go_package = "go.alis.build/a2a/extension/scheduler";
 
 // Manages scheduled invocations of an A2A agent via Cron Jobs
 service SchedulerService {
-    // Gets the IAM policy for a resource implemented in this service.
-    rpc GetIamPolicy(google.iam.v1.GetIamPolicyRequest) returns (google.iam.v1.Policy) {}
-    // Sets the IAM policy for a resource implemented in this service.
-    rpc SetIamPolicy(google.iam.v1.SetIamPolicyRequest) returns (google.iam.v1.Policy) {}
-    // Adds principals or updates the roles existing principals have on an IAM Policy protected resource.
-    rpc AddIamBindings(alis.open.iam.v1.AddIamBindingsRequest) returns (google.iam.v1.Policy) {}
-    // Removes principals or some of the roles they have on an IAM Policy protected resource.
-    rpc RemoveIamBindings(alis.open.iam.v1.RemoveIamBindingsRequest) returns (google.iam.v1.Policy) {}
-
     // Creates a Cron.
     rpc CreateCron(CreateCronRequest) returns (Cron) {}
     // Lists all Crons.
