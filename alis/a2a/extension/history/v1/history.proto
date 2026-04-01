@@ -30,7 +30,6 @@ service ThreadService {
     rpc GetThread(GetThreadRequest) returns (Thread) {}
     // Deletes an Thread.
     rpc DeleteThread(DeleteThreadRequest) returns (google.protobuf.Empty) {}
-
     // Appends an event to a given Thread
     rpc AppendThreadEvent(AppendThreadEventRequest) returns (AppendThreadEventResponse) {}
     // Lists all events.
@@ -50,6 +49,19 @@ message Thread {
     string agent_id = 3;
     // The agent display name, e.g. Finance Agent
     string agent_display_name = 4;
+    // Internal monotonic counter for assigning event sequence numbers.
+    int64 next_sequence = 5;
+    // Highest event sequence currently present in the thread.
+    // This is shared thread state and is the source of truth for unread calculations.
+    int64 latest_sequence = 6;
+    // Caller-specific read cursor for the thread.
+    // This is a response projection, not shared thread state.
+    // It is populated on read APIs that have caller context, such as ListThreads.
+    // Future multi-user implementations may expose per-user read state separately.
+    int64 read_sequence = 7;
+    // True when the caller has unread events in this thread.
+    // This is a response projection derived from latest_sequence and read_sequence.
+    bool has_unread = 8;
      
     // When this Thread was created.
     google.protobuf.Timestamp create_time = 98;
@@ -70,6 +82,9 @@ message ThreadEvent {
         // An event indicating a task artifact update.
         lf.a2a.v1.TaskArtifactUpdateEvent artifact_update = 5;
     }
+    // Monotonic sequence number within a thread.
+    // Clients can use this as a stable read cursor.
+    int64 sequence = 6;
 
     // When this event was created.
     google.protobuf.Timestamp create_time = 98;

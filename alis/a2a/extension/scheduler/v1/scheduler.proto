@@ -51,6 +51,10 @@ message Cron {
     // Cron owner email. Used in combination with owner for 'on-behalf-of'
     // E.g. me@email.com
     string email = 8;
+    // Optional A2A context to send the scheduled message into.
+    // When set, executions attach to the existing conversation/thread for this context.
+    // When empty, each execution starts a new conversation/context.
+    string context_id = 9;
 
     // When this Cron was created.
     google.protobuf.Timestamp create_time = 98;
