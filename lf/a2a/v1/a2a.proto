@@ -10,7 +10,7 @@ import "google/protobuf/struct.proto";
 import "google/protobuf/timestamp.proto";
 
 option csharp_namespace = "Lf.A2a.V1";
-option go_package = "go.alis.build/a2a/lf/a2a/v1";
+option go_package = "github.com/a2aproject/a2a-go/v2/a2apb/v1";
 option java_multiple_files = true;
 option java_outer_classname = "A2A";
 option java_package = "com.google.lf.a2a.v1";
