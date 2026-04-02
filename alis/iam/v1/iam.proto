@@ -1,0 +1,60 @@
+syntax = "proto3";
+
+package alis.iam.v1;
+
+option go_package = "go.alis.build/common/alis/iam/v1";
+
+// The request message for the AddIamBindings method
+message AddIamBindingsRequest {
+  // The iam protected resource to add the bindings to
+  string resource = 1;
+  // The principals (users, service accounts or groups)
+  // E.g: user:123456789, serviceAccount:alis-build@..., builders,builders:alis,builders:alis.os,admins,admins:alis.os
+  repeated string principals = 2;
+  // The roles Resource to give the principals. At least one role must be provided.
+  // Format: ['roles/*', ...]
+  // Example: ['roles/owner', 'roles/admin']
+  repeated string roles = 3;
+  // Whether to remove each principal from any other roles they have
+  bool remove_from_other_roles = 4;
+}
+
+// The request message for the RemoveIamBindings method
+message RemoveIamBindingsRequest {
+  // The iam protected resource to remove the bindings from
+  string resource = 1;
+  // The principals (users, service accounts or groups)
+  // E.g: user:123456789, serviceAccount:alis-build@..., builders,builders:alis,builders:alis.os,admins,admins:alis.os
+  repeated string principals = 2;
+  // The roles to remove the principals from
+  // If empty, the principals will be removed from all roles
+  // Format: ['roles/*', ...]
+  // Example: ['roles/owner', 'roles/admin']
+  repeated string roles = 3;
+}
+
+// Request message for `BatchTestIamPermissions` method.
+message BatchTestIamPermissionsRequest {
+  // REQUIRED: The resources for which the policy detail is being requested.
+  // See the operation documentation for the appropriate value for this field.
+  repeated string resources = 1;
+
+  // The set of permissions to check for the `resources`. Permissions with
+  // wildcards (such as '*' or 'storage.*') are not allowed. For more
+  // information see
+  // [IAM Overview](https://cloud.google.com/iam/docs/overview#permissions).
+  repeated string permissions = 2;
+}
+
+// Response message for `BatchTestIamPermissions` method.
+message BatchTestIamPermissionsResponse {
+  // The permissions the requester has for each requested resource.
+  repeated ResourcePermissions resource_permissions = 1;
+  // The permissions the requester has on a resource.
+  message ResourcePermissions {
+    // The resource.
+    string resource = 1;
+    // The permissions.
+    repeated string permissions = 2;
+  }
+}
