@@ -31,6 +31,12 @@ message Cron {
     string name = 1;
     // The prompt payload that the agent will be invoked with when the Cron runs.
     string prompt = 2;
+    // Optional initial prompt for TYPE_CRON jobs.
+    // When set, this prompt is sent before the recurring prompt to establish context
+    // for future executions.
+    // Example initial_prompt: "You need to summarise my emails and tell me if there is anything urgent."
+    // Example prompt: "Anything new I need to be aware of?"
+    string initial_prompt = 13;
     // The unix-cron string format expression (* * * * *) for recurring jobs.
     // Required when using type='TYPE_CRON'.
     // See https://docs.cloud.google.com/scheduler/docs/configuring/cron-job-schedules for details.
@@ -55,20 +61,37 @@ message Cron {
     // When set, executions attach to the existing conversation/thread for this context.
     // When empty, each execution starts a new conversation/context.
     string context_id = 9;
+    // The lifecycle state of the Cron.
+    State state = 10;
+    // When this Cron was last executed.
+    google.protobuf.Timestamp last_run_time = 11;
+    // When this Cron was archived.
+    // For TYPE_AT jobs this is typically set automatically after successful execution.
+    google.protobuf.Timestamp archive_time = 12;
 
     // When this Cron was created.
     google.protobuf.Timestamp create_time = 98;
     // When this Cron was last updated.
     google.protobuf.Timestamp update_time = 99;
 
-     // Cron Type definition.
+    // Supported schedule types for a Cron.
     enum Type {
-        // Unspecified type
+        // Default value. Indicates the type has not been specified.
         TYPE_UNSPECIFIED = 0;
-        // CRON type. Must be used for tasks that run on a recurring schedule.
+        // Recurring schedule using the cron expression and timezone fields.
         TYPE_CRON = 1;
-        // AT type. Must be used for once-off, non-recurring tasks that run at a specified time only.
+        // One-off schedule that runs once at the specified `at` timestamp.
         TYPE_AT = 2;
+    }
+
+    // Lifecycle states for a Cron.
+    enum State {
+        // Default value. Indicates the lifecycle state has not been specified.
+        STATE_UNSPECIFIED = 0;
+        // The Cron is scheduled and eligible to run.
+        STATE_ACTIVE = 1;
+        // The Cron has been archived and is no longer eligible to run.
+        STATE_ARCHIVED = 2;
     }
 }
 
