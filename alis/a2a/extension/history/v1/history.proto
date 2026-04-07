@@ -32,6 +32,10 @@ service ThreadService {
     rpc DeleteThread(DeleteThreadRequest) returns (google.protobuf.Empty) {}
     // Appends an event to a given Thread
     rpc AppendThreadEvent(AppendThreadEventRequest) returns (AppendThreadEventResponse) {}
+    // Gets per-user state for a Thread.
+    rpc GetUserThreadState(GetUserThreadStateRequest) returns (UserThreadState) {}
+    // Updates per-user state for a Thread.
+    rpc UpdateUserThreadState(UpdateUserThreadStateRequest) returns (UserThreadState) {}
     // Lists all events.
     rpc ListThreadEvents(ListThreadEventsRequest) returns (ListThreadEventsResponse) {}
     // Stream events.
@@ -54,14 +58,10 @@ message Thread {
     // Highest event sequence currently present in the thread.
     // This is shared thread state and is the source of truth for unread calculations.
     int64 latest_sequence = 6;
-    // Caller-specific read cursor for the thread.
-    // This is a response projection, not shared thread state.
-    // It is populated on read APIs that have caller context, such as ListThreads.
-    // Future multi-user implementations may expose per-user read state separately.
-    int64 read_sequence = 7;
-    // True when the caller has unread events in this thread.
-    // This is a response projection derived from latest_sequence and read_sequence.
-    bool has_unread = 8;
+    reserved 7;
+    reserved "read_sequence";
+    reserved 8;
+    reserved "has_unread";
      
     // When this Thread was created.
     google.protobuf.Timestamp create_time = 98;
@@ -90,9 +90,42 @@ message ThreadEvent {
     google.protobuf.Timestamp create_time = 98;
 }
 
+// Per-user state for a Thread.
+message UserThreadState {
+    // The resource name of the user-thread-state row.
+    // threads/{context_id}/userStates/{userId}
+    string name = 1;
+    // The parent Thread resource name.
+    // threads/{context_id}
+    string thread = 2;
+    // The user resource name this user-thread state belongs to.
+    // Format: users/{user}
+    string user = 3;
+    // Highest event sequence acknowledged by this user.
+    int64 read_sequence = 4;
+    // True when this user has pinned the thread.
+    bool pinned = 5;
+    // When this user pinned the thread.
+    // Unset when pinned is false.
+    google.protobuf.Timestamp pinned_time = 6;
+
+    // When this user-thread state was last updated.
+    google.protobuf.Timestamp update_time = 98;
+}
+
 // Request to get an Thread.
 message GetThreadRequest {
     // The resource name of the Thread to retrieve.
+    string name = 1;
+    // A read mask to specify which fields to return.
+    // If not specified, view will determine the fields returned.
+    google.protobuf.FieldMask read_mask = 3;
+}
+
+// Request to get UserThreadState.
+message GetUserThreadStateRequest {
+    // The resource name of the user-thread state to retrieve.
+    // Format: threads/{context_id}/userStates/{userId}
     string name = 1;
     // A read mask to specify which fields to return.
     // If not specified, view will determine the fields returned.
@@ -122,10 +155,24 @@ message ListThreadsRequest {
     google.protobuf.FieldMask read_mask = 5;
 }
 
+// Caller-scoped thread projection returned by list/read APIs.
+message ThreadView {
+    // The shared thread resource.
+    Thread thread = 1;
+    // Highest event sequence acknowledged by the caller.
+    int64 read_sequence = 2;
+    // True when latest_sequence is greater than read_sequence.
+    bool has_unread = 3;
+    // True when the caller has pinned this thread.
+    bool pinned = 4;
+    // When the caller pinned this thread.
+    google.protobuf.Timestamp pinned_time = 5;
+}
+
 // Response for ListThreads.
 message ListThreadsResponse {
-    // The list of a2a treads.
-    repeated Thread threads = 1;
+    // The list of caller-scoped thread views.
+    repeated ThreadView threads = 1;
     // A token to retrieve the next page of results.
     string next_page_token = 2;
 }
@@ -160,6 +207,14 @@ message ListThreadEventsResponse {
     repeated ThreadEvent events = 1;
     // A token to retrieve the next page of results.
     string next_page_token = 2;
+}
+
+// Request to update UserThreadState.
+message UpdateUserThreadStateRequest {
+    // The user-thread-state resource to update.
+    UserThreadState user_thread_state = 1;
+    // A field mask controlling which fields are updated.
+    google.protobuf.FieldMask update_mask = 2;
 }
 
 // Request to stream events.
