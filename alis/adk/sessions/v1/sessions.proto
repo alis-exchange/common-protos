@@ -1,0 +1,902 @@
+syntax = "proto3";
+
+package alis.adk.sessions.v1;
+
+import "google/protobuf/duration.proto";
+import "google/protobuf/struct.proto";
+import "google/protobuf/timestamp.proto";
+import "google/type/date.proto";
+
+option go_package = "go.alis.build/common/alis/adk/sessions/v1";
+
+// Session represents a conversation session between a user and an agent.
+//
+// A session contains a set of actions between users and agents, including
+// the session state, events, and metadata.
+message Session {
+  // Identifier. The ID of the session.
+  // Format: `{session}`
+  string id = 1;
+
+  // Required. The name of the application associated with this session.
+  string app_name = 2;
+
+  // Required. Immutable. The user ID who owns this session.
+  string user_id = 3;
+
+  // Optional. The display name of the session.
+  optional string display_name = 4;
+
+  // Optional. Session-specific state which stores key conversation points.
+  // This is a key-value store that persists across events in the session.
+  google.protobuf.Struct state = 10;
+
+  // The expiration configuration for the session.
+  oneof expiration {
+    // Optional. Timestamp of when this session is considered expired.
+    // This is always provided on output, regardless of what was sent on input.
+    google.protobuf.Timestamp expire_time = 96;
+
+    // Optional. Input only. The TTL (time-to-live) for this session.
+    // When provided on input, the service will calculate expire_time.
+    google.protobuf.Duration ttl = 97;
+  }
+
+  // Output only. Timestamp when the session was created.
+  google.protobuf.Timestamp create_time = 98;
+
+  // Output only. Timestamp when the session was last updated.
+  google.protobuf.Timestamp update_time = 99;
+}
+
+// AppState represents application-level state shared across all users and
+// sessions within an application.
+//
+// Keys use the "app:" prefix in the merged session state view. Stored in
+// a separate table keyed by app_name.
+message AppState {
+  // Required. The name of the application.
+  string app_name = 1;
+
+  // Optional. Key-value state shared across all users and sessions of the app.
+  google.protobuf.Struct state = 2;
+
+  // Output only. Timestamp when this app state was last updated.
+  google.protobuf.Timestamp update_time = 99;
+}
+
+// UserState represents user-level state shared across all sessions of a user
+// within an application.
+//
+// Keys use the "user:" prefix in the merged session state view. Stored in
+// a separate table keyed by (app_name, user_id).
+message UserState {
+  // Required. The name of the application.
+  string app_name = 1;
+
+  // Required. The user ID who owns this state.
+  string user_id = 2;
+
+  // Optional. Key-value state shared across all sessions of this user in the
+  // app.
+  google.protobuf.Struct state = 3;
+
+  // Output only. Timestamp when this user state was last updated.
+  google.protobuf.Timestamp update_time = 99;
+}
+
+// SessionEvent represents a message from either the user or agent.
+//
+// Events are the fundamental unit of interaction in a session, containing
+// content, metadata, and actions taken by the agent.
+message SessionEvent {
+  // Identifier. The ID of the event.
+  // Format: `{event}`
+  string id = 1;
+
+  // Required. The name of the application associated with this event.
+  string app_name = 2;
+
+  // Required. The user ID who owns the session this event belongs to.
+  string user_id = 3;
+
+  // Required. The ID of the session this event belongs to.
+  string session_id = 4;
+
+  // Required. The invocation ID of the event.
+  // Multiple events can have the same invocation ID, representing events
+  // that are part of the same agent invocation.
+  string invocation_id = 5;
+
+  // Required. The name of the agent that sent the event, or the user
+  // identifier.
+  string author = 6;
+
+  // Optional. Actions executed by the agent as part of this event.
+  EventActions actions = 7;
+
+  // Optional. IDs of long-running function calls. Used for function call
+  // events.
+  repeated string long_running_tool_ids = 8;
+
+  // Optional. The branch of the event. Format: `agent_1.agent_2.agent_3` for
+  // nested agent hierarchies. Used when child agents should not see siblings'
+  // history.
+  optional string branch = 9;
+
+  // Optional. Content of the event provided by the author.
+  Content content = 10;
+
+  // Optional. Metadata returned when grounding is enabled (e.g. web search,
+  // RAG).
+  GroundingMetadata grounding_metadata = 11;
+
+  // Optional. Custom metadata of the LLM response.
+  google.protobuf.Struct custom_metadata = 12;
+
+  // Optional. Token usage metadata from the model.
+  UsageMetadata usage_metadata = 13;
+
+  // Optional. Citation metadata for sourced content.
+  CitationMetadata citation_metadata = 14;
+
+  // Optional. Indicates whether the content is part of an unfinished text
+  // stream.
+  optional bool partial = 15;
+
+  // Optional. Indicates whether the response from the model is complete.
+  optional bool turn_complete = 16;
+
+  // Optional. Error code if the response is an error. Code varies by model.
+  optional string error_code = 17;
+
+  // Optional. Error message if the response is an error.
+  optional string error_message = 18;
+
+  // Optional. Indicates the LLM was interrupted when generating (e.g. user
+  // stop).
+  optional bool interrupted = 19;
+
+  // Optional. The reason the LLM stopped generating.
+  FinishReason finish_reason = 20;
+
+  // Optional. The average log probability of the tokens in the response.
+  optional double avg_logprobs = 21;
+
+  // Optional. The version of the model that generated the response.
+  optional string model_version = 22;
+
+  // Optional. The logprobs result of the response.
+  LogprobsResult logprobs_result = 23;
+
+  // Required. Timestamp when the event was created on the client side.
+  google.protobuf.Timestamp timestamp = 98;
+}
+
+// EventMetadata contains metadata relating to an LLM response event.
+message EventMetadata {
+  // Optional. Metadata returned to client when grounding is enabled.
+  GroundingMetadata grounding_metadata = 1;
+
+  // Optional. Indicates whether the text content is part of an unfinished text
+  // stream. Only used for streaming mode and when the content is plain text.
+  bool partial = 2;
+
+  // Optional. Indicates whether the response from the model is complete.
+  // Only used for streaming mode.
+  bool turn_complete = 3;
+
+  // Optional. Flag indicating that LLM was interrupted when generating the
+  // content. Usually due to user interruption during bidirectional streaming.
+  bool interrupted = 4;
+
+  // Optional. Set of IDs of the long-running function calls.
+  // Agent client will know from this field which function call is long-running.
+  // Only valid for function call events.
+  repeated string long_running_tool_ids = 5;
+
+  // Optional. The branch of the event.
+  // The format is like `agent_1.agent_2.agent_3`, where agent_1 is the parent
+  // of agent_2, and agent_2 is the parent of agent_3.
+  // Branch is used when multiple child agents shouldn't see their siblings'
+  // conversation history.
+  string branch = 6;
+
+  // Optional. Custom metadata of the LLM response.
+  google.protobuf.Struct custom_metadata = 7;
+}
+
+// EventActions represent actions executed by the agent as part of an event.
+message EventActions {
+  // Optional. If true, the model will not summarize the function response.
+  // Only used for function_response events.
+  bool skip_summarization = 1;
+
+  // Optional. Indicates that the event is updating the state with the given
+  // delta. The delta contains key-value pairs representing state changes.
+  google.protobuf.Struct state_delta = 2;
+
+  // Optional. Indicates that the event is updating artifacts.
+  // Key is the filename, value is the version number.
+  map<string, int64> artifact_delta = 3;
+
+  // Optional. The agent is escalating to a higher level agent.
+  bool escalate = 6;
+
+  // Optional. Will only be set by a tool response indicating tool request
+  // authentication configuration.
+  // Map key is the function call ID since one function call response (from
+  // model) could correspond to multiple function calls.
+  // Map value is the required auth config, which can be another struct.
+  map<string, ToolConfirmation> requested_tool_confirmations = 7;
+
+  // Optional. If set, the event transfers control to the specified agent.
+  string transfer_agent = 8;
+}
+
+// Content represents the base structured datatype containing multi-part content
+// of a message.
+//
+// A Content includes a role field designating the producer of the Content
+// and a parts field containing multi-part data that contains the content of
+// the message turn.
+message Content {
+  // Optional. The producer of the content. Must be either 'user' or 'model'.
+  //
+  // Useful to set for multi-turn conversations, otherwise can be left blank
+  // or unset.
+  string role = 1;
+
+  // Required. Ordered Parts that constitute a single message.
+  // Parts may have different IANA MIME types.
+  repeated Part parts = 2;
+}
+
+// Part represents a datatype containing media that is part of a multi-part
+// Content message.
+//
+// A Part consists of data which has an associated datatype. A Part can only
+// contain one of the accepted types in Part.data.
+//
+// A Part must have a fixed IANA MIME type identifying the type and subtype
+// of the media if inline_data or file_data field is filled with raw bytes.
+message Part {
+  oneof data {
+    // Optional. Text part (can be code).
+    string text = 1;
+
+    // Optional. Inlined bytes data.
+    Blob inline_data = 2;
+
+    // Optional. URI-based data.
+    FileData file_data = 3;
+
+    // Optional. A predicted FunctionCall returned from the model that
+    // contains a string representing the FunctionDeclaration.name with the
+    // parameters and their values.
+    FunctionCall function_call = 5;
+
+    // Optional. The result output of a FunctionCall that contains a string
+    // representing the FunctionDeclaration.name and a structured JSON object
+    // containing any output from the function call. It is used as context to
+    // the model.
+    FunctionResponse function_response = 6;
+
+    // Optional. Code generated by the model that is meant to be executed.
+    ExecutableCode executable_code = 8;
+
+    // Optional. Result of executing the ExecutableCode.
+    CodeExecutionResult code_execution_result = 9;
+  }
+
+  oneof metadata {
+    // Optional. Video metadata. The metadata should only be specified while the
+    // video data is presented in inline_data or file_data.
+    VideoMetadata video_metadata = 4;
+  }
+
+  // Optional. Indicates if the part is a thought from the model.
+  bool thought = 10;
+
+  // Optional. An opaque signature for the thought so it can be reused in
+  // subsequent requests.
+  bytes thought_signature = 11;
+}
+
+// Blob represents inline binary data.
+//
+// It's preferred to send text directly rather than raw bytes.
+message Blob {
+  // Required. The IANA standard MIME type of the source data.
+  string mime_type = 1;
+
+  // Required. Raw bytes.
+  bytes data = 2;
+}
+
+// FileData represents URI-based data.
+message FileData {
+  // Required. The IANA standard MIME type of the source data.
+  string mime_type = 1;
+
+  // Required. URI.
+  string file_uri = 2;
+}
+
+// VideoMetadata describes the input video content.
+message VideoMetadata {
+  // Optional. The start offset of the video.
+  google.protobuf.Duration start_offset = 1;
+
+  // Optional. The end offset of the video.
+  google.protobuf.Duration end_offset = 2;
+}
+
+// FunctionCall represents a predicted function call returned from the model
+// that contains a string representing the FunctionDeclaration.name and a
+// structured JSON object containing the parameters and their values.
+message FunctionCall {
+  // Required. The name of the function to call.
+  // Matches FunctionDeclaration.name.
+  string name = 1;
+
+  // Required. The function parameters and values in JSON object format.
+  // See FunctionDeclaration.parameters for parameter details.
+  google.protobuf.Struct args = 2;
+
+  // Optional. The unique ID of the function call. If populated, the client
+  // should execute the function_call and return the response with the matching
+  // id.
+  string id = 3;
+}
+
+// FunctionResponse represents the result output from a FunctionCall that
+// contains a string representing the FunctionDeclaration.name and a structured
+// JSON object containing any output from the function. This is used as context
+// to the model.
+//
+// This should contain the result of a FunctionCall made based on model
+// prediction.
+message FunctionResponse {
+  // Required. The name of the function that was called.
+  // Matches FunctionDeclaration.name and FunctionCall.name.
+  string name = 1;
+
+  // Required. The function response in JSON object format.
+  // Use "output" key to specify function output and "error" key to specify
+  // error details (if any). If "output" and "error" keys are not specified,
+  // then the whole "response" is treated as function output.
+  google.protobuf.Struct response = 2;
+
+  // Optional. The ID of the function call this response is for. Populated by
+  // the client to match the corresponding function call id.
+  string id = 3;
+
+  // Optional. Ordered Parts that constitute a function response.
+  // Parts may have different IANA MIME types.
+  repeated FunctionResponsePart parts = 4;
+}
+
+// FunctionResponsePart represents a datatype containing media that is part of
+// a FunctionResponse message.
+//
+// A FunctionResponsePart consists of data which has an associated datatype.
+// A FunctionResponsePart can only contain one of the accepted types in
+// FunctionResponsePart.data.
+//
+// A FunctionResponsePart must have a fixed IANA MIME type identifying the
+// type and subtype of the media if the inline_data field is filled with raw
+// bytes.
+message FunctionResponsePart {
+  oneof data {
+    // Inline media bytes.
+    FunctionResponseBlob inline_data = 1;
+
+    // URI-based data.
+    FunctionResponseFileData file_data = 2;
+  }
+}
+
+// FunctionResponseBlob represents raw media bytes for function response.
+//
+// Text should not be sent as raw bytes; use the 'text' field instead.
+message FunctionResponseBlob {
+  // Required. The IANA standard MIME type of the source data.
+  string mime_type = 1;
+
+  // Required. Raw bytes.
+  bytes data = 2;
+
+  // Optional. Display name of the blob.
+  //
+  // Used to provide a label or filename to distinguish blobs.
+  //
+  // This field is only returned in PromptMessage for prompt management.
+  // It is currently used in the Gemini GenerateContent calls only when server
+  // side tools (code_execution, google_search, and url_context) are enabled.
+  string display_name = 4;
+}
+
+// FunctionResponseFileData represents URI-based data for function response.
+message FunctionResponseFileData {
+  // Required. The IANA standard MIME type of the source data.
+  string mime_type = 1;
+
+  // Required. URI.
+  string file_uri = 2;
+
+  // Optional. Display name of the file data.
+  //
+  // Used to provide a label or filename to distinguish file data.
+  //
+  // This field is only returned in PromptMessage for prompt management.
+  // It is currently used in the Gemini GenerateContent calls only when server
+  // side tools (code_execution, google_search, and url_context) are enabled.
+  string display_name = 3;
+}
+
+// ExecutableCode represents code generated by the model that is meant to be
+// executed, and the result returned to the model.
+//
+// Generated when using the FunctionDeclaration tool and FunctionCallingConfig
+// mode is set to Mode.CODE.
+message ExecutableCode {
+  // Supported programming languages for the generated code.
+  enum Language {
+    // Unspecified language. This value should not be used.
+    LANGUAGE_UNSPECIFIED = 0;
+
+    // Python >= 3.10, with numpy and simpy available.
+    PYTHON = 1;
+  }
+
+  // Required. Programming language of the code.
+  Language language = 1;
+
+  // Required. The code to be executed.
+  string code = 2;
+}
+
+// CodeExecutionResult represents the result of executing ExecutableCode.
+//
+// Always follows a part containing the ExecutableCode.
+message CodeExecutionResult {
+  // Enumeration of possible outcomes of the code execution.
+  enum Outcome {
+    // Unspecified status. This value should not be used.
+    OUTCOME_UNSPECIFIED = 0;
+
+    // Code execution completed successfully.
+    OUTCOME_OK = 1;
+
+    // Code execution finished but with a failure. stderr should contain the
+    // reason.
+    OUTCOME_FAILED = 2;
+
+    // Code execution ran for too long, and was cancelled. There may or may not
+    // be a partial output present.
+    OUTCOME_DEADLINE_EXCEEDED = 3;
+  }
+
+  // Required. Outcome of the code execution.
+  Outcome outcome = 1;
+
+  // Optional. Contains stdout when code execution is successful, stderr or
+  // other description otherwise.
+  string output = 2;
+}
+
+// GroundingMetadata contains metadata returned to client when grounding is
+// enabled.
+message GroundingMetadata {
+  // Optional. Web search queries for the following-up web search.
+  repeated string web_search_queries = 1;
+
+  // Optional. Queries executed by the retrieval tools.
+  repeated string retrieval_queries = 3;
+
+  // Optional. Google search entry for the following-up web searches.
+  SearchEntryPoint search_entry_point = 4;
+
+  // List of supporting references retrieved from specified grounding source.
+  repeated GroundingChunk grounding_chunks = 5;
+
+  // Optional. List of grounding support.
+  repeated GroundingSupport grounding_supports = 6;
+
+  // Optional. Output only. Retrieval metadata.
+  RetrievalMetadata retrieval_metadata = 7;
+
+  // Optional. Output only. Resource name of the Google Maps widget context
+  // token to be used with the PlacesContextElement widget to render contextual
+  // data. This is populated only for Google Maps grounding.
+  string google_maps_widget_context_token = 8;
+
+  // List of source flagging URIs. This is currently populated only for Google
+  // Maps grounding.
+  repeated SourceFlaggingUri source_flagging_uris = 9;
+
+  // SourceFlaggingUri represents a source content flagging URI for a place or
+  // review. This is currently populated only for Google Maps grounding.
+  message SourceFlaggingUri {
+    // ID of the place or review.
+    string source_id = 1;
+
+    // A link where users can flag a problem with the source (place or review).
+    // The link is generated by Google and it does not contain information from
+    // the user query. It may contain information of the content it is flagging,
+    // which can be used to identify places.
+    string flag_content_uri = 2;
+  }
+}
+
+// GroundingChunk represents a chunk of grounding information from various
+// sources.
+message GroundingChunk {
+  // Chunk type.
+  oneof chunk_type {
+    // Grounding chunk from the web.
+    Web web = 1;
+
+    // Grounding chunk from context retrieved by the retrieval tools.
+    RetrievedContext retrieved_context = 2;
+
+    // Grounding chunk from Google Maps.
+    Maps maps = 3;
+  }
+
+  // Web represents a chunk from the web.
+  message Web {
+    // Optional. Domain of the chunk.
+    string domain = 1;
+
+    // Optional. URI reference of the chunk.
+    string uri = 2;
+
+    // Optional. Title of the chunk.
+    string title = 3;
+  }
+
+  // RetrievedContext represents a chunk from context retrieved by the retrieval
+  // tools.
+  message RetrievedContext {
+    // Optional. URI reference of the attribution.
+    string uri = 1;
+
+    // Optional. Title of the attribution.
+    string title = 2;
+
+    // Optional. Text of the attribution.
+    string text = 3;
+
+    // Tool-specific details about the retrieved context.
+    oneof context_details {
+      // Additional context for the RAG retrieval result. This is only populated
+      // when using the RAG retrieval tool.
+      RagChunk rag_chunk = 4;
+    }
+
+    // Optional. Output only. The full document name for the referenced Vertex
+    // AI Search document.
+    string document_name = 6;
+  }
+
+  // Maps represents a chunk from Google Maps.
+  message Maps {
+    // Optional. URI reference of the chunk.
+    string uri = 1;
+
+    // Optional. Title of the chunk.
+    string title = 2;
+
+    // Optional. Text of the chunk.
+    string text = 3;
+
+    // Optional. This Place's resource name, in `places/{place_id}` format.
+    // Can be used to look up the Place.
+    string place_id = 4;
+
+    // Sources used to generate the place answer.
+    // This includes review snippets and photos that were used to generate the
+    // answer, as well as URIs to flag content.
+    PlaceAnswerSources place_answer_sources = 5;
+
+    // PlaceAnswerSources contains sources used to generate the place answer.
+    message PlaceAnswerSources {
+      // Snippets of reviews that are used to generate the answer.
+      repeated ReviewSnippet review_snippets = 1;
+
+      // ReviewSnippet encapsulates a review snippet.
+      message ReviewSnippet {
+        // ID of the review referencing the place.
+        string review_id = 1;
+
+        // A link to show the review on Google Maps.
+        string google_maps_uri = 2;
+
+        // Title of the review.
+        string title = 3;
+
+        // A reference representing this place review which may be used to look
+        // up this place review again.
+        string review = 4;
+
+        // A link where users can flag a problem with the generated answer.
+        string flag_content_uri = 5;
+
+        // A string of formatted recent time, expressing the review time
+        // relative to the current time in a form appropriate for the language
+        // and country.
+        string relative_publish_time_description = 6;
+      }
+
+      // A link where users can flag a problem with the generated answer.
+      string flag_content_uri = 2;
+    }
+  }
+}
+
+// GroundingSupport represents grounding support for a claim in the content.
+message GroundingSupport {
+  // Optional. Segment of the content this support belongs to.
+  Segment segment = 1;
+
+  // A list of indices (into 'grounding_chunk') specifying the citations
+  // associated with the claim. For instance [1,3,4] means that
+  // grounding_chunk[1], grounding_chunk[3], grounding_chunk[4] are the
+  // retrieved content attributed to the claim.
+  repeated int32 grounding_chunk_indices = 2;
+
+  // Confidence score of the support references. Ranges from 0 to 1. 1 is the
+  // most confident. This list must have the same size as the
+  // grounding_chunk_indices.
+  repeated float confidence_scores = 3;
+}
+
+// Segment represents a segment of the content.
+message Segment {
+  // Output only. The index of a Part object within its parent Content object.
+  int32 part_index = 1;
+
+  // Output only. Start index in the given Part, measured in bytes. Offset from
+  // the start of the Part, inclusive, starting at zero.
+  int32 start_index = 2;
+
+  // Output only. End index in the given Part, measured in bytes. Offset from
+  // the start of the Part, exclusive, starting at zero.
+  int32 end_index = 3;
+
+  // Output only. The text corresponding to the segment from the response.
+  string text = 4;
+}
+
+// SearchEntryPoint represents a Google search entry point.
+message SearchEntryPoint {
+  // Optional. Web content snippet that can be embedded in a web page or an app
+  // webview.
+  string rendered_content = 1;
+
+  // Optional. Base64 encoded JSON representing array of <search term, search
+  // url> tuple.
+  bytes sdk_blob = 2;
+}
+
+// RetrievalMetadata contains metadata related to retrieval in the grounding
+// flow.
+message RetrievalMetadata {
+  // Optional. Score indicating how likely information from Google Search could
+  // help answer the prompt. The score is in the range [0, 1], where 0 is the
+  // least likely and 1 is the most likely. This score is only populated when
+  // Google Search grounding and dynamic retrieval is enabled. It will be
+  // compared to the threshold to determine whether to trigger Google Search.
+  float google_search_dynamic_retrieval_score = 2;
+}
+
+// RagChunk includes the content of a chunk of a RagFile, and associated
+// metadata.
+message RagChunk {
+  // The content of the chunk.
+  string text = 1;
+
+  // Optional. If populated, represents where the chunk starts and ends in the
+  // document.
+  PageSpan page_span = 2;
+
+  // PageSpan represents where the chunk starts and ends in the document.
+  message PageSpan {
+    // Page where chunk starts in the document. Inclusive. 1-indexed.
+    int32 first_page = 1;
+
+    // Page where chunk ends in the document. Inclusive. 1-indexed.
+    int32 last_page = 2;
+  }
+}
+
+// UsageMetadata contains token accounting details for a model request and
+// response.
+message UsageMetadata {
+  // Output only. A detailed breakdown of the token count for each modality in
+  // the cached content.
+  repeated ModalityTokenCount cache_tokens_details = 1;
+  // Output only. The number of tokens in the cached content that was used for
+  // this request.
+  int32 cached_content_token_count = 2;
+  // The total number of tokens in the generated candidates. This includes all
+  // the generated response candidates.
+  int32 candidates_token_count = 3;
+  // Output only. A detailed breakdown of the token count for each modality in
+  // the generated candidates.
+  repeated ModalityTokenCount candidates_tokens_details = 4;
+  // Number of tokens in the prompt. When cached_content is set, this is still
+  // the total effective prompt size meaning this includes the number of tokens
+  // in the cached content.
+  int32 prompt_token_count = 5;
+  // Output only. A detailed breakdown of the token count for each modality in
+  // the prompt.
+  repeated ModalityTokenCount prompt_tokens_details = 6;
+  // Output only. The number of tokens that were part of the model's generated
+  // "thoughts" output, if applicable.
+  int32 thoughts_token_count = 7;
+  // Output only. The number of tokens in the results from tool executions,
+  // which are provided back to the model as input, if applicable.
+  int32 tool_use_prompt_token_count = 8;
+  // Output only. A detailed breakdown by modality of the token counts from the
+  // results of tool executions, which are provided back to the model as input.
+  repeated ModalityTokenCount tool_use_prompt_tokens_details = 9;
+  // The total number of tokens for the entire request. This is the sum of
+  // `prompt_token_count`, `candidates_token_count`,
+  // `tool_use_prompt_token_count`, and `thoughts_token_count`.
+  int32 total_token_count = 10;
+  // Output only. The traffic type for this request.
+  TrafficType traffic_type = 11;
+}
+
+// Represents token counting info for a single modality.
+message ModalityTokenCount {
+  // Optional. The modality associated with this token count.
+  MediaModality modality = 1;
+  // Number of tokens.
+  int32 token_count = 2;
+}
+
+// Enumeration of possible media modalities.
+enum MediaModality {
+  // The modality is unspecified.
+  MEDIA_MODALITY_UNSPECIFIED = 0;
+  // Plain text.
+  MEDIA_MODALITY_TEXT = 1;
+  // Images.
+  MEDIA_MODALITY_IMAGE = 2;
+  // Video.
+  MEDIA_MODALITY_VIDEO = 3;
+  // Audio.
+  MEDIA_MODALITY_AUDIO = 4;
+  // Document, e.g. PDF.
+  MEDIA_MODALITY_DOCUMENT = 5;
+}
+
+// Enumeration of possible traffic types.
+enum TrafficType {
+  // The traffic type is unspecified.
+  TRAFFIC_TYPE_UNSPECIFIED = 0;
+  // The request was processed using Pay-As-You-Go quota.
+  TRAFFIC_TYPE_ON_DEMAND = 1;
+  // Type for Provisioned Throughput traffic.
+  TRAFFIC_TYPE_PROVISIONED_THROUGHPUT = 2;
+}
+
+// CitationMetadata contains citation details for sourced or quoted content in
+// a model response.
+message CitationMetadata {
+  // Optional. Contains citation information when the model directly quotes, at
+  // length, from another source. Can include traditional websites and code
+  // repositories.
+  repeated Citation citations = 1;
+
+  // Citation information when the model quotes another source.
+  message Citation {
+    // Output only. End index into the content.
+    int32 end_index = 1;
+
+    // Output only. License of the attribution.
+    string license = 2;
+
+    // Output only. Publication date of the attribution.
+    google.type.Date publication_date = 3;
+
+    // Output only. Start index into the content.
+    int32 start_index = 4;
+
+    // Output only. Title of the attribution.
+    string title = 5;
+
+    // Output only. URL reference of the attribution.
+    string uri = 6;
+  }
+}
+
+// FinishReason describes why the model stopped generating a response.
+enum FinishReason {
+  // The finish reason is unspecified.
+  FINISH_REASON_UNSPECIFIED = 0;
+  // Token generation reached a natural stopping point or a configured stop
+  // sequence.
+  FINISH_REASON_STOP = 1;
+  // Token generation reached the configured maximum output tokens.
+  FINISH_REASON_MAX_TOKENS = 2;
+  // Token generation stopped because the content potentially contains safety
+  // violations. NOTE: When streaming, [content][] is empty if content filters
+  // blocks the output.
+  FINISH_REASON_SAFETY = 3;
+  // The token generation stopped because of potential recitation.
+  FINISH_REASON_RECITATION = 4;
+  // The token generation stopped because of using an unsupported language.
+  FINISH_REASON_LANGUAGE = 5;
+  // All other reasons that stopped the token generation.
+  FINISH_REASON_OTHER = 6;
+  // Token generation stopped because the content contains forbidden terms.
+  FINISH_REASON_BLOCKLIST = 7;
+  // Token generation stopped for potentially containing prohibited content.
+  FINISH_REASON_PROHIBITED_CONTENT = 8;
+  // Token generation stopped because the content potentially contains Sensitive
+  // Personally Identifiable Information (SPII).
+  FINISH_REASON_SPII = 9;
+  // The function call generated by the model is invalid.
+  FINISH_REASON_MALFORMED_FUNCTION_CALL = 10;
+  // Token generation stopped because generated images have safety violations.
+  FINISH_REASON_IMAGE_SAFETY = 11;
+  // The tool call generated by the model is invalid.
+  FINISH_REASON_UNEXPECTED_TOOL_CALL = 12;
+  // Image generation stopped because the generated images have prohibited
+  // content.
+  FINISH_REASON_IMAGE_PROHIBITED_CONTENT = 13;
+  // The model was expected to generate an image, but none was generated.
+  FINISH_REASON_NO_IMAGE = 14;
+  // Image generation stopped because the generated image may be a recitation
+  // from a source.
+  FINISH_REASON_IMAGE_RECITATION = 15;
+  // Image generation stopped for a reason not otherwise specified.
+  FINISH_REASON_IMAGE_OTHER = 16;
+}
+
+// ToolConfirmation represents a confirmation request for a tool execution.
+message ToolConfirmation {
+  // Hint is the message provided to the user to explain why the confirmation
+  // is needed and what action is being confirmed.
+  string hint = 1;
+
+  // Confirmed indicates the user's decision.
+  // true if the user approved the action, false if they denied it.
+  // The state before the user has responded is typically handled outside
+  // this struct (e.g., by the absence of a result or a pending status).
+  bool confirmed = 2;
+
+  // Payload contains any additional data or context related to the confirmation
+  // request. The structure of the Payload is application-specific.
+  google.protobuf.Value payload = 3;
+}
+
+// LogprobsResultCandidate represents a candidate for a logprobs result.
+message LogprobsResultCandidate {
+  // The candidate's log probability.
+  float log_probability = 1;
+  // The candidate's token string value.
+  string token = 2;
+  // The candidate's token ID value.
+  int32 token_id = 3;
+}
+
+// LogprobsResultTopCandidates represents the top candidates for a logprobs result.
+message LogprobsResultTopCandidates {
+  // Sorted by log probability in descending order.
+  repeated LogprobsResultCandidate candidates = 1;
+}
+
+// LogprobsResult represents the logprobs result for a model response.
+message LogprobsResult {
+  // Length = total number of decoding steps. The chosen candidates may or may
+  // not be in top_candidates.
+  repeated LogprobsResultCandidate     chosen_candidates = 1;
+  // Length = total number of decoding steps.
+  repeated LogprobsResultTopCandidates top_candidates    = 2;
+}
