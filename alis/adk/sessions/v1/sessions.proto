@@ -3,11 +3,40 @@ syntax = "proto3";
 package alis.adk.sessions.v1;
 
 import "google/protobuf/duration.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/field_mask.proto";
 import "google/protobuf/struct.proto";
 import "google/protobuf/timestamp.proto";
 import "google/type/date.proto";
 
 option go_package = "go.alis.build/common/alis/adk/sessions/v1";
+
+// SessionService manages agent sessions and session events.
+service SessionService {
+  // Creates a new session.
+  rpc CreateSession(CreateSessionRequest) returns (Session);
+
+  // Gets details of a specific session.
+  rpc GetSession(GetSessionRequest) returns (Session);
+
+  // Lists sessions with optional filtering and ordering.
+  rpc ListSessions(ListSessionsRequest) returns (ListSessionsResponse);
+
+  // Updates a specific session.
+  rpc UpdateSession(UpdateSessionRequest) returns (Session);
+
+  // Deletes a specific session.
+  rpc DeleteSession(DeleteSessionRequest) returns (google.protobuf.Empty);
+
+  // Gets a specific event from a session.
+  rpc GetEvent(GetEventRequest) returns (SessionEvent);
+
+  // Lists events in a given session with optional filtering and ordering.
+  rpc ListEvents(ListEventsRequest) returns (ListEventsResponse);
+
+  // Appends an event to a given session.
+  rpc AppendEvent(AppendEventRequest) returns (AppendEventResponse);
+}
 
 // Session represents a conversation session between a user and an agent.
 //
@@ -172,6 +201,134 @@ message SessionEvent {
   // Required. Timestamp when the event was created on the client side.
   google.protobuf.Timestamp timestamp = 98;
 }
+
+// Request message for SessionService.CreateSession.
+message CreateSessionRequest {
+  // Required. The session to create.
+  Session session = 1;
+
+  // Optional. The session ID to create.
+  // If not provided, a new session ID will be generated.
+  string session_id = 2;
+}
+
+// Request message for SessionService.GetSession.
+message GetSessionRequest {
+  // Required. The resource name of the session.
+  // Format: `sessions/{session}`
+  string name = 1;
+}
+
+// Request message for SessionService.ListSessions.
+message ListSessionsRequest {
+  // Optional. The maximum number of sessions to return.
+  // The service may return fewer than this value.
+  // If unspecified, at most 100 sessions will be returned.
+  int32 page_size = 1;
+
+  // Optional. A page token, received from a previous ListSessions call.
+  // Provide this to retrieve the next page of results.
+  string page_token = 2;
+
+  // Optional. The standard list filter.
+  // Supported fields:
+  //   - `display_name`
+  //   - `user_id`
+  //   - `app_name`
+  string filter = 3;
+
+  // Optional. A comma-separated list of fields to order by, sorted in ascending
+  // order. Use "desc" after a field name for descending.
+  // Supported fields:
+  //   - `create_time`
+  //   - `update_time`
+  string order_by = 4;
+}
+
+// Response message for SessionService.ListSessions.
+message ListSessionsResponse {
+  // A list of sessions matching the request.
+  repeated Session sessions = 1;
+
+  // A token, which can be sent as ListSessionsRequest.page_token to retrieve
+  // the next page. Absence of this field indicates there are no subsequent
+  // pages.
+  string next_page_token = 2;
+}
+
+// Request message for SessionService.UpdateSession.
+message UpdateSessionRequest {
+  // Required. The session to update.
+  Session session = 1;
+
+  // Required. The list of fields to update.
+  google.protobuf.FieldMask update_mask = 2;
+}
+
+// Request message for SessionService.DeleteSession.
+message DeleteSessionRequest {
+  // Required. The resource name of the session.
+  // Format: `sessions/{session}`
+  string name = 1;
+}
+
+// Request message for SessionService.GetEvent.
+message GetEventRequest {
+  // Required. The resource name of the event.
+  // Format: `sessions/{session}/events/{event}`
+  string name = 1;
+}
+
+// Request message for SessionService.ListEvents.
+message ListEventsRequest {
+  // Required. The resource name of the session to list events from.
+  // Format: `sessions/{session}`
+  string parent = 1;
+
+  // Optional. The maximum number of events to return.
+  // The service may return fewer than this value.
+  // If unspecified, at most 100 events will be returned.
+  int32 page_size = 2;
+
+  // Optional. A page token, received from a previous ListEvents call.
+  // Provide this to retrieve the next page of results.
+  string page_token = 3;
+
+  // Optional. The standard list filter.
+  // Supported fields:
+  //   - `timestamp` range in RFC 3339 format.
+  string filter = 4;
+
+  // Optional. A comma-separated list of fields to order by, sorted in ascending
+  // order. Use "desc" after a field name for descending.
+  // Supported fields:
+  //   - `timestamp`
+  string order_by = 5;
+}
+
+// Response message for SessionService.ListEvents.
+message ListEventsResponse {
+  // A list of events matching the request.
+  repeated SessionEvent session_events = 1;
+
+  // A token, which can be sent as ListEventsRequest.page_token to retrieve
+  // the next page. Absence of this field indicates there are no subsequent
+  // pages.
+  string next_page_token = 2;
+}
+
+// Request message for SessionService.AppendEvent.
+message AppendEventRequest {
+  // Required. The resource name of the session to append the event to.
+  // Format: `sessions/{session}`
+  string name = 1;
+
+  // Required. The event to append.
+  SessionEvent event = 2;
+}
+
+// Response message for SessionService.AppendEvent.
+message AppendEventResponse {}
 
 // EventMetadata contains metadata relating to an LLM response event.
 message EventMetadata {
