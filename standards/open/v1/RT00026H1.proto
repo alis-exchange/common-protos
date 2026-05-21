@@ -1,0 +1,96 @@
+syntax = "proto3";
+
+package standards.open.v1;
+
+import "google/api/annotations.proto";
+import "google/api/client.proto";
+import "google/api/resource.proto";
+import "google/type/money.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/field_mask.proto";
+import "google/protobuf/timestamp.proto";
+import "google/type/date.proto";
+
+option go_package = "github.com/standards-exchange/protobuf-go/standards/open/v1";
+
+// Fund Holding
+message RT00026H1 {
+    // The effective date of the holding.
+    // The holdings are as of market close on the effective date
+    google.type.Date effective_date = 1;
+    // The legal identifier of the umbrella
+    // Should conform to: https://openfunds.org/OFST005010 (Umbrella)
+    // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information
+    string umbrella_fund = 2;
+    // Name of the relevant sub-fund
+    // Should conform to: https://openfunds.org/OFST010110 (Legal Fund Name Only)
+    // Refers to the Sub-Fund in the case of an umbrella structure
+    // or Fund in the case of a standalone structure
+    // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information
+    string fund = 3;
+    // The ISO compliant three character code for the base currency of the fund
+    string fund_currency = 4;
+    // The internalID used by the system producing the data
+    string internal_asset_id = 5;
+    // ISO 6166 code of ISIN when available. If an ISIN is used, it is recommended that the MIC or Bloomberg Exchange Code should additionally be populated. This combination allows for a fund holding to be uniquely identified.
+    string external_asset_id_isin = 101;
+    // CUSIP - The Committee on Uniform Securities Identification Procedures number assigned by the CUSIP Service Bureau for U.S. and Canadian companies when available. If a CUSIP is used, it is recommended that the MIC or Bloomberg Exchange Code should additionally be populated. This combination allows for a fund holding to be uniquely identified.
+    string external_asset_id_cusip = 102;
+    // SEDOL - Stock Exchange Daily Official List for the London Stock Exchange (when available). If a SEDOL is used, it is recommended that the MIC or Bloomberg Exchange Code should additionally be populated. This combination allows for a fund holding to be uniquely identified.
+    string external_asset_id_sedol = 103;
+    // FIGI - Financial Instrument Global Identifier (when available)
+    string external_asset_id_figi = 104;
+    // PermID - Refinitiv Permanent Identifiers (when available)
+    string external_asset_id_permid = 105;
+    // MIC - Market identifier code as defined by ISO 10383 (available at https://www.iso20022.org/market-identifier-codes) (when available)
+    string external_exchange_id_mic = 201;
+    // Bloomberg Exchange Code - Two digit market identifier code as defined by Bloomberg (when available)
+    string external_exchange_id_bb_exchange_code = 202;
+    // Enumerations of asset categories
+    enum AssetCategory {
+        // Source not specified by the user.
+        ASSET_CATEGORY_UNSPECIFIED = 0;
+        // Asset
+        ASSET = 1;
+        // Cash
+        CASH = 2;
+        // Cash Equivalent
+        CASH_EQUIVALENT = 3;
+        // Equity
+        EQUITY = 4;
+        // Fixed Income
+        FIXED_INCOME = 7;
+        // Forex
+        FOREIGN_EXCHANGE = 8;
+        // Future
+        FUTURE = 9;
+        // Other Liabilities
+        LIABILITY = 10;
+        // Options
+        OPTION = 11;
+    }
+    // The asset category of the holding
+    AssetCategory asset_category = 6;
+    // The ISO compliant three character local currency code of the asset
+    string local_currency_code = 7;
+    // The quantity of the asset held
+    double quantity = 8;
+    // price in local currency units
+    double price_lcu = 9;
+    // price in fund currency units
+    double price_base = 10;
+    // the total market value in fund currency units
+    double market_value_base = 11;
+    // the total net asset value of the fund on the effective date in base currency units
+    double fund_nav = 12;
+    // the percentage weight of total net asset value
+    double percent_nav = 13;
+
+    // The date as of which the holdings record was produced.
+    google.type.Date as_of_date = 301;
+}
+
+// Batch set of RT00026H1 responses
+message RT00026H1_batch {
+    repeated RT00026H1 response = 1;
+}

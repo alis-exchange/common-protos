@@ -1,0 +1,502 @@
+syntax = "proto3";
+
+package standards.open.v1;
+
+import "google/api/annotations.proto";
+import "google/api/client.proto";
+import "google/api/field_behavior.proto";
+import "google/api/resource.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/field_mask.proto";
+import "google/protobuf/timestamp.proto";
+import "google/type/date.proto";
+
+option go_package = "github.com/standards-exchange/protobuf-go/standards/open/v1";
+
+// FinDatEx ESG Template (EET) V1
+message RT000F0J4 {
+    // Information related to the dataset and dataset producer
+    DatasetInformation dataset_information = 1;
+    // Definition of information related to the dataset and dataset producer
+    message DatasetInformation {
+        enum EETVersion {
+            // Source not specified by the user.
+            EET_VERSION_UNSPECIFIED = 0;
+            // Version 1 of the FinDatEx EET template
+            VERSION_1 = 1;
+        }
+        // This field specifies the output version of the template and is used by the recipient to understand the number of fields expected, their labeling and order.
+        // 00010_EET_Version
+        EETVersion eet_version = 1;
+        // If the Manufacturer/Issuer have chosen to outsource the production of an EET posting to another party responsible for the production and publication of the EET data set, such party name should be entered in this field.
+        // 00020_EET_Producer_Name
+        string producer_name = 2;
+        // If the Manufacturer/Issuer have chosen to outsource the production of an EET posting to another party responsible for the production and publication of the EET data set, such party LEI should be entered in this field.
+        // 00030_EET_Producer_LEI
+        string producer_lei = 3;
+        // Contact entry point for distributors regarding EET
+        // 00040_EET_Producer_Email
+        string producer_email = 4;
+        // Date and Time of the creation of the EET file
+        // 00050_EET_File_Generation_Date_And_Time
+        google.protobuf.Timestamp file_generation_timestamp = 5;
+        // SFDR products pre-cont
+        // 00060_EET_Data_Reporting_SFDR_Pre_Contractual
+        bool data_reporting_sfdr_pre_contractual = 6;
+        // SFDR products periodic
+        // 00070_EET_Data_Reporting_SFDR_Periodic
+        bool data_reporting_sfdr_periodic = 7;
+        // SFDR Entity (ins & dis)
+        // 00080_EET_Data_Reporting_SFDR_Entity_Level
+        bool data_reporting_sfdr_entity_level = 8;
+        // MiFID Products (including target market) & MiFID distributors entity / client journey
+        // 00090_EET_Data_Reporting_MiFID
+        bool data_reporting_mifid = 9;
+        // IDD Products (including target market), IDD insurers entity / client journey
+        // 00100_EET_Data_Reporting_IDD
+        bool data_reporting_idd = 10;
+    }
+    // Data relating to the product manufacturer
+    ManufacturerInformation manufacturer_information = 2;
+    // Definition of data relating to the product manufacturer
+    message ManufacturerInformation {
+        // Name of the Manufacturer
+        // 10000_Manufacturer_Name
+        string manufacturer_name = 1;
+        // Codification used to determine the identification code. Either LEI or None.
+        enum ManufacturerCodeType {
+            // Type not specified.
+            TYPE_UNSPECIFIED = 0;
+            // Legal Entity Identifier
+            LEI = 1;
+        }
+        // LEI codification should be provided if available.
+        ManufacturerCodeType manufacturer_code_type = 2; // 10010_Manufacturer_Code_Type
+        // Identification code of the Manufacturer
+        // Conditional to field 10010 is set to LEI
+        string manufacturer_code = 3; // 10020_Manufacturer_Code
+        // Contact entry point for distributors for content question
+        string manufacturer_email = 4;  // 10030_Manufacturer_Email
+        // Date to which the general data refer
+        google.type.Date general_reference_date = 5; // 10040_General_Reference_Date
+        // Has the Manufacturer signed the Principle for Responsible Investment?
+        // Consider PRB or equivalent organisation for the banking strategy. Do we need to consider to consider the group or the asset manager itself ? This data point has been modified to consider the UNEP- FI Principles for Responsible Banking.
+        bool manufacturer_pri_or_prb_signatory = 6; // 11000_Manufacturer_PRI_Or_PRB_Signatory
+        // Notation of the Manufacturer by the PRI on the "governance and strategy" pillar
+        // After one year of application all Manufacturer should receive a notation. We propose to focus on "governance and strategy" notation because there is no consolidated PRI notation
+        string manufacturer_pri_notation = 7; // 11010_Manufacturer_PRI_Notation
+        // Notation of the Manufacturer by the PRI on the "governance and strategy" pillar
+        bool manufacturer_pri_compliant = 8; // 11020_Manufacturer_PRI_Or_PRB_Compliant
+        // The Manufacturer is  not a PRI/PRB signatory but considers it follows PRI/PRB rules.
+        bool manufacturer_pri_like = 9; // 11030_Manufacturer_PRI_Or_PRB_Like
+        // Enumeration of Manufacturer Commitments
+        enum Commitments {
+            // Commitments not specified.
+            COMMITMENTS_UNSPECIFIED = 0;
+            // TCFD
+            A_TCFD = 1;
+            // NZAMI or NZAOA
+            B_NZAMI_NZAOA = 2;
+            // SBT for FI
+            C_SBT_FOR_FI = 3;
+            // Stewardship Code
+            D_STEWARDSHIP_CODE = 4;
+            // UNGC
+            E_UNGC = 5;
+            // Participation to the « Non-Disclosure Campaign » from CDP
+            F_CDP = 6;
+        }
+        // Other Commitments by Manufacturers
+        Commitments other_commitments = 10; // 11040_Manufacturer_Other_Commitments
+        // Disclosure of the applicable Stewardship Code
+        Commitments stewardship_code_signatory = 11; // 12000_Manufacturer_Stewarship_Code_Signatory
+        // Internet address where the client can find all relevant informations regarding stewardship and engagement of the manufacturer.
+        string manufacturer_website_information_stewardship_and_engagement = 12; // 13000_Manufacturer_Website_Information_Stewardship_And_Engagement
+    }
+    // Product level disclosure data.
+    message ProductData {
+        // Definition of product disclosure information data
+        message ProductIdentification {
+            // The legal identifier of the umbrella
+            // Should conform to: https://openfunds.org/OFST005010 (Umbrella)
+            // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information
+            string umbrella_fund = 1;
+            // The name of the fund to which the financial instrument belongs
+            string fund_name = 2;
+            // Definition of information defining the relevant share classes
+            message ShareClass {
+                // Extension that identifies the share class.
+                // Should conform to: https://openfunds.org/OFST020050 (Share Class Extension)
+                string share_class_extension = 1;
+                // The global identifier of the share class
+                string share_class_id = 2;
+                // Enumerations of financial identifiers
+                enum ShareClassIdentifierTypes {
+                    // Source not specified by the user.
+                    IDENTIFIER_UNSPECIFIED = 0;
+                    // ISO 6166 code of ISIN when available
+                    ISIN = 1;
+                    // CUSIP (The Committee on Uniform Securities Identification Procedures number assigned by the CUSIP Service Bureau for U.S. and Canadian companies)
+                    CUSIP = 2;
+                    // SEDOL (Stock Exchange Daily Official List for the London Stock Exchange)
+                    SEDOL = 3;
+                    // WKN (Wertpapier Kenn-Nummer, the alphanumeric German identification number)
+                    WKN = 4;
+                    // Bloomberg Ticker (Bloomberg letters code that identify a company's securities)
+                    BBG_TICKER = 5;
+                    // BBGID (The Bloomberg Global ID)
+                    BBGID = 6;
+                    // Reuters RIC (Reuters instrument code)
+                    RIC = 7;
+                    // FIGI (Financial_Instrument Global Identifier)
+                    FIGI = 8;
+                    // LEI 0 Legal Entity Identifier
+                    LEI = 9;
+                    // PermID - Refinitiv Permanent Identifiers
+                    PERM_ID = 10;
+                }
+                // Codification chosen to identify the share class
+                ShareClassIdentifierTypes share_class_id_type = 3;
+            }
+            // Share classes associated with the fund
+            repeated ShareClass share_classes = 3;
+        }
+        // Product disclosure data
+        ProductIdentification product_identification = 1;
+        //  Definition of ESG screening criteria
+        message ESGScreeningCriteria {
+            // Enumeration of Fund categories in reference of the article of SFDR european regulation applying to the product.
+            enum SFDRProductType {
+                DOES_NOT_FOLLOW_SFDR_GUIDELINES = 0;
+                FOLLOWS_ARTICLE_6_GUIDELINES = 1;
+                ARTICLE_8_LIKE = 2;
+                ARTICLE_9_LIKE = 3;
+                NOT_ARTICLE_8_OR_9 = 4;
+                // Product with ESG characteristics
+                ARTICLE_8_PRODUCT = 5;
+                // Product with ESG objective
+                ARTICLE_9_PRODUCT = 6;
+            }
+            // Fund categories in reference of the article of SFDR european regulation applying to the product.
+            // See fields 20040 (27) and 20050 (28)
+            SFDRProductType sfdr_product_type = 7;
+            // Enumeration of ESG Labels
+            enum ESGLabel {
+                ESG_LABEL_UNSPECIFIED = 0;
+                A_ICMA_GREEN_BOND_PRINCIPLES = 1;
+                B_EU_GREEN_BOND_STANDARD = 2;
+                C_EU_ECOLABEL_FOR_FINANCIAL_PRODUCTS = 3;
+                D_FNG_SIEGEL_FOND = 4;
+                E_CBI_CLIMATE_BONDS_STANDARDS = 5;
+                F_ICMA_SOCIAL_BONDS_PRINCIPLES = 6;
+                G_LUXFLAG_ESG = 7;
+                H_LUXFLAG_CLIMATE_FINANCE = 8;
+                I_LUXFLAG_ENVIRONMENT = 9;
+                J_KEIN_VERSTOSS_GEGEN_ATOMWAFFENSPERRVERTRAG = 10;
+                K_ISR = 11;
+                L_TOWARDS_SUSTAINABILITY = 12;
+                M_UZ49_DAS_OSTERREICHISCHE_UMWELTZEICHEN = 13;
+                N_NORDIC_SWAN = 14;
+                O_GREENFIN_LABEL = 15;
+                P_FINANSOL = 16;
+                Q_DDV_NACHHALTIGKEITSKODEX_ESG_STRATEGIE = 17;
+                R_DDV_NACHHALTIGKEITSKODEX_ESG_IMPACT = 18;
+                S_GRUNER_PFANDBRIEF = 19;
+                T_SOZIALER_PFANDBRIEF = 20;
+                U_LUXFLAG_MICROFINANCE = 21;
+                V_LUXFLAG_SUSTAINABLE_INSURANCE_PRODUCTS = 22;
+                X_CHARTE_ESG_FRANCAISE_DES_PRODUITS_STRUCTURES = 23;
+                Z_OTHER = 99;
+            }
+            // Disclosure of applicable ESG labels. See 20060_Financial_Instrument_ESG_Label_Or_Standard
+            repeated ESGLabel esg_labels = 8;
+            // Proportion in look through of art 8 sub invested funds for funds of funds Nav based
+            // See 20070_Financial_Instrument_Percentage_Of_Minimum_SFDR_Art_8_Funds
+            double fund_of_fund_min_exposure_article_8 = 9;
+            // Proportion in look through of art 9 sub invested funds for funds of funds Nav based
+            // See 20080_Financial_Instrument_Percentage_Of_Minimum_SFDR_Art_9_Funds
+            double fund_of_fund_min_exposure_article_9 = 10;
+            // Enumeration of main SFDR focus
+            enum MainFocusAreas {
+                FOCUS_UNSPECIFIED = 0;
+                ENVIRONMENTAL = 1;
+                SOCIAL = 2;
+                GOVERNMENTAL = 3;
+            }
+            // The main ESG focus of the fund
+            // 20090_Financial_Instrument_Main_ESG_Focus
+            repeated MainFocusAreas main_esg_focus = 11;
+            // Consideration of PAI is commitment to reduce or mitigate adverse impacts and can be done quantitative or qualitatively
+            // 20100_Financial_Instrument_Does_This_Product_Consider_Principle_Adverse_Impact_In_Their_Investment
+            bool pai_considered = 12;
+        }
+        // The ESG screening criteria of the fund
+        ESGScreeningCriteria esg_screening_criteria = 2;
+        // Definition of product disclosures
+        message ProductDisclosures {
+            // Conditional on it being an Article 8 or 9 fund:
+            // Each insurance company needs to have the pre contractual, periodic, websites translated and published in the language of the countries of distribution. This field allows to list the languages in which the annexes documents are translated
+            // 20110_Financial_Instrument_Languages
+            // Must be the https://en.wikipedia.org/wiki/ISO_639-1 two letter language code
+            repeated string languages = 1;
+            // Definition of a product disclosure link
+            message ProductDisclosureLink {
+                // Must be the https://en.wikipedia.org/wiki/ISO_639-1 two letter language code
+                string language = 1;
+                // The link to the disclosure. Must be a valid weburl e.g. www.findatex/sample/pre-contractual/LU0001234567/EN.pdf
+                // Link must be a standalone document without additional disclaimers or authentication.
+                // "Not available" must be used when a specific document is not created in that language.
+                string link = 2;
+                // The date the disclosure was produced
+                google.type.Date production_date = 3;
+            }
+            // 20120_Financial_Instrument_Link_To_PCDFP_For_MOP.
+            // Pre Contractual Disclosure for Financial Products referred to in  Article 8(1) and 9(1), (2) and (3) (EU) 2019/2088 as stand alone document PDF for underlying investment options in Multi Option Products. Annex I, Annex II (EU) 2019/2088.
+            // "Link to the ""pre contractual"" informations document. Deep Link shall be https and without an additional disclaimers or authentication.
+            //It must be a link to a standalone document
+            //Conditional to 20040 or 20050 set to 8 or 9
+            //Could be provided for art6 under insurers demand
+            // 'Not Available' must be used when a specific document is not created in that language (could be seen as a benefit)"/
+            repeated ProductDisclosureLink pre_contractual_disclosure_for_financial_products_links = 2;
+            // 20140_Financial_Instrument_Link_To_PDFP_for_MOP.
+            // Periodic Disclosure for Financial Products referred to in  Article 8(1) and 9(1), (2) and (3) (EU) 2019/2088 as stand alone document PDF for underlying investment options in Multi Option Products. Annex III, Annex IV (EU) 2019/2088.
+            repeated ProductDisclosureLink periodic_disclosure_links = 3;
+            // 20150_Financial_Instrument_End_Date_Of_Reporting_Period_PDFP
+            // End Date Of Reporting Period PDFP (based on 12 months reporting report market usage)
+            google.type.Date end_of_reporting_period_for_periodic_disclosures = 4;
+        }
+        // ESG Product disclosure documents for the fund.
+        ProductDisclosures product_disclosures = 3;
+        // Definition of Article 8 and Article 9 disclosures
+        message Article8Article9Information {
+            // 20170_Financial_Instrument_Sustainable_Investments_Art_8
+            // Does the art 8 product invest in sustainable investment?
+            bool does_article_8_fund_invest_in_sustainable_investments = 1;
+            // 20180_Financial_Instrument_Products_Minimal_Proportion_Of_Sustainable_Investments_Art_8
+            // For art 8  products, the minimum proportion of sustainable investments.
+            double article_8_fund_minimum_proportion_of_sustainable_investments = 2;
+            // 20190_Financial_Instrument_Sustainable_Investment_EU_Taxonomy_Art_8
+            // Does the minimum specified in field 20180 include EU Taxonomy  sustainable investment?
+            bool does_article_8_min_investments_include_eu_taxonomy_investments = 3;
+            // 20200_Financial_Instrument_Sustainable_Investment_Environmental_Not_EU_Taxonomy_Art_8
+            // Does the minimum specified in field 20180 include Non EU Taxonomy Environmental sustainable investment?
+            bool does_article_8_min_investments_include_non_eu_taxonomy_investments = 4;
+            // 20210_Financial_Instrument_Sustainable_Investment_Social_Objective_Art_8.
+            // Does the minimum specified in field 20180 include sustainable investment with social objective?
+            bool does_min_investments_include_investments_with_social_objective = 5;
+            // 20220_Financial_Instrument_Minimum_Sustainable_Investment_With_Environmental_Objective_Art_9
+            // For art 9 products, the minimum proportion of sustainable investments with environmental objective.
+            double article_9_fund_minimum_proportion_of_environmental_investments = 6;
+            // 20230_Financial_Instrument_Environmentally_Sustainable_Investment_EU_Taxonomy_Art_9
+            // Does the minimum specified in field 20220 include EU Taxonomy Environmental sustainable investment?
+            bool does_article_9_min_investments_include_eu_taxonomy_investments = 7;
+            // 20240_Financial_Instrument_Environmentally_Sustainable_Investment_Not_EU_Taxonomy_Art_9
+            // Does the minimum specified in field 20220 include Non EU Taxonomy Environmental sustainable investment?
+            bool does_article_9_min_investments_include_non_eu_taxonomy_investments = 8;
+            // 20250_Financial_Instrument_Minimum_Sustainable_Investment_Social_Objective_Art_9
+            // For art 9 products, the minimum proportion of sustainable investments with social objective.
+            double article_9_fund_minimum_proportion_of_social_investments = 9;
+            // 20260_Financial_Instrument_ESG_Existing_Thematic_Characteristics
+            // Does this Financial_Instrument incorporate ESG factors through ESG thematic approach ?
+            bool thematic_approach = 10;
+            // Enumeration of thematic environmental investment strategies
+            enum EnvironmentalThemes {
+                ENVIRONMENTAL_THEME_UNSPECIFIED = 0;
+                A_ENERGY = 1;
+                B_RENEWABLE_ENERGY = 2;
+                C_RAW_MATERIALS = 3;
+                D_WATER_AND_LAND = 4;
+                E_WASTE = 5;
+                F_GREENHOUSE_GAS_EMISSIONS = 6;
+                G_BIODIVERSITY = 7;
+                H_CIRCULAR_ECONOMY = 8;
+                I_ENVIRONMENTAL_OTHER = 9;
+            }
+            // 20270_Financial_Instrument_Environmental_Thematic_Characteristics.
+            repeated EnvironmentalThemes environmental_themes = 11;
+            // Enumeration of thematic social investment strategies
+            enum SocialThemes {
+                SOCIAL_THEME_UNSPECIFIED = 0;
+                A_INEQUALITY = 1;
+                B_SOCIAL_COHESION = 2;
+                C_SOCIAL_INTEGRATION = 3;
+                D_LABOUR_RELATIONS = 4;
+                E_INVESTMENT_IN_HUMAN_CAPITAL = 5;
+                F_ECONOMICALLY_OR_SOCIALLY_DISADVANTAGED_COMMUNITIES = 6;
+                G_SOCIAL_OTHER = 7;
+            }
+            // 20280_Financial_Instrument_Social_Thematic_Characteristics
+            repeated SocialThemes social_themes = 12;
+            // Enumeration of thematic governance investment strategies
+            enum GovernanceThemes {
+                GOVERNANCE_THEME_UNSPECIFIED = 0;
+                A_SOUND_MANAGEMENT_STRUCTURES = 1;
+                B_EMPLOYEE_RELATIONS = 2;
+                C_RENUMERATION_OF_STAFF = 3;
+                D_TAX_COMPLIANCE = 4;
+                E_GOVERANCE_OTHER = 5;
+            }
+            // 20290_Financial_Instrument_Governance_Thematic_Characteristics
+            repeated GovernanceThemes governance_themes = 13;
+            // Enumeration of UN Sustainable Development Goals
+            enum SustainableDevelopmentGoals {
+                SDG_UNSPECIFIED = 0;
+                A_NO_POVERTY = 1;
+                B_NO_HUNGER = 2;
+                C_GOOD_HEALTH_AND_WELLBEING = 3;
+                D_QUALITY_EDUCATION = 4;
+                E_GENDER_EQUALITY = 5;
+                F_CLEAN_WATER_AND_SANITATION = 6;
+                G_AFFORDABLE_AND_CLEAN_ENERGY = 7;
+                H_DECENT_WORK_AND_ECONOMIC_GROWTH = 8;
+                I_INDUSTRY_INNOVATION_AND_INFRASTRUCTURE = 9;
+                J_REDUCED_INEQUALITY = 10;
+                K_SUSTAINABLE_CITIES_AND_COMMUNITIES = 11;
+                L_RESPONSIBLE_CONSUMPTION_AND_PRODUCTION = 12;
+                M_CLIMATE_ACTION = 13;
+                N_LIFE_BELOW_WATER = 14;
+                O_LIFE_ON_LAND = 15;
+                P_PEACE_AND_JUSTICE_STRONG_INSTITUTIONS = 16;
+                Q_PARTNERSHIPS_TO_ACHIEVE_GOALS = 17;
+            }
+            // 20300_Financial_Instrument_Alignment_With_Sustainable_Development_Goals
+            repeated SustainableDevelopmentGoals TargetedSustainableDevelopmentGoals = 14;
+            // 20310_Financial_Instrument_Weight_Of_Eligible_Issuers
+            double weight_eligible_issuers = 15;
+            // 20320_Financial_Instrument_Number_Of_Eligible_Issuers
+            int32 number_eligible_issuers = 16;
+            // 20330_Financial_Instrument_Weight_Of_ESG_Covered_Issuers
+            double weight_covered_issuers = 17;
+            // 20340_Financial_Instrument_Number_Of_ESG_Covered_Issuers
+            int32 number_covered_issuers = 18;
+            // 20350_Financial_Instrument_Weight_Of_Engaged_Issuers
+            double weight_engaged_issuers = 19;
+            // 20360_Financial_Instrument_Number_Of_Engaged_Issuers
+            int32 number_engaged_issuers = 20;
+            // 20370_Financial_Instrument_Has_A_Reference_ESG_Benchmark.
+            //  Has a reference benchmark been designated for the purpose of attaining the environmental or social characteristics promoted by the financial product?
+            bool esg_benchmark = 21;
+            // The display name of the ESG benchmark.
+            string esg_benchmark_name = 22;
+            // The global identifier of ESG benchmark.
+            // 20380_Financial_Instrument_Benchmark_Name
+            string esg_benchmark_id = 23;
+            // Enumerations of benchmark identifiers
+            enum BenchmarkIdentifierTypes {
+                // Source not specified by the user.
+                IDENTIFIER_UNSPECIFIED = 0;
+                // ISO 6166 code of ISIN when available
+                ISIN = 1;
+                // Reuters RIC (Reuters instrument code)
+                RIC = 2;
+                // FIGI (Financial_Instrument Global Identifier)
+                FIGI = 3;
+                // PermID - Refinitiv Permanent Identifiers
+                PERM_ID = 4;
+            }
+            // Codification chosen to identify the share class
+            BenchmarkIdentifierTypes esg_benchmark_id_type = 24;
+            // 20390_Financial_Instrument_Minimum_Or_Planned_Asset_Allocation_Date.
+            // Link to pre-contractual report. Before there is a pre contractual report, the date is the date of commitment (equal to or before today). Then it will be the date of the latest pre-contractual report
+            google.type.Date minimum_or_planned_allocation_date = 25;
+            // 20400_Financial_Instrument_EU_SFDR_Minimum_Or_Planned_Investments_With_Environmental_Or_Social_Characteristics
+            double minimum_or_planned_investments_with_environmental_or_social_characteristics = 26;
+            // Enumerations for 20410_Financial_Instrument_EU_SFDR_Methodology_For_Sustainable_Investments_Calculation
+            enum SustainableInvestmentCalculationApproaches {
+                CALCULATION_APPROACH_UNSPECIFIED = 0;
+                REVENUE = 1;
+                CAPEX = 2;
+                OPEX = 3;
+            }
+            // 20410_Financial_Instrument_EU_SFDR_Methodology_For_Sustainable_Investments_Calculation
+            repeated SustainableInvestmentCalculationApproaches sustainable_investment_calculation_approaches = 27;
+            // 20420_Financial_Instrument_EU_SFDR_Minimum_Or_Planned_Investments_Sustainable_Investments
+            double minimum_or_planned_sustainable_investments = 28;
+            // 20430_Financial_Instrument_EU_SFDR_Minimum_Or_Planned_Other_Investments_With_Environmental_Or_Social_Characteristics
+            double minimum_or_planned_other_investments_with_environmental_or_social_characteristics = 29;
+            // 20440_Financial_Instrument_EU_SFDR_Minimum_Or_Planned_Investments_Sustainable_Investments_Environmental
+            double minimum_or_planned_sustainable_investments_environmental = 30;
+            // 20450_Financial_Instrument_EU_SFDR_Minimum_Or_Planned_Investments_Sustainable_Investments_Taxonomy_Aligned
+            double minimum_or_planned_sustainable_investments_taxonomy_aligned = 31;
+            // 20460_Financial_Instrument_EU_SFDR_Minimum_Or_Planned_Investments_Sustainable_Investments_Other_Environmental
+            double minimum_or_planned_sustainable_investments_other_environmental = 32;
+            // 20470_Financial_Instrument_EU_SFDR_Minimum_Or_Planned_Investments_Sustainable_Investments_Social
+            double minimum_or_planned_sustainable_investments_social = 33;
+            // 20480_Financial_Instrument_Last_Reported_Asset_Allocation_Date.
+            // The date to which sustainable investment allocations refer.
+            google.type.Date last_reported_allocation_date = 34;
+            // 20490_Financial_Instrument_EU_SFDR_Last_Reported_Investments_With_Environmental_Or_Social_Characteristics
+            double eu_sfdr_last_reported_investments_with_environmental_or_social_characteristics = 35;
+            // 20500_Financial_Instrument_EU_SFDR_Last_Reported_Investments_Not_Sustainable_Other
+            double eu_sfdr_last_reported_investments_not_sustainable_other = 36;
+            // 20510_Financial_Instrument_EU_SFDR_Last_Reported_Investments_Are_Sustainable_Investments
+            double eu_sfdr_last_reported_investments_sustainable = 37;
+            // 20520_Financial_Instrument_EU_SFDR_Last_Reported_Other_Investments_With_Environmental_Or_Social_Characteristics
+            double eu_sfdr_last_reported_other_investments_with_environmental_or_social_characteristics = 38;
+            // 20530_Financial_Instrument_EU_SFDR_Last_Reported_Investments_Are_Sustainable_Investments_Environmental
+            double eu_sfdr_last_reported_investments_sustainable_environmental = 39;
+            // 20540_Financial_Instrument_EU_SFDR_Last_Reported_Investments_Are_Sustainable_Investments_Taxonomy_Aligned
+            double eu_sfdr_last_reported_investments_sustainable_taxonomy_aligned = 40;
+            // 20550_Financial_Instrument_EU_SFDR_Last_Reported_Investments_Are_Sustainable_Investments_Other_Environmental
+            double eu_sfdr_last_reported_investments_sustainable_other_environmental = 41;
+            // 20560_Financial_Instrument_EU_SFDR_Last_Reported_Investments_Are_Sustainable_Investments_Social
+            double eu_sfdr_last_reported_investments_sustainable_social = 42;
+            // 20570_Financial_Instrument_With_Objective_Of_A_Reduction_In_Carbon_Emissions
+            bool reduction_in_carbon_emissions_objective = 43;
+            // 20580_Financial_Instrument_Aligned_With_Paris_Agreement
+            bool aligned_with_paris_agreement = 44;
+            // 20590_Does_This_Financial_Instrument_Consider_End_Client_Sustainability_Preferences.
+            // False == Neutral.
+            bool consider_end_client_sustainability_preferences = 45;
+            // 20600_Financial_Instrument_Minimum_Percentage_Investments_Aligned_EU_Taxonomy_Incl_Sovereign_Bonds
+            double minimum_percentage_aligned_with_eu_taxonomy_incl_sovereign_bonds = 46;
+            // 20610_Financial_Instrument_Minimum_Percentage_Investments_Aligned_EU_Taxonomy_Excl_Sovereign_Bonds
+            double minimum_percentage_aligned_with_eu_taxonomy_excl_sovereign_bonds = 47;
+            // 20620_Financial_Instrument_Was_This_Statement_Subject_To_An_External_Review_By_Third_Party
+            bool subject_to_third_party_review = 48;
+            // 20630_Financial_Instrument_Methodology_Used_For_Alignment_Calculation_With_EU_Taxonomy.
+            // Discloses the methodology used for alignment calculation with the EU Taxonomy, defined as either Revenue, CapEx or OpEx.
+            SustainableInvestmentCalculationApproaches methodology_used_for_eu_taxonomy_alignment_calculation = 49;
+            // 20640_Financial_Instrument_Minimum_Share_Of_Transitional_Activities
+            double minimum_share_transitional_activities = 50;
+            // 20650_Financial_Instrument_Minimum_Share_Of_Enabling_Activities
+            double minimum_share_enabling_activities = 51;
+            // 20660_Financial_Instrument_Percentage_Taxonomy_Aligned_Incl_Sovereign_Revenue
+            double percentage_taxonomy_aligned_incl_sovereign_revenue = 52;
+            // 20670_Financial_Instrument_Percentage_Taxonomy_Aligned_Incl_Sovereign_Capex
+            double percentage_taxonomy_aligned_incl_sovereign_capex = 53;
+            // 20680_Financial_Instrument_Percentage_Taxonomy_Aligned_Incl_Sovereign_Opex
+            double percentage_taxonomy_aligned_incl_sovereign_opex = 54;
+            // 20690_Financial_Instrument_Percentage_Taxonomy_Aligned_Excl_Sovereign_Revenue
+            double percentage_taxonomy_aligned_excl_sovereign_revenue = 55;
+            // 20700_Financial_Instrument_Percentage_Taxonomy_Aligned_Excl_Sovereign_Capex
+            double percentage_taxonomy_aligned_excl_sovereign_capex = 56;
+            // 20710_Financial_Instrument_Percentage_Taxonomy_Aligned_Excl_Sovereign_Opex
+            double percentage_taxonomy_aligned_excl_sovereign_opex = 57;
+            // 20721_Financial_Instrument_Climate_Change_Mitigation_Percentage
+            double percentage_taxonomy_aligned_climate_change_mitigation = 58;
+            // 20731_Financial_Instrument_Climate_Change_Adaptation_Percentage
+            double percentage_taxonomy_aligned_climate_change_adaption = 59;
+            // 20741_Financial_Instrument_Sustainable_Use_And_Protection_Of_Water_And_Marine_Resources_Percentage
+            double percentage_taxonomy_aligned_sustainable_use_and_protection_of_water_and_marine_resources = 60;
+            // 20751_Financial_Instrument_Transition_To_A_Circular_Economy_Percentage
+            double percentage_taxonomy_aligned_circular_economy = 61;
+            // 20761_Financial_Instrument_Pollution_Prevention_And_Control_Percentage
+            double percentage_taxonomy_aligned_pollution_prevention_and_control = 62;
+            // 20771_Financial_Instrument_Protection_And_Restoration_Of_Biodiversity_And_Ecosystems_Percentage
+            double percentage_taxonomy_aligned_protection_and_restoration_of_biodiversity_and_ecosystems = 63;
+            // 20780_Financial_Instrument_Share_Of_Transitional_Activities
+            double percentage_taxonomy_aligned_share_of_transitional_activities = 64;
+            // 20790_Financial_Instrument_Share_Of_Enabling_Activities
+            double percentage_taxonomy_aligned_share_of_enabling_activities = 65;
+        }
+    }
+    // Product level disclosures
+    // Per guidelines, information should be disclosed on a per product basis
+    repeated ProductData per_product_information = 3;
+}
+
+// Batch set of RT000F0J4 responses
+message RT000F0J4_batch {
+    repeated RT000F0J4 response = 1;
+}

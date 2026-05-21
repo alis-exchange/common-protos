@@ -1,0 +1,636 @@
+syntax = "proto3";
+
+package standards.open.v1;
+
+import "google/api/annotations.proto";
+import "google/api/client.proto";
+import "google/api/resource.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/field_mask.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
+import "google/type/date.proto";
+import "google/type/month.proto";
+import "standards/open/v1/rag.proto";
+
+option go_package = "github.com/standards-exchange/protobuf-go/standards/open/v1";
+
+
+// Transfer Agency Monthly KPI & MI Report for governance oversight and reporting for UCITS funds
+message RT000ZR69 {
+    // Definition of a metric
+    message Metric {
+        // The date the data was produced
+        google.type.Date production_date = 1;
+        // The end date of the reporting period of the metric (inclusive)
+        // For example, if the metric measures data for the month of December 2022, 2022-12-31
+        google.type.Date reporting_period_end = 2;
+        // The start date of the reporting period of the metric (inclusive)
+        // For example, if the metric measures data for the month of December 2022, 2022-12-01
+        google.type.Date reporting_period_start = 3;
+        // The internal identifier of the umbrella
+        string umbrella_fund_identifier = 4;
+        // The name of the umbrella
+        // Should conform to: https://openfunds.org/OFST005010 (Umbrella)
+        // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information
+        string umbrella_fund = 5;
+        // The identifier of the fund (typically the sub-fund fund or standalone fund) that holds the security
+        // Should conform to: https://openfunds.org/OFST010110 (Legal Fund Name Only)
+        // Refers to the Sub-Fund in the case of an umbrella structure
+        // or Fund in the case of a standalone structure
+        // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information
+        string fund_identifier = 6;
+        // The name of the fund (typically the sub-fund fund or standalone fund) that holds the security
+        // Should conform to: https://openfunds.org/OFST010110 (Legal Fund Name Only)
+        // Refers to the Sub-Fund in the case of an umbrella structure
+        // or Fund in the case of a standalone structure
+        // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information
+        string fund = 7;
+        // Enumeration of metricIDs
+        enum MetricID {
+            // The enumeration of the metrics measured
+            METRIC_ID_UNSPECIFIED = 0;
+            // Total number of transactions settled during the month (core + corporate action + other)
+            TRANSACTIONS_PROCESSED = 1;
+            // The number of financial transactions processed (e.g. subscriptions, redemptions, switches in/out, dividend- and trailer fees reinvestments)
+            CORE_TRANSACTIONS_PROCESSED = 2;
+            // The number of corporate action transactions processed (e.g. cash dividends)
+            CORPORATE_ACTION_FINANCIAL_TRANSACTIONS_PROCESSED = 3;
+            // Other transactions (e.g stock transfers)
+            OTHER_TRANSACTIONS_PROCESSED = 4;
+            // The aggregate STP rate across all transactions
+            AGGREGATE_TRANSACTIONS_STP_RATE = 5;
+            // The number of STP transactions processed (transactions that came across via an automated method versus manual
+            // for example fax/post..etc)
+            CORE_TRANSACTIONS_STP_RATE = 6;
+            // The STP transaction rate (stp_transactions_processed / transactions_processed)
+            CORPORATE_ACTION_TRANSACTIONS_STP_RATE = 7;
+            // The total value of net in/outflows in the currency units of the metric subject
+            NET_FLOWS = 8;
+            // Number of transactions processed correctly as a percentage of total number of TA transactions settled during the reporting month.
+            TRANSACTION_PROCESSING_ACCURACY = 9;
+            // The total number of transactional errors
+            TRANSACTIONAL_ERRORS = 10;
+            // The total number of operational errors
+            OPERATIONAL_ERRORS = 11;
+            // Value of errors in the reporting currency
+            VALUE_OF_ERRORS_REPORTING_CURRENCY = 12;
+            // The number of complaints in the reporting period
+            NUMBER_OF_COMPLAINTS = 13;
+            // The number of complaints upheld
+            NUMBER_OF_UPHELD_COMPLAINTS = 14;
+            // The total number of accounts
+            NUMBER_OF_ACCOUNTS = 15;
+            // Total percentage of accounts with balances
+            PERCENTAGE_ACCOUNTS_WITH_BALANCES = 16;
+            // The percentage of accounts in good order at the end of the reporting period
+            PERCENTAGE_ACCOUNTS_IN_GOOD_ORDER = 17;
+            // The percentage of large trade reports sent within the agreed timeframe
+            INVESTOR_REPORTS_TIMELINESS = 18;
+            // Number of phone calls processed
+            NUMBER_OF_PHONE_CALLS_PROCESSED = 19;
+            // Number of email queries processed
+            NUMBER_OF_EMAIL_QUERIES_PROCESSED = 20;
+            // The percentage of calls that were abandoned
+            ABANDON_RATE = 21;
+            // The average amount of time (seconds) taken to respond to an email query
+            AVERAGE_EMAIL_QUERY_TIME = 22;
+            // The average amount of time (seconds) taken to respond to an phone query
+            AVERAGE_PHONE_QUERY_TIME = 23;
+            // The rate at which email response timeliness met agreed service level thresholds
+            EMAIL_QUERY_TIMELINESS_RATE = 24;
+            // The rate at which email response timeliness met agreed service level thresholds
+            PHONE_QUERY_TIMELINESS_RATE = 25;
+            // Number of system issues that occurred during the month.
+            SYSTEM_ISSUES = 26;
+            // The self-assessment rating of the provider (typically on a scale of 1 - below expectations to 9 - well above expectations)
+            PROVIDER_SELF_ASSESSMENT = 27;
+            // The service assessment rating of the customer (typically on a scale of 1 - below expectations to 9 - well above expectations)
+            CUSTOMER_SERVICE_ASSESSMENT = 28;
+            // The net asset value at the end of the period in reporting currency
+            NET_ASSET_VALUE_REPORTING_CURRENCY = 29;
+            // The net asset value at the end of the period in subject currency
+            NET_ASSET_VALUE_SUBJECT_CURRENCY = 30;
+            // Number of new investor accounts registered during the reporting period
+            NEW_INVESTOR_ACCOUNTS = 31;
+            // Number of new investor accounts registered classifying as high risk
+            NEW_HIGH_RISK_INVESTOR_ACCOUNTS = 32;
+            // Total number of investor accounts classified as high risk
+            HIGH_RISK_ACCOUNTS = 33;
+            // Total number of PEP accounts
+            PEP_ACCOUNTS = 34;
+            // Total number of dormant accounts
+            DORMANT_ACCOUNTS = 35;
+            // Number of unusual or suspicious activity exceptions raised to Manco
+            SUSPICIOUS_ACTIVITY_EXCEPTIONS_RAISED = 36;
+            // Number of sanctions screening exceptions raised to Manco
+            SANCTIONS_SCREENING_EXCEPTIONS_RAISED = 37;
+            // Number of negative media screening exceptions raised to Manco
+            NEGATIVE_MEDIA_SCREENING_EXCEPTIONS_RAISED = 38;
+            // Number of AML or financial crime exceptions
+            AML_OR_FINANCIAL_CRIME_EXCEPTIONS_RAISED = 39;
+            // Total number of blocked accounts
+            BLOCKED_ACCOUNTS = 40;
+            // Total number of accounts blocked for AML reasons
+            BLOCKED_ACCOUNTS_AML = 41;
+            // Total number of accounts restricted for sanctions reasons (Cuba/Iran/Syria etc)
+            RESTRICTED_ACCOUNTS_SANCTIONS = 42;
+            // The number of investor payments made
+            INVESTOR_PAYMENTS = 43;
+            // The accuracy of investor payments
+            INVESTOR_PAYMENTS_ACCURACY = 44;
+            // The timeliness of investor payments
+            INVESTOR_PAYMENTS_TIMELINESS = 45;
+            // The number of dividend payouts
+            DIVIDEND_PAYOUTS = 46;
+            // The accuracy of dividend payouts
+            DIVIDEND_PAYOUT_ACCURACY = 47;
+            // The timeliness of dividend payouts
+            DIVIDEND_PAYOUT_TIMELINESS = 48;
+            // The number of commission and trailer fee payments
+            COMMISSION_AND_TRAILER_FEE_PAYMENTS = 49;
+            // The accuracy of commission and trailer fee payments
+            COMMISSION_AND_TRAILER_FEE_PAYMENTS_ACCURACY = 50;
+            // The timeliness of commission and trailer fee payments
+            COMMISSION_AND_TRAILER_FEE_PAYMENTS_TIMELINESS = 51;
+            // The percentage of new account openings completed without error
+            NEW_ACCOUNT_OPENING_ACCURACY = 52;
+            // The percentage of new account openings within SLA
+            NEW_ACCOUNT_OPENING_TIMELINESS = 53;
+            // The number of new agent / distributor onboardings that occurred in the period
+            NEW_AGENTS_OR_DISTRIBUTORS = 54;
+            // The percentage of new agent / distributor onboardings that occurred without error
+            NEW_AGENTS_OR_DISTRIBUTOR_ACCURACY = 55;
+            // The percentage of new agent / distributor onboardings that occurred within the SLA
+            NEW_AGENTS_OR_DISTRIBUTOR_TIMELINESS = 56;
+            // The total number of reportable data breaches that occurred
+            REPORTABLE_DATA_BREACHES = 57;
+            // The total number of non-reportable data breaches
+            NON_REPORTABLE_DATA_BREACHES = 58;
+
+            // The total number of reports provided in the reporting period
+            REPORTS_SENT = 101;
+            // The percentage of all reports delivered without error
+            REPORTS_ACCURACY = 102;
+            // The percentage of all reports within the agreed timeframe
+            REPORTS_TIMELINESS = 103;
+            // The number of estimate reports provided in the reporting period
+            ESTIMATE_REPORTS = 104;
+            // The percentage of estimate reports delivered without error
+            ESTIMATE_REPORTS_ACCURACY = 105;
+            // The percentage of estimate reports within the agreed timeframe
+            ESTIMATE_REPORTS_TIMELINESS = 106;
+            // The number of confirmed reports provided in the reporting period
+            CONFIRMED_REPORTS = 107;
+            // The percentage of confirmed reports delivered without error
+            CONFIRMED_REPORTS_ACCURACY = 108;
+            // The percentage of confirmed reports within the agreed timeframe
+            CONFIRMED_REPORTS_TIMELINESS = 109;
+            // The number of large trade reports sent
+            LARGE_TRADE_REPORTS = 110;
+            // The number of large trade reports sent without error
+            LARGE_TRADE_REPORTS_ACCURACY = 111;
+            // The number of large trade reports sent within the agreed timeframe
+            LARGE_TRADE_REPORTS_TIMELINESS = 112;
+            // The number of investor reports sent
+            INVESTOR_REPORTS = 113;
+            // The number of large trade reports sent without error
+            INVESTOR_REPORTS_ACCURACY = 114;
+            // The number of contract notes
+            CONTRACT_NOTES_SENT = 115;
+            // The accuracy of contract notes sent
+            CONTRACT_NOTE_ACCURACY = 116;
+            // The timeliness of contract notes sent
+            CONTRACT_NOTE_TIMELINESS = 117;
+            // The number of monthly statements sent
+            MONTHLY_STATEMENTS_SENT = 118;
+            // The accuracy of monthly statements sent
+            MONTHLY_STATEMENTS_ACCURACY = 119;
+            // The timeliness of monthly statements sent
+            MONTHLY_STATEMENTS_TIMELINESS = 120;
+            // The number of estimate cash reports provided in the reporting period
+            ESTIMATE_CASH_REPORTS = 121;
+            // The percentage of estimate cash reports provided in the reporting period without error
+            ESTIMATE_CASH_REPORTS_ACCURACY = 122;
+            // The percentage of timeliness of estimate cash reports provided in the reporting period
+            ESTIMATE_CASH_REPORTS_TIMELINESS = 123;
+            // The number of accounts with balances
+            NUMBER_OF_ACCOUNTS_WITH_BALANCES = 124;
+
+        }
+        // The identifier of what the metric measures
+        MetricID metric_id = 8;
+        // The type of value used to measure the metric
+        enum ValueType {
+            METRIC_TYPE_UNSPECIFIED = 0;
+            NUMBER = 1;
+            PERCENTAGE = 2;
+            CURRENCY = 3;
+        }
+        // Enumeration for how to interpret the metric value
+        ValueType value_type = 9;
+        // The currency code is required to comply with the 3-letter ISO 4217 standard.
+        // The ISO 4217 is a set of 3-letter currency codes to represent countries' currencies.
+        // Make sure the provided currency code is in uppercase.
+        // Example: 'USD' for United States Dollar, 'GBP' for Great Britain Pound, 'EUR' for Euro, etc.
+        string currency_code = 10;
+        // The value of the metric
+        double metric = 11;
+        // Options for how to evaluate the metric
+        enum EvaluationType {
+            EVALUATION_TYPE_UNSPECIFIED = 0;
+            // A higher result is more favorable
+            MAXIMISE = 1;
+            // A lower result is more favorable
+            MINIMISE = 2;
+        }
+        // How to evaluate the metric (i.e. is a higher or lower value more favorable)
+        EvaluationType evaluation_type = 12;
+        // The "RED/AMBER/GREEN" designation if applicable
+        RedAmberGreen rag = 13;
+        // The amber cutoff (i.e. the value above which the metric is no longer classified as "RED") if applicable
+        double amber_cutoff = 14;
+        // The green cutoff (i.e. the value above which the metric is no longer classified as "AMBER")  if applicable
+        double green_cutoff = 15;
+        // Optional. The name of the provider
+        string provider = 20;
+        // Optional. The metric ID used by the provider
+        string provider_metric_id = 21;
+        // Optional. The KPI name used by the provider
+        string provider_metric_name = 22;
+        // Optional. Any comments attached to the metric
+        string comments = 99;
+    }
+    // KPIs & other key quantitative metrics for the current and preceding 13 periods
+    repeated Metric metrics = 20;
+    // Recent late trade events. Convention is to report last twelve months.
+    repeated LateTradeEvent late_trade_events = 53;
+    // Recent complains. Convention is to report last thirteen months
+    repeated Complaint complaints = 54;
+    // List of suspicious transactions in the format:
+    repeated Transaction suspicious_transactions = 55;
+    // List of transactions related to PEP accounts
+    repeated Transaction pep_transactions = 56;
+    // List of transactions with a late cash receipt
+    repeated Transaction late_cash_receipt_transactions = 57;
+    // The largest N account holders by AUM.
+    repeated Account largest_shareholders = 71;
+    // List of blocked accounts
+    repeated Account blocked_accounts = 72;
+    // List of PEP accounts
+    repeated Account pep_accounts = 73;
+    // List of new accounts last 3 months
+    repeated Account new_accs_last_three_months = 74;
+    // List of high risk accounts
+    repeated Account high_risk_accounts = 75;
+    // Largest N accounts by transaction volume
+    repeated Account largest_accs_transaction_vol = 76;
+    // Accounts that have holdings and have dealt within the last thirteen months
+    repeated Account active_accounts = 77;
+    // Accounts blocked for AML reasons
+    repeated Account accs_blocked_for_aml_reasons = 78;
+    // Accounts created in the last thirteen months from high risk countries
+    repeated Account new_accs_high_risk_countries = 79;
+    // Information on transfer agency errors
+    repeated Error errors = 80;
+
+    // The definition of an account resource
+    message Account {
+        // The date as of which the information is being reported
+        google.type.Date reporting_date = 101;
+        // The internal identifier of the umbrella
+        string umbrella_fund_identifier = 102;
+        // The name of the umbrella
+        // Should conform to: https://openfunds.org/OFST005010 (Umbrella)
+        // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information
+        string umbrella_fund = 103;
+        // The identifier of the fund (typically the sub-fund fund or standalone fund) that holds the security
+        // Should conform to: https://openfunds.org/OFST010110 (Legal Fund Name Only)
+        // Refers to the Sub-Fund in the case of an umbrella structure
+        // or Fund in the case of a standalone structure
+        // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information
+        string fund_identifier = 104;
+        // The name of the fund (typically the sub-fund fund or standalone fund) that holds the security
+        // Should conform to: https://openfunds.org/OFST010110 (Legal Fund Name Only)
+        // Refers to the Sub-Fund in the case of an umbrella structure
+        // or Fund in the case of a standalone structure
+        // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information
+        string fund = 105;
+        // The resource name of the client
+        string display_name = 1;
+        // Types of account holders
+        enum AccountType {
+            // AccountType unspecified
+            TYPE_UNSPECIFIED = 0;
+            // The account holder is a natural person
+            NATURAL_PERSON = 1;
+            // The account holder is a legal entity
+            LEGAL_ENTITY = 2;
+        }
+        // The type of account
+        AccountType account_type = 2;
+        // The internal unique identifier of the account
+        string account_id = 3;
+        // The status of the account (i.e. active or inactive)
+        Status status = 6;
+        // Enumerations of the status of the account
+        enum Status {
+            // Account status unspecified
+            STATE_UNSPECIFIED = 0;
+            // Account status active
+            ACTIVE = 1;
+            // Account status inactive
+            INACTIVE = 2;
+            // The account is blocked
+            BLOCKED = 3;
+            // The account is in the process of being onboarded, but not blocked
+            ONBOARDING = 4;
+        }
+        // The address of the account
+        string address = 7;
+        // The risk categorization of the client (i.e. low, medium or high)
+        Risk risk = 8;
+        // Enumerations of the risk categorizations
+        enum Risk {
+            // Client risk unspecified
+            RISK_UNSPECIFIED = 0;
+            // The client is deemed low risk
+            LOW = 1;
+            // The client is deemed medium risk
+            MEDIUM = 2;
+            // The client is deemed high risk
+            HIGH = 3;
+        }
+        // Whether the client has a purchase stop
+        bool purchase_stop = 9;
+        // Whether the client has a redemption stop
+        bool redemption_stop = 10;
+        // Whether the client has a stop on redemptions settling
+        bool stop_red_settle = 11;
+        // Whether the client has a stop on transfers in
+        bool transfer_inward_stop = 12;
+        // Whether the client has a stop on transfers out
+        bool transfer_out_stop = 13;
+        // Whether there is a stop on the account for PEP reasons
+        bool stop_pep = 14;
+        // Whether there is a stop on the account for AML reasons
+        bool stop_aml = 15;
+        // If there is a stop, what is the stop date
+        google.type.Date stop_date = 16;
+        // The share of total shares - unsettled
+        double percent_total_shares = 18;
+        // The total value of the account
+        double account_value = 19;
+        // The share of total aum - unsettled
+        double percent_total_aum = 20;
+        // The date the account was created
+        google.type.Date account_creation_date = 22;
+        // The date the account was active and onboarded
+        google.type.Date account_active_date = 23;
+        // The date of the last AML refresh
+        google.type.Date last_aml_refresh_date = 24;
+    }
+    // Definition of a transaction
+    message Transaction {
+        // The date as of which the information is being reported
+        google.type.Date reporting_date = 101;
+        // The internal identifier of the umbrella
+        string umbrella_fund_identifier = 102;
+        // The name of the umbrella
+        // Should conform to: https://openfunds.org/OFST005010 (Umbrella)
+        // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information
+        string umbrella_fund = 103;
+        // The identifier of the fund (typically the sub-fund fund or standalone fund) that holds the security
+        // Should conform to: https://openfunds.org/OFST010110 (Legal Fund Name Only)
+        // Refers to the Sub-Fund in the case of an umbrella structure
+        // or Fund in the case of a standalone structure
+        // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information
+        string fund_identifier = 104;
+        // The name of the fund (typically the sub-fund fund or standalone fund) that holds the security
+        // Should conform to: https://openfunds.org/OFST010110 (Legal Fund Name Only)
+        // Refers to the Sub-Fund in the case of an umbrella structure
+        // or Fund in the case of a standalone structure
+        // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information
+        string fund = 105;
+        // The resource name of the client
+        string account_name = 1;
+        // Types of account holders
+        enum AccountType {
+            // AccountType unspecified
+            TYPE_UNSPECIFIED = 0;
+            // The account holder is a natural person
+            NATURAL_PERSON = 1;
+            // The account holder is a legal entity
+            LEGAL_ENTITY = 2;
+        }
+        // The type of account
+        AccountType account_type = 2;
+        // The internal unique identifier of the account
+        string account_id = 3;
+        // The global identifier of the share class
+        string share_class_id = 4;
+        // Enumerations of financial identifiers
+        enum ShareClassIdentifierTypes {
+            // Source not specified by the user.
+            IDENTIFIER_UNSPECIFIED = 0;
+            // ISO 6166 code of ISIN when available
+            ISIN = 1;
+            // CUSIP - The Committee on Uniform Securities Identification Procedures number assigned by the CUSIP Service Bureau for U.S. and Canadian companies
+            CUSIP = 2;
+            // SEDOL - Stock Exchange Daily Official List for the London Stock Exchange
+            SEDOL = 3;
+            // WKN - Wertpapier Kenn-Nummer, the alphanumeric German identification number
+            WKN = 4;
+            // Bloomberg Ticker - Bloomberg letters code that identify a company's securities
+            BBG_TICKER = 5;
+            // BBGID - The Bloomberg Global ID
+            BBGID = 6;
+            // Reuters RIC - Reuters instrument code
+            RIC = 7;
+            // FIGI - (Financial Instrument Global Identifier). To look up the FIGI navigate to https://www.openfigi.com/.
+            FIGI = 8;
+            // LEI - Legal Entity Identifier
+            LEI = 9;
+            // PermID - (Refinitiv Permanent Identifier). To look up the PermID navigate to https://permid.org/
+            PERM_ID = 10;
+        }
+        // Codification chosen to identify the share class
+        ShareClassIdentifierTypes share_class_id_type = 5;
+        // Extension that identifies the share class.
+        // Should conform to: https://openfunds.org/OFST020050 (Share Class Extension)
+        string share_class_extension = 6;
+        // The number of settled units subscribed to or redeeemed
+        double units = 7;
+        // The nav of the subscription per unit at which the transaction was priced
+        double nav_per_unit = 9;
+        // The current total value of the transaction
+        double total_value = 10;
+        // Enumerations of transaction types
+        enum TransactionType {
+            // The transaction type is unspecified
+            TRANSACTION_TYPE_UNSPECIFIED = 0;
+            // Purchase of shares in the specified share class
+            SUBSCRIPTION = 1;
+            // Redemption of shares from the specified share class
+            REDEMPTION = 2;
+            // Movement between accounts for a single share class (ISIN), for example from PartyA to PartyB
+            TRANSFER = 3;
+            // Movement between share classes (i.e. ISIN) for a single account, for example PartyA switches their holdings of ShareClassA for holdings of ShareClassB
+            SWITCH = 4;
+        }
+        // The type of transaction
+        TransactionType transaction_type = 11;
+        // The trade date of the transaction
+        google.type.Date trade_date = 12;
+        // The settlement date of the transaction
+        google.type.Date settlement_date = 13;
+        // Enumerations of transaction source types
+        enum SourceType {
+            // Source type unspecified
+            SOURCE_TYPE_UNSPECIFIED = 0;
+            // Fax
+            FAX = 1;
+            // Email
+            EMAIL = 2;
+            // Telephone
+            TELEPHONE = 3;
+            // SWIFT
+            SWIFT = 4;
+            // API
+            API = 5;
+            // BlockChain
+            BLOCK_CHAIN = 6;
+        }
+        // The transaction source type
+        SourceType source_type = 14;
+        // The source of the transaction
+        string source = 15;
+    }
+    // Definition of a Complaint
+    message Complaint {
+        // The date as of which the information is being reported
+        google.type.Date reporting_date = 101;
+        // The internal identifier of the umbrella
+        string umbrella_fund_identifier = 102;
+        // The name of the umbrella
+        // Should conform to: https://openfunds.org/OFST005010 (Umbrella)
+        // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information
+        string umbrella_fund = 103;
+        // The identifier of the fund (typically the sub-fund fund or standalone fund)
+        // Should conform to: https://openfunds.org/OFST010110 (Legal Fund Name Only)
+        // Refers to the Sub-Fund in the case of an umbrella structure
+        // or Fund in the case of a standalone structure
+        // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information
+        string fund_identifier = 104;
+        // The name of the fund (typically the sub-fund fund or standalone fund)
+        // Should conform to: https://openfunds.org/OFST010110 (Legal Fund Name Only)
+        // Refers to the Sub-Fund in the case of an umbrella structure
+        // or Fund in the case of a standalone structure
+        // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information
+        string fund = 105;
+        // The date of the complaint
+        google.type.Date complaint_date = 2;
+        // Description of the complaint
+        string description = 3;
+        // The account identifier related to the complainant (if applicable)
+        string account_id = 4;
+        // Resolution of the complaint
+        string resolution = 5;
+        // Whether the complaint was upheld
+        bool complaint_upheld = 6;
+    }
+    // Definition of a late trade events
+    message LateTradeEvent {
+        // The date as of which the information is being reported
+        google.type.Date reporting_date = 101;
+        // The internal identifier of the umbrella
+        string umbrella_fund_identifier = 102;
+        // The name of the umbrella
+        // Should conform to: https://openfunds.org/OFST005010 (Umbrella)
+        // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information
+        string umbrella_fund = 103;
+        // The identifier of the fund (typically the sub-fund fund or standalone fund)
+        // Should conform to: https://openfunds.org/OFST010110 (Legal Fund Name Only)
+        // Refers to the Sub-Fund in the case of an umbrella structure
+        // or Fund in the case of a standalone structure
+        // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information
+        string fund_identifier = 104;
+        // The name of the fund (typically the sub-fund fund or standalone fund)
+        // Should conform to: https://openfunds.org/OFST010110 (Legal Fund Name Only)
+        // Refers to the Sub-Fund in the case of an umbrella structure
+        // or Fund in the case of a standalone structure
+        // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information
+        string fund = 105;
+        // The date of the late trade
+        google.type.Date late_trade_date = 1;
+        // The date the late trade was identified
+        google.type.Date identification_date = 2;
+        // Cause of the late trade
+        string cause = 3;
+        // Resolution of the breach and underlying source of issue
+        string resolution = 4;
+    }
+    // Definition of an error
+    message Error {
+        // The reporting date for the error
+        google.type.Date reporting_date = 1;
+        // The internal referenceID used to track the breach
+        string reference_id = 2;
+        // The identifier of the umbrella
+        string umbrella_fund_identifier = 3;
+        // The name of the umbrella
+        // Should conform to: https://openfunds.org/OFST005010 (Umbrella)
+        // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information
+        string umbrella_fund = 4;
+        // The identifier of the fund (typically the sub-fund fund or standalone fund) that holds the security
+        // Should conform to: https://openfunds.org/OFST010110 (Legal Fund Name Only)
+        // Refers to the Sub-Fund in the case of an umbrella structure
+        // or Fund in the case of a standalone structure
+        // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information
+        string fund_identifier = 5;
+        // The name of the fund (typically the sub-fund fund or standalone fund) that holds the security
+        // Should conform to: https://openfunds.org/OFST010110 (Legal Fund Name Only)
+        // Refers to the Sub-Fund in the case of an umbrella structure
+        // or Fund in the case of a standalone structure
+        // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information
+        string fund = 6;
+        // The date the error was detected
+        google.type.Date detection_date = 7;
+        // Period of the error - Start Date
+        google.type.Date error_period_start_date = 8;
+        // Period of the breach - End Date
+        google.type.Date error_period_end_date = 9;
+        // The identifier of the impacted account
+        string account_id = 10;
+        // Description and cause of the error
+        string cause = 15;
+        // Corrective measures taken to fix the error
+        string corrective_measures = 16;
+        // Measures taken to avoid recurrence
+        string remediation = 17;
+        // Enumerations of impact of the error
+        enum Impact {
+            IMPACT_UNSPECIFIED = 0;
+            WITHOUT_IMPACT = 1;
+            IMMATERIAL = 2;
+            MATERIAL = 3;
+        }
+        // The impact of the error
+        Impact impact = 18;
+        // The amount of impact (in currency terms)
+        double impact_amount = 19;
+        // The currency code of the impact amount
+        // The country code is required to comply with the 3-letter ISO 3166-1 alpha-3 standard.
+        // The ISO 3166-1 alpha-3 is a set of 3-letter country codes to represent countries and dependent areas.
+        // Make sure the provided country code is in uppercase.
+        // Example: 'USA' for the United States, 'GBR' for Great Britain, 'DEU' for Germany, etc.
+        string impact_amount_currency = 20;
+        // Other Comments
+        string comments = 51;
+    }
+}
+
+// Batch set of RT000ZR69 responses
+message RT000ZR69_batch {
+    repeated RT000ZR69 response = 1;
+}

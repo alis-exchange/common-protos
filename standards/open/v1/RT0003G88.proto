@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package standards.open.v1;
+
+option go_package = "github.com/standards-exchange/protobuf-go/standards/open/v1";
+
+
+// This report provides asset allocation data to the Allan Gray Retail Platform for certain  Rezco funds
+message RT0003G88 {}

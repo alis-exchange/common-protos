@@ -1,0 +1,69 @@
+syntax = "proto3";
+
+package standards.open.v1;
+
+import "google/api/annotations.proto";
+import "google/api/client.proto";
+import "google/api/resource.proto";
+import "google/type/money.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/field_mask.proto";
+import "google/protobuf/timestamp.proto";
+import "google/type/date.proto";
+
+option go_package = "github.com/standards-exchange/protobuf-go/standards/open/v1";
+
+// Share Class Unit Price
+message RT0006XG4 {
+    // The effective date of the holding.
+    // The holdings are as of market close on the effective date
+    google.type.Date effective_date = 1;
+    // The legal identifier of the umbrella
+    // Should conform to: https://openfunds.org/OFST005010 (Umbrella)
+    // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information
+    string umbrella_fund = 2;
+    // The internal umbrella ID used by the system producing the data
+    string internal_umbrella_id = 3;
+    // Name of the relevant sub-fund
+    // Should conform to: https://openfunds.org/OFST010110 (Legal Fund Name Only)
+    // Refers to the Sub-Fund in the case of an umbrella structure
+    // or Fund in the case of a standalone structure
+    // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information
+    string fund = 4;
+    // The internal fund ID used by the system producing the data
+    string internal_fund_id = 5;
+    // The ISO compliant three character code for the base currency of the fund
+    string fund_currency = 6;
+    // Extension that identifies the share class.
+    // Should conform to: https://openfunds.org/OFST020050 (Share Class Extension)
+    string share_class_extension = 7;
+    // The internal share class ID used by the system producing the data
+    string internal_share_class_id = 8;
+    // ISO 6166 code of ISIN when available. If an ISIN is used, it is recommended that the MIC or Bloomberg Exchange Code should additionally be populated. This combination allows for a fund holding to be uniquely identified.
+    string external_share_class_id_isin = 101;
+    // CUSIP - The Committee on Uniform Securities Identification Procedures number assigned by the CUSIP Service Bureau for U.S. and Canadian companies when available. If a CUSIP is used, it is recommended that the MIC or Bloomberg Exchange Code should additionally be populated. This combination allows for a fund holding to be uniquely identified.
+    string external_share_class_id_cusip = 102;
+    // SEDOL - Stock Exchange Daily Official List for the London Stock Exchange (when available). If a SEDOL is used, it is recommended that the MIC or Bloomberg Exchange Code should additionally be populated. This combination allows for a fund holding to be uniquely identified.
+    string external_share_class_id_sedol = 103;
+    // FIGI - Financial_Instrument Global Identifier (when available)
+    string external_share_class_id_figi = 104;
+    // PermID - Refinitiv Permanent Identifiers (when available)
+    string external_share_class_id_permid = 105;
+    // MIC - Market identifier code as defined by ISO 10383 (available at https://www.iso20022.org/market-identifier-codes) (when available)
+    string external_exchange_id_mic = 201;
+    // Bloomberg Exchange Code - Two digit market identifier code as defined by Bloomberg (when available)
+    string external_exchange_id_bb_exchange_code = 202;
+    // The NAV per share on the effective date
+    double nav_per_share = 9;
+    // The NAV per share on the prior effective date
+    double prior_nav_per_share = 10;
+    // The total net assets attributed to the share class
+    double total_net_assets = 11;
+    // The total shares outstanding per class
+    double shares_outstanding = 12;
+}
+
+// Batch set of RT0006XG4 responses
+message RT0006XG4_batch {
+    repeated RT0006XG4 response = 1;
+}

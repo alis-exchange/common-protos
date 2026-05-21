@@ -1,0 +1,319 @@
+syntax = "proto3";
+
+package standards.open.v1;
+
+import "google/type/date.proto";
+import "google/protobuf/wrappers.proto";
+
+option go_package = "github.com/standards-exchange/protobuf-go/standards/open/v1";
+
+// A proto defined object representing the data parsed from a Alexander Forbes
+// Regulation 28 Survey Template
+message RT000NVJ3 {
+  // A list of records
+  // There could be more than one Reg28 sheet withing a particular spreadsheet, which would represent individual
+  // records.
+  repeated Record records = 1;
+  // Defining a single record / row within excel
+  message Record {
+    // The Survey Type (B6)
+    string survey = 1;
+    // The name of the fund (B7)
+    string fund = 2;
+    // The AF product ID (I7)
+    google.protobuf.StringValue product_id = 3;
+    // The Management Company
+    google.protobuf.StringValue management_company = 4;
+    // The effective month of the report
+    google.type.Date month = 5;
+    // Enumerations of type of fund
+    enum FundType {
+      // Not specified by user
+      FUND_TYPE_UNSPECIFIED = 0;
+      // Segregated mandate
+      SEGREGATED = 1;
+      // Unit trust
+      UNIT_TRUST = 2;
+      // Pooled investment
+      POOLED = 3;
+    }
+    // type of fund (C12:C14)
+    FundType fund_type = 6;
+    // Enumerations of the risk classification
+    enum RiskClassification {
+      // Not specified
+      RISK_CLASSIFICATION_UNSPECIFIED = 0;
+      // Aggressive risk
+      AGGRESSIVE = 1;
+      // Moderate risk
+      MODERATE = 2;
+      // Conservative risk
+      CONSERVATIVE = 3;
+    }
+    // risk classification (F12:F14)
+    RiskClassification risk_classification = 7;
+    // Message defining the return by category.
+    // All returns should be populated in percentage terms e.g. 1% and not 0.01
+    message Returns {
+      // Domestic equities
+      google.protobuf.DoubleValue domestic_equities = 1;
+      // Domestic debt instruments
+      google.protobuf.DoubleValue domestic_debt_instruments = 2;
+      // Domestic cash and money market
+      google.protobuf.DoubleValue domestic_cash_and_money_market = 3;
+      // Domestic immovable property
+      google.protobuf.DoubleValue domestic_immovable_property = 4;
+      // Domestic commodities
+      google.protobuf.DoubleValue domestic_commodities = 5;
+      // Domestic hedge funds
+      google.protobuf.DoubleValue domestic_hedge_funds = 6;
+      // Domestic private equity funds
+      google.protobuf.DoubleValue domestic_private_equity_funds = 7;
+      // Domestic other
+      google.protobuf.DoubleValue domestic_other = 8;
+      // Total domestic return
+      google.protobuf.DoubleValue total_domestic = 9;
+      // International equities
+      google.protobuf.DoubleValue international_equities = 10;
+      // International debt instruments
+      google.protobuf.DoubleValue international_debt_instruments = 11;
+      // International cash and money market
+      google.protobuf.DoubleValue international_cash_and_money_market = 12;
+      // International immovable property
+      google.protobuf.DoubleValue international_immovable_property = 13;
+      // International commodities
+      google.protobuf.DoubleValue international_commodities = 14;
+      // International hedge funds
+      google.protobuf.DoubleValue international_hedge_funds = 15;
+      // International private equity funds
+      google.protobuf.DoubleValue international_private_equity_funds = 16;
+      // International other
+      google.protobuf.DoubleValue international_other = 17;
+      // Total international return
+      google.protobuf.DoubleValue total_international = 18;
+      // Total portfolio return
+      google.protobuf.DoubleValue total_portfolio = 19;
+      // Gross unit price/index value
+      google.protobuf.DoubleValue gross_unit_price_or_index_value = 20;
+    }
+    // Investment returns for the Portfolio
+    Returns portfolio_returns = 8;
+    // Investment returns for the Benchmark
+    Returns benchmark_returns = 9;
+    // (-- api-linter: core::0140::prepositions=disabled
+    //     aip.dev/not-precedent: We need to do this because it just makes sense to describe time periods
+    //     by using the word to e.g. 3 to 7 years etc.. --)
+    // Message defining the return by category.
+    // All exposures should be populated in decimal form e.g. 1% as 0.01
+    message Exposure {
+      // Sum of all domestic_equities_* should equal the value in total_domestic_equities
+      google.protobuf.DoubleValue total_domestic_equities = 1;
+      // Domestic equities that are in the resources sector
+      google.protobuf.DoubleValue domestic_equities_resources = 2;
+      // Domestic equities that are in the financials sector
+      google.protobuf.DoubleValue domestic_equities_financials = 3;
+      // Domestic equities that are in the industrials sector
+      google.protobuf.DoubleValue domestic_equities_industrials = 4;
+      // Other domestic equities (fall in none of the above sectors)
+      google.protobuf.DoubleValue domestic_equities_other_equity = 5;
+      // Sum of all domestic_debt_instruments_* should equal the value in total_domestic_debt_instruments
+      google.protobuf.DoubleValue total_domestic_debt_instruments = 6;
+      // Domestic debt instruments 0-3 years
+      google.protobuf.DoubleValue domestic_debt_instruments_zero_to_three_years = 7;
+      // Domestic debt instruments 3-7 years
+      google.protobuf.DoubleValue domestic_debt_instruments_three_to_seven_years = 8;
+      // Domestic debt instruments 7-12 years
+      google.protobuf.DoubleValue domestic_debt_instruments_seven_to_twelve_years = 9;
+      // Domestic debt instruments 12+ years
+      google.protobuf.DoubleValue domestic_debt_instruments_twelve_plus_years = 10;
+      // Other domestic debt instruments
+      google.protobuf.DoubleValue domestic_debt_instruments_other = 11;
+      // Total domestic cash and money market
+      google.protobuf.DoubleValue total_domestic_cash_and_money_market = 12;
+      // Sum of all domestic_immovable_property_* should equal the value in total_domestic_immovable_property
+      google.protobuf.DoubleValue total_domestic_immovable_property = 13;
+      // Domestic immovable direct property
+      google.protobuf.DoubleValue domestic_immovable_property_direct = 14;
+      // Domestic immovable listed property
+      google.protobuf.DoubleValue domestic_immovable_property_listed = 15;
+      // Domestic immovable unlisted property
+      google.protobuf.DoubleValue domestic_immovable_property_unlisted = 16;
+      // Total domestic commodities
+      google.protobuf.DoubleValue total_domestic_commodities = 17;
+      // Total domestic hedge funds
+      google.protobuf.DoubleValue total_domestic_hedge_funds = 18;
+      // Total domestic private equity funds
+      google.protobuf.DoubleValue total_domestic_private_equity_funds = 19;
+      // Total domestic other
+      google.protobuf.DoubleValue total_domestic_other = 20;
+      // Sum of all international_* should equal the value in total_international
+      google.protobuf.DoubleValue total_international = 21;
+      // International equities
+      google.protobuf.DoubleValue international_equities = 22;
+      // International debt instruments
+      google.protobuf.DoubleValue international_debt_instruments = 23;
+      // International cash and money and market
+      google.protobuf.DoubleValue international_cash_and_money_market = 24;
+      // International immovable property
+      google.protobuf.DoubleValue international_immovable_property = 25;
+      // International commodities
+      google.protobuf.DoubleValue international_commodities = 26;
+      // International hedge funds
+      google.protobuf.DoubleValue international_hedge_funds = 27;
+      // International private equity funds
+      google.protobuf.DoubleValue international_private_equity_funds = 28;
+      // International other
+      google.protobuf.DoubleValue international_other = 29;
+      // Total portfolio exposure. Sum of all total_domestic_* and total_international should equal thr value in total_portfolio
+      google.protobuf.DoubleValue total_portfolio = 30;
+    }
+    // the physical exposure by category and subcategory
+    Exposure physical_exposure = 10;
+    // the effective exposure by category and subcategory
+    Exposure effective_exposure = 11;
+    // the benchmark exposure by category and subcategory
+    Exposure benchmark_exposure = 12;
+
+    // 3. Market Value information
+    MarketValueInfo market_value_info = 13;
+    // Attributes of Market Value info.
+    message MarketValueInfo {
+      // 3. Market value of Portfolio on which performance is measured (in Rands)
+      google.protobuf.DoubleValue performance_portfolio = 1;
+      // 3a. Market value of total balanced portfolios (Rands)
+      google.protobuf.DoubleValue total_balanced_portfolio = 2;
+    }
+
+    // 4. Segregated portfolios
+    SegregatedPortfolios segregated_portfolios = 14;
+    // Attributes of Segregated portfolios
+    message SegregatedPortfolios {
+      // 4. # OF SEGREGATED PORTFOLIOS THAT MAKE UP THE COMPOSITE (IF COMPOSITE CONSISTS OF SEGREGATED ACCOUNTS)
+      google.protobuf.Int32Value segregated_portfolios_count = 1;
+      // 4a.  HIGHEST RETURN segregated portfolios
+      google.protobuf.DoubleValue highest_return = 2;
+      // 4b.  LOWEST RETURN segregated portfolios
+      google.protobuf.DoubleValue lowest_return = 3;
+      // 4c.  MEDIAN RETURN segregated portfolios
+      google.protobuf.DoubleValue median_return = 4;
+      // 4d.  INTERNAL DISPERSION segregated portfolios (Calculated as the standard deviation of returns around the composite return.)
+      google.protobuf.DoubleValue internal_dispersion = 5;
+    }
+
+    // 5. Yields and Duration
+    YieldsAndDurations yields_and_durations = 15;
+    // Attributes of the YieldsAndDurations object.
+    message YieldsAndDurations {
+      //     5a. MODIFIED DURATION - DOMESTIC CASH AND MONEY MARKET HOLDINGS (DAYS)
+      google.protobuf.DoubleValue modified_duration_domestic_cash_and_money_market_holdings = 20;
+      //     5b. MODIFIED DURATION - DOMESTIC DEBT HOLDINGS (YEARS)
+      google.protobuf.DoubleValue modified_duration_domestic_debt_holdings = 21;
+      //     5c. MODIFIED DURATION - DOMESTIC TOTAL FIXED INTEREST HOLDINGS (YEARS)
+      google.protobuf.DoubleValue modified_duration_domestic_total_fixed_interest_holdings = 22;
+      //     5d. WEIGHTED AVERAGE PRICE:EARNINGS RATIO - DOMESTIC EQUITIES
+      google.protobuf.DoubleValue weighted_average_pe_ratio_domestic_equities = 23;
+      //     5e.  WEIGHTED AVERAGE DIVIDEND YIELD - DOMESTIC EQUITIES
+      google.protobuf.DoubleValue weighted_average_dividend_yield_domestic_equities = 24;
+    }
+
+    // 6. TOP TEN DOMESTIC EQUITY HOLDINGS (TO BE SUPPLIED QUARTERLY)
+    repeated Holding top_ten_domestic_equity_holdings = 25;
+    // Definition of a holding reported
+    message Holding {
+      // Display name of holding
+      google.protobuf.StringValue display_name = 1;
+      // JSE code of the holding, for example: DSY
+      google.protobuf.StringValue code = 2;
+      // Percentage allocation of total equities
+      google.protobuf.DoubleValue equities_allocation = 3;
+      // Percentage allocation of total Portfolio
+      google.protobuf.DoubleValue portfolio_allocation = 4;
+    }
+    // 7. RETURN CALCULATION METHOD USED, e.g. NAV-NAV, gross of fees, and with income reinvested
+    google.protobuf.StringValue return_calculation_method_used = 26;
+    // 8.  BENCHMARK DESCRIPTION: Specify the Benchmark per asset class as well as the total fund benchmark
+    google.protobuf.StringValue benchmark_description = 27;
+    // 9a. Market Value Reconciliation
+    MarketValueReconciliation market_value_reconciliation = 28;
+    // Defining a Market Value Reconciliation attributes.
+    message MarketValueReconciliation {
+      // Opening Market Value
+      google.protobuf.DoubleValue opening_market_value = 1;
+      // Total Contributions
+      google.protobuf.DoubleValue total_contributions = 2;
+      // Total Withdrawals
+      google.protobuf.DoubleValue  total_withdrawals = 3;
+      // Adjustment for market movement (+/-)
+      google.protobuf.DoubleValue market_movement = 4;
+      // Closing Market Value
+      google.protobuf.DoubleValue closing_value = 5;
+    }
+    // 9b. Composite Reconciliation
+    CompositeReconciliation composite_reconciliation = 29;
+    // Defining a Composite Reconciliation attributes.
+    message CompositeReconciliation {
+      // Opening number of funds
+      google.protobuf.Int32Value opening_funds_count = 1;
+      // 9b.  COMPOSITE RECONCILIATION : ADD NEW FUNDS
+      google.protobuf.Int32Value new_funds_count = 2;
+      // Reason for new funds
+      google.protobuf.StringValue new_funds_reason = 3;
+      // 9b.  COMPOSITE RECONCILIATION : ADD NEW FUNDS
+      google.protobuf.Int32Value removed_funds_count = 4;
+      // Reason for funds removed
+      google.protobuf.StringValue removed_funds_reason = 5;
+      // 9b.  COMPOSITE RECONCILIATION : LESS FUNDS REMOVED COMPOSITE
+      google.protobuf.Int32Value closing_funds_count = 6;
+    }
+    // Additional Equity information
+    EquityInfo equity_info = 30;
+    // Defining Equity Info attributes.
+    message EquityInfo {
+      // 10. Equity % of assets off benchmark
+      google.protobuf.DoubleValue percent_assets_off_benchmark = 1;
+      // 10. Equity % average cash holding for the month
+      google.protobuf.DoubleValue average_monthly_cash_percentage = 2;
+      // 10. Equity % gold held
+      google.protobuf.DoubleValue gold_percentage = 3;
+      // 10. Equity % listed property held
+      google.protobuf.DoubleValue listed_property_percentage = 4;
+      // % unlisted property held
+      google.protobuf.DoubleValue unlisted_property_percentage = 5;
+    }
+    // Additional Bond information
+    BondInfo bond_info = 31;
+    // Defining Bond Info attributes.
+    message BondInfo {
+      // 11. Percentage in ILB’s
+      google.protobuf.DoubleValue ilbs_percentage = 1;
+      // 11. Percentage in cash
+      google.protobuf.DoubleValue cash_percentage = 2;
+      // 11. Restrictions ito derivatives
+      google.protobuf.StringValue restrictions_ito_derivatives = 3;
+      // 11. % of assets off benchmark
+      google.protobuf.DoubleValue bonds_percent_assets_off_benchmark = 4;
+      // 11. Modified duration limit
+      google.protobuf.DoubleValue bonds_modified_duration_limit = 5;
+      // 11. Running yield
+      google.protobuf.DoubleValue bonds_running_yield = 6;
+      // 11. Weighted average term to maturity
+      google.protobuf.DoubleValue weighted_average_ttm = 7;
+      // 11. Credit spread modified duration
+      google.protobuf.DoubleValue credit_spread_modified_duration = 8;
+      // 11. % listed vs unlisted instruments
+      google.protobuf.DoubleValue listed_vs_unlisted_instruments = 9;
+      // 11. % of instruments below investment grade
+      google.protobuf.DoubleValue below_investment_grade_percentage = 10;
+    }
+
+    // Additional Cash information
+    CashInfo cash_info = 32;
+    // Defining Bond Info attributes.
+    message CashInfo {
+      // 12. CASH - Running yield
+      google.protobuf.DoubleValue running_yield = 1;
+      // 12. CASH - Weighted average term to maturity
+      google.protobuf.DoubleValue weighted_average_ttm = 2;
+    }
+  }
+}

@@ -1,0 +1,52 @@
+syntax = "proto3";
+
+package standards.open.v1;
+
+option go_package = "github.com/standards-exchange/protobuf-go/standards/open/v1";
+
+// Y / N requiring no further explanation
+enum YesNo {
+  // No
+  N = 0;
+  // Yes
+  Y = 1;
+  // Not Applicable
+  NA = 2;
+}
+
+// Response where a NO requires further information
+message YesNoExplain {
+  enum Response {
+    RESPONSE_UNSPECIFIED = 0;
+    YES = 1;
+    NO = 2;
+  }
+  // Yes / No response.
+  Response response = 1;
+  // Explanation if the answer is `NO`
+  string explanation = 2;
+}
+// Response where a YES requires further information
+message YesExplainNo {
+  enum Response {
+    RESPONSE_UNSPECIFIED = 0;
+    YES = 1;
+    NO = 2;
+  }
+  // Yes / No response.
+  Response response = 1;
+  // Explanation if the answer is `YES`
+  string explanation = 2;
+}
+// Response where further information is required regardless of whether a Yes or No is provided
+message YesNoAndExplain {
+  enum Response {
+    RESPONSE_UNSPECIFIED = 0;
+    YES = 1;
+    NO = 2;
+  }
+  // Yes / No response.
+  Response response = 1;
+  // Provide further information for the response
+  string explanation = 2;
+}

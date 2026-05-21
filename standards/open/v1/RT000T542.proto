@@ -1,0 +1,266 @@
+syntax = "proto3";
+
+package standards.open.v1;
+
+import "google/api/annotations.proto";
+import "google/api/client.proto";
+import "google/api/resource.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/field_mask.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
+import "google/type/month.proto";
+import "google/type/date.proto";
+import "standards/open/v1/rag.proto";
+
+option go_package = "github.com/standards-exchange/protobuf-go/standards/open/v1";
+
+// UCITS Transfer Agency KPI and MI Data Exchange Template
+message RT000T542 {
+  // Definition of a metric
+  message Metric {
+    // The date the metric was produced
+    google.type.Date production_date = 1;
+    // The start date of the reporting period of the metric (inclusive)
+    // For example, if the metric measures data for the month of December 2022, 2022-12-01
+    google.type.Date reporting_period_start = 2;
+    // The end date of the reporting period of the metric (inclusive)
+    // For example, if the metric measures data for the month of December 2022, 2022-12-01
+    google.type.Date reporting_period_end = 3;
+    // The relevant identifier of the umbrella
+    string umbrella_fund_identifier = 4;
+    // The name of the umbrella
+    // Should conform to: https://openfunds.org/OFST005010 (Umbrella)
+    // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information
+    string umbrella_fund = 5;
+    // The relevant identifier of the fund
+    string fund_identifier = 6;
+    // The name of the fund (typically the sub-fund fund or standalone fund) that holds the security
+    // Should conform to: https://openfunds.org/OFST010110 (Legal Fund Name Only)
+    // Refers to the Sub-Fund in the case of an umbrella structure
+    // or Fund in the case of a standalone structure
+    // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information
+    string fund = 7;
+    // Enumeration of metricIDs
+    enum MetricID {
+      // The enumeration of the metrics measured
+      METRIC_ID_UNSPECIFIED = 0;
+      // Total number of transactions settled during the month (core + corporate action + other)
+      TRANSACTIONS_PROCESSED = 1;
+      // The number of financial transactions processed (e.g. subscriptions, redemptions, switches in/out, dividend- and trailer fees reinvestments)
+      CORE_TRANSACTIONS_PROCESSED = 2;
+      // The number of corporate action transactions processed (e.g. cash dividends)
+      CORPORATE_ACTION_FINANCIAL_TRANSACTIONS_PROCESSED = 3;
+      // Other transactions (e.g stock transfers)
+      OTHER_TRANSACTIONS_PROCESSED = 4;
+      // The aggregate STP rate across all transactions
+      AGGREGATE_TRANSACTIONS_STP_RATE = 5;
+      // The number of STP transactions processed (transactions that came across via an automated method versus manual
+      // for example fax/post..etc)
+      CORE_TRANSACTIONS_STP_RATE = 6;
+      // The STP transaction rate (stp_transactions_processed / transactions_processed)
+      CORPORATE_ACTION_TRANSACTIONS_STP_RATE = 7;
+      // The total value of net in/outflows in the currency units of the metric subject
+      NET_FLOWS = 8;
+      // Number of transactions processed correctly as a percentage of total number of TA transactions settled during the reporting month.
+      TRANSACTION_PROCESSING_ACCURACY = 9;
+      // The total number of transactional errors
+      TRANSACTIONAL_ERRORS = 10;
+      // The total number of operational errors
+      OPERATIONAL_ERRORS = 11;
+      // Value of errors in the reporting currency
+      VALUE_OF_ERRORS_REPORTING_CURRENCY = 12;
+      // The number of complaints in the reporting period
+      NUMBER_OF_COMPLAINTS = 13;
+      // The number of complaints upheld
+      NUMBER_OF_UPHELD_COMPLAINTS = 14;
+      // The total number of accounts
+      NUMBER_OF_ACCOUNTS = 15;
+      // Total percentage of accounts with balances
+      PERCENTAGE_ACCOUNTS_WITH_BALANCES = 16;
+      // The percentage of accounts in good order at the end of the reporting period
+      PERCENTAGE_ACCOUNTS_IN_GOOD_ORDER = 17;
+      // The percentage of large trade reports sent within the agreed timeframe
+      INVESTOR_REPORTS_TIMELINESS = 18;
+      // Number of phone calls processed
+      NUMBER_OF_PHONE_CALLS_PROCESSED = 19;
+      // Number of email queries processed
+      NUMBER_OF_EMAIL_QUERIES_PROCESSED = 20;
+      // The percentage of calls that were abandoned
+      ABANDON_RATE = 21;
+      // The average amount of time (seconds) taken to respond to an email query
+      AVERAGE_EMAIL_QUERY_TIME = 22;
+      // The average amount of time (seconds) taken to respond to an phone query
+      AVERAGE_PHONE_QUERY_TIME = 23;
+      // The rate at which email response timeliness met agreed service level thresholds
+      EMAIL_QUERY_TIMELINESS_RATE = 24;
+      // The rate at which email response timeliness met agreed service level thresholds
+      PHONE_QUERY_TIMELINESS_RATE = 25;
+      // Number of system issues that occurred during the month.
+      SYSTEM_ISSUES = 26;
+      // The self-assessment rating of the provider (typically on a scale of 1 - below expectations to 9 - well above expectations)
+      PROVIDER_SELF_ASSESSMENT = 27;
+      // The service assessment rating of the customer (typically on a scale of 1 - below expectations to 9 - well above expectations)
+      CUSTOMER_SERVICE_ASSESSMENT = 28;
+      // The net asset value at the end of the period in reporting currency
+      NET_ASSET_VALUE_REPORTING_CURRENCY = 29;
+      // The net asset value at the end of the period in subject currency
+      NET_ASSET_VALUE_SUBJECT_CURRENCY = 30;
+      // Number of new investor accounts registered during the reporting period
+      NEW_INVESTOR_ACCOUNTS = 31;
+      // Number of new investor accounts registered classifying as high risk
+      NEW_HIGH_RISK_INVESTOR_ACCOUNTS = 32;
+      // Total number of investor accounts classified as high risk
+      HIGH_RISK_ACCOUNTS = 33;
+      // Total number of PEP accounts
+      PEP_ACCOUNTS = 34;
+      // Total number of dormant accounts
+      DORMANT_ACCOUNTS = 35;
+      // Number of unusual or suspicious activity exceptions raised to Manco
+      SUSPICIOUS_ACTIVITY_EXCEPTIONS_RAISED = 36;
+      // Number of sanctions screening exceptions raised to Manco
+      SANCTIONS_SCREENING_EXCEPTIONS_RAISED = 37;
+      // Number of negative media screening exceptions raised to Manco
+      NEGATIVE_MEDIA_SCREENING_EXCEPTIONS_RAISED = 38;
+      // Number of AML or financial crime exceptions
+      AML_OR_FINANCIAL_CRIME_EXCEPTIONS_RAISED = 39;
+      // Total number of blocked accounts
+      BLOCKED_ACCOUNTS = 40;
+      // Total number of accounts blocked for AML reasons
+      BLOCKED_ACCOUNTS_AML = 41;
+      // Total number of accounts restricted for sanctions reasons (Cuba/Iran/Syria etc)
+      RESTRICTED_ACCOUNTS_SANCTIONS = 42;
+      // The number of investor payments made
+      INVESTOR_PAYMENTS = 43;
+      // The accuracy of investor payments
+      INVESTOR_PAYMENTS_ACCURACY = 44;
+      // The timeliness of investor payments
+      INVESTOR_PAYMENTS_TIMELINESS = 45;
+      // The number of dividend payouts
+      DIVIDEND_PAYOUTS = 46;
+      // The accuracy of dividend payouts
+      DIVIDEND_PAYOUT_ACCURACY = 47;
+      // The timeliness of dividend payouts
+      DIVIDEND_PAYOUT_TIMELINESS = 48;
+      // The number of commission and trailer fee payments
+      COMMISSION_AND_TRAILER_FEE_PAYMENTS = 49;
+      // The accuracy of commission and trailer fee payments
+      COMMISSION_AND_TRAILER_FEE_PAYMENTS_ACCURACY = 50;
+      // The timeliness of commission and trailer fee payments
+      COMMISSION_AND_TRAILER_FEE_PAYMENTS_TIMELINESS = 51;
+      // The percentage of new account openings completed without error
+      NEW_ACCOUNT_OPENING_ACCURACY = 52;
+      // The percentage of new account openings within SLA
+      NEW_ACCOUNT_OPENING_TIMELINESS = 53;
+      // The number of new agent / distributor onboardings that occurred in the period
+      NEW_AGENTS_OR_DISTRIBUTORS = 54;
+      // The percentage of new agent / distributor onboardings that occurred without error
+      NEW_AGENTS_OR_DISTRIBUTOR_ACCURACY = 55;
+      // The percentage of new agent / distributor onboardings that occurred within the SLA
+      NEW_AGENTS_OR_DISTRIBUTOR_TIMELINESS = 56;
+      // The total number of reportable data breaches that occurred
+      REPORTABLE_DATA_BREACHES = 57;
+      // The total number of non-reportable data breaches
+      NON_REPORTABLE_DATA_BREACHES = 58;
+
+      // The total number of reports provided in the reporting period
+      REPORTS_SENT = 101;
+      // The percentage of all reports delivered without error
+      REPORTS_ACCURACY = 102;
+      // The percentage of all reports within the agreed timeframe
+      REPORTS_TIMELINESS = 103;
+      // The number of estimate reports provided in the reporting period
+      ESTIMATE_REPORTS = 104;
+      // The percentage of estimate reports delivered without error
+      ESTIMATE_REPORTS_ACCURACY = 105;
+      // The percentage of estimate reports within the agreed timeframe
+      ESTIMATE_REPORTS_TIMELINESS = 106;
+      // The number of confirmed reports provided in the reporting period
+      CONFIRMED_REPORTS = 107;
+      // The percentage of confirmed reports delivered without error
+      CONFIRMED_REPORTS_ACCURACY = 108;
+      // The percentage of confirmed reports within the agreed timeframe
+      CONFIRMED_REPORTS_TIMELINESS = 109;
+      // The number of large trade reports sent
+      LARGE_TRADE_REPORTS = 110;
+      // The number of large trade reports sent without error
+      LARGE_TRADE_REPORTS_ACCURACY = 111;
+      // The number of large trade reports sent within the agreed timeframe
+      LARGE_TRADE_REPORTS_TIMELINESS = 112;
+      // The number of investor reports sent
+      INVESTOR_REPORTS = 113;
+      // The number of large trade reports sent without error
+      INVESTOR_REPORTS_ACCURACY = 114;
+      // The number of contract notes
+      CONTRACT_NOTES_SENT = 115;
+      // The accuracy of contract notes sent
+      CONTRACT_NOTE_ACCURACY = 116;
+      // The timeliness of contract notes sent
+      CONTRACT_NOTE_TIMELINESS = 117;
+      // The number of monthly statements sent
+      MONTHLY_STATEMENTS_SENT = 118;
+      // The accuracy of monthly statements sent
+      MONTHLY_STATEMENTS_ACCURACY = 119;
+      // The timeliness of monthly statements sent
+      MONTHLY_STATEMENTS_TIMELINESS = 120;
+      // The number of estimate cash reports provided in the reporting period
+      ESTIMATE_CASH_REPORTS = 121;
+      // The percentage of estimate cash reports provided in the reporting period without error
+      ESTIMATE_CASH_REPORTS_ACCURACY = 122;
+      // The percentage of timeliness of estimate cash reports provided in the reporting period
+      ESTIMATE_CASH_REPORTS_TIMELINESS = 123;
+      // The number of accounts with balances
+      NUMBER_OF_ACCOUNTS_WITH_BALANCES = 124;
+
+    }
+    // The identifier of what the metric measures
+    MetricID metric_id = 8;
+    // The type of value used to measure the metric
+    enum ValueType {
+      METRIC_TYPE_UNSPECIFIED = 0;
+      NUMBER = 1;
+      PERCENTAGE = 2;
+      CURRENCY = 3;
+    }
+    // Enumeration for how to interpret the metric value
+    ValueType value_type = 9;
+    // If the metric type is "CURRENCY" then a 3-letter currency code defined in ISO 4217 must be provided.
+    // The country code is required to comply with the 3-letter ISO 3166-1 alpha-3 standard.
+    // The ISO 3166-1 alpha-3 is a set of 3-letter country codes to represent countries and dependent areas.
+    // Make sure the provided country code is in uppercase.
+    // Example: 'USA' for the United States, 'GBR' for Great Britain, 'DEU' for Germany, etc.
+    string currency_code = 10;
+    // The value of the metric
+    double metric = 11;
+    // Options for how to evaluate the metric
+    enum EvaluationType {
+      EVALUATION_TYPE_UNSPECIFIED = 0;
+      // A higher result is more favorable
+      MAXIMISE = 1;
+      // A lower result is more favorable
+      MINIMISE = 2;
+    }
+    // How to evaluate the metric (i.e. is a higher or lower value more favorable)
+    EvaluationType evaluation_type = 12;
+    // The "RED/AMBER/GREEN" designation if applicable
+    RedAmberGreen rag = 13;
+    // The amber cutoff (i.e. the value above which the metric is no longer classified as "RED") if applicable
+    double amber_cutoff = 14;
+    // The green cutoff (i.e. the value above which the metric is no longer classified as "AMBER")  if applicable
+    double green_cutoff = 15;
+    // Optional. The name of the provider
+    string provider = 20;
+    // Optional. The metric ID used by the provider
+    string provider_metric_id = 21;
+    // Optional. The KPI name used by the provider
+    string provider_metric_name = 22;
+    // Optional. General comments related to the metric
+    string general_commentary = 81;
+    // Optional. Comments on the root cause of any issue
+    string root_cause_commentary = 82;
+    // Optional. Comments on the actions taken to remediate the root cause
+    string remediations_commentary = 83;
+  }
+  // KPIs & other key quantitative metrics
+  repeated Metric metrics = 20;
+}

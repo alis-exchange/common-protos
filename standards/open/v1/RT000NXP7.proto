@@ -1,0 +1,750 @@
+syntax = "proto3";
+
+package standards.open.v1;
+
+import "google/api/annotations.proto";
+import "google/api/client.proto";
+import "google/api/resource.proto";
+import "google/type/money.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/field_mask.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/descriptor.proto";
+import "google/type/date.proto";
+import "standards/open/v1/yesno.proto";
+import "standards/open/v1/fieldOptionsExtentions.proto";
+import "standards/open/v1/RT000JTL0.proto";
+import "standards/open/v1/RT0007VM1.proto";
+import "google/protobuf/wrappers.proto";
+
+option go_package = "github.com/standards-exchange/protobuf-go/standards/open/v1";
+
+// The CSSF SFDR Periodic Disclosure is a  data collection exercise is to collect, in a digital format,
+// information contained in precontractual disclosure documents/templates.
+//
+// See https://www.cssf.lu/en/2023/06/sfdr-data-collection-exercise-applicable-to-investment-fund-managers-ifms-and-institutions-for-occupational-retirement-provision-iorps-on-periodic-disclosures-in-relation-to-regulation-eu-2019-2/
+// See the following for the technical guidance: https://www.cssf.lu/en/Document/sfdr-uci-periodic-data-collection-practical-and-technical-guidance/
+// See https://edesk.apps.cssf.lu/edesk-dashboard/docs/sfdr-periodic/jsonschema/v1_0_0/sfdr-periodic-input-jsonschema-v1_0_0
+// for JSON Schema
+message RT000NXP7 {
+  message Header {
+    enum ReportType {
+      // Unspecified
+      REPORT_TYPE_UNSPECIFIED = 0;
+      // SFDR_PERIODIC_FUND
+      SFDR_PERIODIC_FUND = 1;
+    }
+    enum Version {
+      // Unspecified
+      VERSION_UNSPECIFIED = 0;
+      // v1.0.0
+      V1_0_0 = 1;
+    }
+    // Required
+    // UUID format Unique identifier following the rfc 4122 norm (see https://www.rfc-editor.org/rfc/rfc4122)
+    string report_uid = 1 [
+      json_name="reportUid",
+      (standards.open.v1.fdx_options).required = true,
+      (standards.open.v1.fdx_options).question = "UUID format Unique identifier following the rfc 4122 norm (see https://www.rfc-editor.org/rfc/rfc4122)"
+    ];
+    // Required
+    ReportType report_type = 2 [
+      json_name="reportType",
+      (standards.open.v1.fdx_options).required = true,
+      (standards.open.v1.fdx_options).question = "The Report Type (i.e. SFDR_PRECONTRACTUAL)"
+    ];
+    // Required
+    Version version = 3 [
+      json_name="version",
+      (standards.open.v1.fdx_options).required = true,
+      (standards.open.v1.fdx_options).question = "Version (i.e. V1.0.0)"
+    ];
+    string created_by = 4 [
+      json_name="createdBy",
+      (standards.open.v1.fdx_options).question = "Created By:"
+    ];
+    string submitted_by = 5 [
+      json_name="submittedBy",
+      (standards.open.v1.fdx_options).question = "Submitted By:"
+    ];
+    // Format "date-time"
+    google.protobuf.Timestamp creation_timestamp = 6 [
+      json_name="creationTimestamp",
+      (standards.open.v1.fdx_options).question = "The create timestamp in the ISO 8601 format YYYY-MM-DDTHH:mm:ss.sssZ "
+    ];
+  }
+  // The header of the report (required)
+  Header header = 1 [
+    (standards.open.v1.fdx_options).question = "Metadata about the report",
+    (standards.open.v1.fdx_options).required = true
+  ];
+  // The payload of the report (required)
+  message Payload {
+    SFDRPeriodicReport sfdr_periodic_report = 1 [
+      json_name="sfdrPeriodicReport",
+      (standards.open.v1.fdx_options).required = true,
+      (standards.open.v1.fdx_options).question = "The questions to be answered for the entity and subfunds"
+    ];
+  }
+  // The payload of the report
+  Payload payload = 2 [
+    (standards.open.v1.fdx_options).question = "Data to be submitted to the CSSF",
+    (standards.open.v1.fdx_options).required = true
+  ];
+  // The SFDR Periodic Report
+  message SFDRPeriodicReport {
+    // CSSF code of the entity
+    string entity_cssf_code = 1 [
+      json_name="entityCssfCode",
+      (standards.open.v1.fdx_options).required = true,
+      (standards.open.v1.fdx_options).question = "CSSF code of the entity"
+    ];
+    // The Exercise End Date
+    // The ISO 8601 formatted date (e.g. 2018-11-13)
+    string exercise_end_date = 2 [
+      json_name="exerciseEndDate",
+      (standards.open.v1.fdx_options).required = true,
+      (standards.open.v1.fdx_options).question = "Exercise end date"
+    ];
+    // List of Article 8 subfunds
+    repeated Article8Subfund article8_subfunds = 3 [
+      json_name="article8Subfunds",
+      (standards.open.v1.fdx_options).required = true,
+      (standards.open.v1.fdx_options).question = "Complete the following questions for all Article 8 subfunds"
+    ];
+    // List of Article 9 subfunds
+    repeated Article9Subfund article9_subfunds = 4 [
+      json_name="article9Subfunds",
+      (standards.open.v1.fdx_options).required = true,
+      (standards.open.v1.fdx_options).question = "Complete the following questions for all Article  subfunds"
+    ];
+    // List of Article 9 subfunds
+    repeated TopInvestmentsSubfunds top_investments_subfunds = 5 [
+      json_name="topInvestmentsSubfunds",
+      (standards.open.v1.fdx_options).required = true,
+      (standards.open.v1.fdx_options).question = "Largest investments of the article 8 and article 9 subfunds array"
+    ];
+  }
+  // Definition of information to be provided per Article 8 sub fund
+  message Article8Subfund {
+    // CSSF code of the sub-fund. Number corresponding to the compartment without zero in front of the number. For a stand-alone fund, please enter 0. For a multiple compartment fund, please indicate the corresponding number.
+    int32 subfund_cssf_code = 1 [
+      json_name="subfundCssfCode",
+      (standards.open.v1.fdx_options).required = true,
+      (standards.open.v1.fdx_options).question = "CSSF code of the sub-fund. (Integer)",
+      (standards.open.v1.fdx_options).description = "Number corresponding to the compartment without zero in front of the number. For a stand-alone fund, please enter 0. For a multiple compartment fund, please indicate the corresponding number."
+    ];
+    // Has the subfund been liquidated during the year?
+    YesNo  subfund_liquidated_indicator = 2 [
+      json_name="subfundLiquidatedIndicator",
+      (standards.open.v1.fdx_options).required = true,
+      (standards.open.v1.fdx_options).question = "Has the subfund been liquidated during the year?",
+      (standards.open.v1.fdx_options).default = "2"
+    ];
+    // If yes, indicate the date of the start of the liquidation period
+    // The ISO 8601 formatted date (e.g. 2018-11-13)
+    string  subfund_start_date_liquidation_period = 3 [
+      json_name="subfundStartDateLiquidationPeriod",
+      (standards.open.v1.fdx_options).question = "If yes, indicate the date of the start of the liquidation period",
+      (standards.open.v1.fdx_options).default = "2",
+      (standards.open.v1.fdx_options).conditional = "Payload.SfdrPeriodicReport.Article8Subfunds.0.SubfundLiquidatedIndicator?1:2"
+    ];
+    // The subfund promoted Environmental/Social characterisitics and while it did not have as its objective a sustainable investment, it made sustainable investments
+    YesNo  sustainable_investments_indicator = 4 [
+      json_name="sustainableInvestmentsIndicator",
+      (standards.open.v1.fdx_options).required = true,
+      (standards.open.v1.fdx_options).question = "The subfund promoted Environmental/Social characterisitics and while it did not have as its objective a sustainable investment, it made sustainable investments",
+      (standards.open.v1.fdx_options).default = "1"
+    ];
+    // Proportion (in %) of sustainable investments
+    double sustainable_investments_proportion1 = 5 [
+      json_name = "sustainableInvestmentsProportion1",
+      (standards.open.v1.fdx_options).question = "Proportion (in %) of sustainable investments"
+    ];
+    // with an environmental objective in economic activities that qualify as environmentally sustainable under the EU Taxonomy
+    YesNo  environmental_objective_taxonomy_indicator = 6 [
+      json_name="environmentalObjectiveTaxonomyIndicator",
+      (standards.open.v1.fdx_options).question = "with an environmental objective in economic activities that qualify as environmentally sustainable under the EU Taxonomy"
+    ];
+    // with an environmental objective in economic activities that do not qualify as environmentally sustainable under the EU Taxonomy
+    YesNo  environmental_objective_no_taxonomy_indicator = 7 [
+      json_name="environmentalObjectiveNoTaxonomyIndicator",
+      (standards.open.v1.fdx_options).question = "The fund has an environmental objective in economic activities that do not qualify as environmentally sustainable under the EU Taxonomy."
+    ];
+    // with a social objective
+    YesNo  social_objective_indicator = 8 [
+      json_name="socialObjectiveIndicator",
+      (standards.open.v1.fdx_options).question = "with a social objective"
+    ];
+    enum EAndSCharacteristic {
+      E_AND_S_CHARACTERISTICS_UNSPECIFIED = 0; // Not Applicable
+      EEN = 1; // Environmental - energy
+      EREN = 2; // Environmental - renewable energy
+      ERMA = 3; // Environmental - raw materials
+      EWL = 4; // Environmental - water and land
+      EWAS = 5; // Environmental - waste
+      EGGE = 6; // Environmental - greenhouse gas emissions
+      EBIO = 7; // Environmental - biodiversity
+      ECECO = 8; // Environmental - circular economy
+      EOTH = 9; // Environmental - other
+      SINEQ = 10; // Social - inequality
+      SSOCO = 11; // Social - social cohesion
+      SSOIN = 12; // Social - social integration
+      SLARE = 13; // Social - labour relations
+      SIHC = 14; // Social - investment in human capital
+      SESDC = 15; // Social - economically or socially disadvantaged communities
+      SOTH = 16; // Social - other
+    }
+    repeated EAndSCharacteristic e_and_s_characteristics = 9 [
+      json_name="eAndSCharacteristics",
+      (standards.open.v1.fdx_options).required = true,
+      (standards.open.v1.fdx_options).question = "What environmental and/or social characteristics are promoted by the sub-fund?",
+      (standards.open.v1.fdx_options).description = "The field is required if the value of the field Sustainable Investments Indicator is Y"
+    ];
+    // Please specify other environmental characteristics.
+    // The field is required if EOTH is defined in the list of values for the field eAndSCharacteristics
+    string other_environmental_characteristics_description = 10 [
+      json_name="otherEnvironmentalCharacteristicsDescription",
+      (standards.open.v1.fdx_options).question = "Please specify other environmental characteristics.",
+      (standards.open.v1.fdx_options).description = "The field is required if EOTH is defined in the list of values for the field eAndSCharacteristics"
+    ];
+    // Please specify other social characteristics
+    // The field is required if SOTH is defined in the list of values for the field eAndSCharacteristics
+    string other_social_characteristics_description = 11 [
+      json_name="otherSocialCharacteristicsDescription",
+      (standards.open.v1.fdx_options).question = "Please specify other social characteristics",
+      (standards.open.v1.fdx_options).description = "The field is required if SOTH is defined in the list of values for the field eAndSCharacteristics"
+    ];
+    // Were good governance practices of the investee companies considered for investments aligned to environmental and/or social characteristics respectively investments with a sustainable objectives?
+    YesNo  good_governance_practices_indicator = 12 [
+      json_name="goodGovernancePracticesIndicator",
+      (standards.open.v1.fdx_options).required = true,
+      (standards.open.v1.fdx_options).question = "Were good governance practices of the investee companies considered for investments aligned to environmental and/or social characteristics respectively investments with a sustainable objectives?",
+      (standards.open.v1.fdx_options).default = "2"
+    ];
+    // If no, please explain
+    // The field is required if the value of the field goodGovernancePolicyIndicator is N
+    string no_good_governance_practices_description = 13 [
+      json_name="noGoodGovernancePracticesDescription",
+      (standards.open.v1.fdx_options).question = "If no, please explain",
+      (standards.open.v1.fdx_options).description = "The field is required if the value of the field goodGovernancePolicyIndicator is N",
+      (standards.open.v1.fdx_options).conditional = "Payload.SfdrPeriodicReport.Article8Subfunds.0.GoodGovernancePracticesIndicator?2:1"
+    ];
+    enum SustainableInvestmentObjective {
+      SUSTAINABLE_INVESTMENT_OBJECTIVES_UNSPECIFIED = 0; // Not Applicable
+      CCM = 1; // Climate change mitigation
+      CCA = 2; // Climate change adaptation
+      UPWM = 3; // The sustainable use and protection of water and marine resources
+      TCE = 4; // The transition to a circular economy
+      PPC = 5; // Pollution prevention and control
+      PRBE = 6; // The protection and restoration of biodiversity and ecosystems
+      SO = 7; // Social objective
+      RCE = 8; //
+    }
+    // What were the objectives of the sustainable investments that the subfund partially made?
+    repeated SustainableInvestmentObjective sustainable_investments_objectives = 15 [
+      json_name="sustainableInvestmentsObjectives",
+      (standards.open.v1.fdx_options).question = "What were the objectives of the sustainable investments that the subfund partially made?"
+    ];
+    // Does the sub-fund consider principle adverse impacts on sustainability factors?
+    YesNo  principal_adverse_impact_consideration_indicator = 16 [
+      json_name="principalAdverseImpactConsiderationIndicator",
+      (standards.open.v1.fdx_options).required = true,
+      (standards.open.v1.fdx_options).question = "Does the sub-fund consider principle adverse impacts on sustainability factors?",
+      (standards.open.v1.fdx_options).default = "2"
+    ];
+    // Proportion of investments aligned with environmental or social characteristics (in %)
+    double aligned_e_s_characteristics_investments_proportion = 17 [
+      json_name="alignedESCharacteristicsInvestmentsProportion",
+      (standards.open.v1.fdx_options).required = true,
+      (standards.open.v1.fdx_options).question = "Proportion of investments aligned with environmental or social characteristics (in %)"
+    ];
+    // Proportion of sustainable investments (in %)
+    double sustainable_investments_proportion2 = 18 [
+      json_name="sustainableInvestmentsProportion2",
+      (standards.open.v1.fdx_options).question = "Proportion of sustainable investments (in %)"
+    ];
+    // Proportion of Taxonomy-aligned (in %)
+    double ta_investments_proportion = 19 [
+      json_name="taInvestmentsProportion",
+      (standards.open.v1.fdx_options).question = "Proportion of Taxonomy-aligned (in %)"
+    ];
+    // Proportion of Other environmental (in %)
+    double other_environmental_proportion = 21 [
+      json_name="otherEnvironmentalProportion",
+      (standards.open.v1.fdx_options).question = "Proportion of Other environmental (in %)"
+    ];
+    // Proportion of Social (in %)
+    double social_proportion = 22 [
+      json_name="socialProportion",
+      (standards.open.v1.fdx_options).question = "Proportion of Social (in %)"
+    ];
+    // Proportion of investments aligned with environmental or social characteristics that do not qualify as sustainable investments (in %)
+    double other_e_s_characteristics_investments_proportion = 23 [
+      json_name="otherESCharacteristicsInvestmentsProportion",
+      (standards.open.v1.fdx_options).required = true,
+      (standards.open.v1.fdx_options).question = "Proportion of investments aligned with environmental or social characteristics that do not qualify as sustainable investments (in %)"
+    ];
+    // Proportion of remaining investments which are neither aligned with the environmental or social characteristics, nor are qualified as sustainable investments (in %)
+    double remaining_investments_proportion = 24 [
+      json_name="remainingInvestmentsProportion",
+      (standards.open.v1.fdx_options).required = true,
+      (standards.open.v1.fdx_options).question = "Proportion of remaining investments which are neither aligned with the environmental or social characteristics, nor are qualified as sustainable investments (in %)"
+    ];
+    // Did the subfund invest in fossil gas related activities complying with the EU Taxonomy ?
+    YesNo  fossil_gas_investments_indicator = 25 [
+      json_name="fossilGasInvestmentsIndicator",
+      (standards.open.v1.fdx_options).question = "Did the subfund invest in fossil gas related activities complying with the EU Taxonomy ?",
+      (standards.open.v1.fdx_options).default = "2"
+    ];
+    // Did the subfund invest in nuclear energy related activities complying with the EU Taxonomy ?
+    YesNo  nuclear_energy_investments_indicator = 26 [
+      json_name="nuclearEnergyInvestmentsIndicator",
+      (standards.open.v1.fdx_options).question = "Did the subfund invest in nuclear energy related activities complying with the EU Taxonomy ?",
+      (standards.open.v1.fdx_options).default = "2",
+      (standards.open.v1.fdx_options).conditional = "Payload.SfdrPrecontractualReport.Article8Subfunds.0.EnvironmentalObjectiveTaxonomyIndicator?1:2"
+    ];
+    // Taxonomy aligned investments in fossil gas related activities  including sovereign bonds expressed as a share of turnover (in %)
+    double fossil_gas_investments_incl_sovereign_bonds_turnover_proportion = 27 [
+      json_name="fossilGasInvestmentsInclSovereignBondsTurnoverProportion",
+      (standards.open.v1.fdx_options).question = "Taxonomy aligned investments in fossil gas related activities  including sovereign bonds expressed as a share of turnover (in %)"
+    ];
+    // Taxonomy aligned investments in nuclear energy related activities  including sovereign bonds expressed as a share of turnover (in %).
+    double nuclear_energy_investments_incl_sovereign_bonds_turnover_proportion = 28 [
+      json_name="nuclearEnergyInvestmentsInclSovereignBondsTurnoverProportion",
+      (standards.open.v1.fdx_options).question = "Taxonomy aligned investments in nuclear energy related activities  including sovereign bonds expressed as a share of turnover (in %)"
+    ];
+    // Taxonomy aligned investments (excluding fossil gas and nuclear energy related activities) including sovereign bonds expressed as a share of turnover (in %)
+    double remaining_investments_incl_sovereign_bonds_turnover_proportion = 29 [
+      json_name="remainingInvestmentsInclSovereignBondsTurnoverProportion",
+      (standards.open.v1.fdx_options).question = "TTaxonomy aligned investments (excluding fossil gas and nuclear energy related activities) including sovereign bonds expressed as a share of turnover (in %)"
+    ];
+    // Taxonomy aligned investments (excluding fossil gas and nuclear energy related activities) including sovereign bonds expressed as a share of turnover (in %)
+    double fossil_gas_investments_incl_sovereign_bonds_capex_proportion = 30 [
+      json_name="fossilGasInvestmentsInclSovereignBondsCapexProportion",
+      (standards.open.v1.fdx_options).question = "Taxonomy aligned investments in fossil gas related activities  including sovereign bonds expressed as a share of CapEx (in %)"
+    ];
+    // Taxonomy aligned investments in nuclear energy related activities including sovereign bonds expressed as a share of CapEx (in %)
+    double nuclear_energy_investments_incl_sovereign_bonds_capex_proportion = 31 [
+      json_name="nuclearEnergyInvestmentsInclSovereignBondsCapexProportion",
+      (standards.open.v1.fdx_options).question = "Taxonomy aligned investments in nuclear energy related activities including sovereign bonds expressed as a share of CapEx (in %)"
+    ];
+    // Taxonomy aligned investments (excluding fossil gas and nuclear energy related activities)  including sovereign bonds expressed as a share of CapEx (in %)
+    double remaining_investments_incl_sovereign_bonds_capex_proportion = 32 [
+      json_name="remainingInvestmentsInclSovereignBondsCapexProportion",
+      (standards.open.v1.fdx_options).question = "Taxonomy aligned investments (excluding fossil gas and nuclear energy related activities)  including sovereign bonds expressed as a share of CapEx (in %)"
+    ];
+    // Taxonomy aligned investments in fossil gas related activities including sovereign bonds expressed as a share of OpEx (in %)
+    double fossil_gas_investments_incl_sovereign_bonds_opex_proportion = 33 [
+      json_name="fossilGasInvestmentsInclSovereignBondsOpexProportion",
+      (standards.open.v1.fdx_options).question = "Taxonomy aligned investments in fossil gas related activities including sovereign bonds expressed as a share of OpEx (in %)"
+    ];
+    // Taxonomy aligned investments in nuclear energy related activities including sovereign bonds expressed as a share of OpEx (in %)
+    double nuclear_energy_investments_incl_sovereign_bonds_opex_proportion = 34 [
+      json_name="nuclearEnergyInvestmentsInclSovereignBondsOpexProportion",
+      (standards.open.v1.fdx_options).question = "Taxonomy aligned investments in nuclear energy related activities including sovereign bonds expressed as a share of OpEx (in %)"
+    ];
+    // Taxonomy aligned investments (excluding fossil gas and nuclear energy related activities)  including sovereign bonds expressed as a share of OpEx (in %)
+    double remaining_investments_incl_sovereign_bonds_opex_proportion = 35 [
+      json_name="remainingInvestmentsInclSovereignBondsOpexProportion",
+      (standards.open.v1.fdx_options).question = "Taxonomy aligned investments (excluding fossil gas and nuclear energy related activities)  including sovereign bonds expressed as a share of OpEx (in %)"
+    ];
+    // Taxonomy aligned investments in fossil gas related activities excluding sovereign bonds expressed as a share of turnover (in %)
+    double fossil_gas_investments_excl_sovereign_bonds_turnover_proportion = 36 [
+      json_name="fossilGasInvestmentsExclSovereignBondsTurnoverProportion",
+      (standards.open.v1.fdx_options).question = "Taxonomy aligned investments in fossil gas related activities excluding sovereign bonds expressed as a share of turnover (in %)"
+    ];
+    // Taxonomy aligned investments in nuclear energy related activities excluding sovereign bonds expressed as a share of turnover (in %)
+    double nuclear_energy_investments_excl_sovereign_bonds_turnover_proportion = 37 [
+      json_name="nuclearEnergyInvestmentsExclSovereignBondsTurnoverProportion",
+      (standards.open.v1.fdx_options).question = "Taxonomy aligned investments in nuclear energy related activities excluding sovereign bonds expressed as a share of turnover (in %)"
+    ];
+    // Taxonomy aligned investments (excluding fossil gas and nuclear energy related activities)  excluding sovereign bonds expressed as a share of turnover (in %)
+    double remaining_investments_excl_sovereign_bonds_turnover_proportion = 38 [
+      json_name="remainingInvestmentsExclSovereignBondsTurnoverProportion",
+      (standards.open.v1.fdx_options).question = "Taxonomy aligned investments (excluding fossil gas and nuclear energy related activities)  excluding sovereign bonds expressed as a share of turnover (in %)"
+    ];
+    // Taxonomy aligned investments in fossil gas related activities excluding sovereign bonds expressed as a share of CapEx (in %)
+    double fossil_gas_investments_excl_sovereign_bonds_capex_proportion = 39 [
+      json_name="fossilGasInvestmentsExclSovereignBondsCapexProportion",
+      (standards.open.v1.fdx_options).question = "Taxonomy aligned investments in fossil gas related activities excluding sovereign bonds expressed as a share of CapEx (in %)"
+    ];
+    // Taxonomy aligned investments in nuclear energy related activities excluding sovereign bonds expressed as a share of CapEx (in %)
+    double nuclear_energy_investments_excl_sovereign_bonds_capex_proportion = 40 [
+      json_name="nuclearEnergyInvestmentsExclSovereignBondsCapexProportion",
+      (standards.open.v1.fdx_options).question = "Taxonomy aligned investments in nuclear energy related activities excluding sovereign bonds expressed as a share of CapEx (in %)"
+    ];
+    // Taxonomy aligned investments (excluding fossil gas and nuclear energy related activities)  excluding sovereign bonds expressed as a share of
+    double remaining_investments_excl_sovereign_bonds_capex_proportion = 41 [
+      json_name="remainingInvestmentsExclSovereignBondsCapexProportion",
+      (standards.open.v1.fdx_options).question = "Taxonomy aligned investments (excluding fossil gas and nuclear energy related activities)  excluding sovereign bonds expressed as a share of"
+    ];
+    // Taxonomy aligned investments in fossil gas related activities excluding sovereign bonds expressed as a share of OpEx (in %)
+    double fossil_gas_investments_excl_sovereign_bonds_opex_proportion = 42 [
+      json_name="fossilGasInvestmentsExclSovereignBondsOpexProportion",
+      (standards.open.v1.fdx_options).question = "Taxonomy aligned investments in fossil gas related activities excluding sovereign bonds expressed as a share of OpEx (in %)"
+    ];
+    // Taxonomy aligned investments in nuclear energy related activities excluding sovereign bonds expressed as a share of OpEx (in %)
+    double nuclear_energy_investments_excl_sovereign_bonds_opex_proportion = 43 [
+      json_name="nuclearEnergyInvestmentsExclSovereignBondsOpexProportion",
+      (standards.open.v1.fdx_options).question = "Taxonomy aligned investments in nuclear energy related activities excluding sovereign bonds expressed as a share of OpEx (in %)"
+    ];
+    // Taxonomy aligned investments (excluding fossil gas and nuclear energy related activities)  excluding sovereign bonds expressed as a share of OpEx (in %)
+    double remaining_investments_excl_sovereign_bonds_opex_proportion = 44 [
+      json_name="remainingInvestmentsExclSovereignBondsOpexProportion",
+      (standards.open.v1.fdx_options).question = "Taxonomy aligned investments (excluding fossil gas and nuclear energy related activities)  excluding sovereign bonds expressed as a share of OpEx (in %)"
+    ];
+    // What was the share of investments made in transitional activities (in %)?
+    double transitional_activities_investments_share = 45 [
+      json_name="transitionalActivitiesInvestmentsShare",
+      (standards.open.v1.fdx_options).question = "What was the share of investments made in transitional activities (in %)?"
+    ];
+    // What was the share of investments made in enabling activities (in %)?
+    double enabling_activities_investments_share = 46 [
+      json_name="enablingActivitiesInvestmentsShare",
+      (standards.open.v1.fdx_options).question = "What was the share of investments made in enabling activities (in %)?"
+    ];
+    // Has a specific index been designated as a reference benchmark for the purpose of attaining the environmental and/or social characteristics promoted by the subfund?
+    YesNo  reference_benchmark_designated_indicator = 47 [
+      json_name="referenceBenchmarkDesignatedIndicator",
+      (standards.open.v1.fdx_options).required = true,
+      (standards.open.v1.fdx_options).question = "Has a specific index been designated as a reference benchmark for the purpose of attaining the environmental and/or social characteristics promoted by the subfund?",
+      (standards.open.v1.fdx_options).default = "1"
+    ];
+    // Is an ISIN code available for the reference benchmark?
+    YesNo  reference_benchmark_isin_code_indicator = 48 [
+      json_name="referenceBenchmarkIsinCodeIndicator",
+      (standards.open.v1.fdx_options).question = "Is an ISIN code available for the reference benchmark?",
+      (standards.open.v1.fdx_options).default = "2",
+      (standards.open.v1.fdx_options).conditional = "Payload.SfdrPrecontractualReport.Article8Subfunds.0.ReferenceBenchmarkDesignatedIndicator?1:2"
+    ];
+    // Specify the ISIN code of the reference benchmark
+    string reference_benchmark_isin_code = 49 [
+      json_name="referenceBenchmarkIsinCode",
+      (standards.open.v1.fdx_options).question = "Specify the ISIN code of the reference benchmark",
+      (standards.open.v1.fdx_options).conditional = "Payload.SfdrPrecontractualReport.Article8Subfunds.0.ReferenceBenchmarkIsinCodeIndicator?1:2"
+    ];
+    // Specify the name of the reference benchmark
+    string reference_benchmark_name = 50 [
+      json_name="referenceBenchmarkName",
+      (standards.open.v1.fdx_options).question = "Specify the name of the reference benchmark",
+      (standards.open.v1.fdx_options).conditional = "Payload.SfdrPrecontractualReport.Article8Subfunds.0.ReferenceBenchmarkDesignatedIndicator?1:2"
+    ];
+    // Out/under performance of the subfund compared to the reference benchmark (in %):
+    double performance_compared_reference_benchmark = 51 [
+      json_name="performanceComparedReferenceBenchmark",
+      (standards.open.v1.fdx_options).question = "Out/under performance of the subfund compared to the reference benchmark (in %):"
+    ];
+  }
+  // Definition of information to be provided per Article 9 sub fund
+  message Article9Subfund {
+    // CSSF code of the sub-fund. Number corresponding to the compartment without zero in front of the number. For a stand-alone fund, please enter 0. For a multiple compartment fund, please indicate the corresponding number.
+    int32 subfund_cssf_code = 1 [
+      json_name = "subfundCssfCode",
+      (standards.open.v1.fdx_options).required = true,
+      (standards.open.v1.fdx_options).question = "CSSF code of the sub-fund. (Integer)",
+      (standards.open.v1.fdx_options).description = "Number corresponding to the compartment without zero in front of the number. For a stand-alone fund, please enter 0. For a multiple compartment fund, please indicate the corresponding number."
+    ];
+    // Has the subfund been liquidated during the year?
+    YesNo  subfund_liquidated_indicator = 2 [
+      json_name = "subfundLiquidatedIndicator",
+      (standards.open.v1.fdx_options).required = true,
+      (standards.open.v1.fdx_options).question = "Has the subfund been liquidated during the year?",
+      (standards.open.v1.fdx_options).default = "2"
+    ];
+    // If yes, indicate the date of the start of the liquidation period
+    // The ISO 8601 formatted date (e.g. 2018-11-13)
+    string  subfund_start_date_liquidation_period = 3 [
+      json_name = "subfundStartDateLiquidationPeriod",
+      (standards.open.v1.fdx_options).question = "If yes, indicate the date of the start of the liquidation period",
+      (standards.open.v1.fdx_options).default = "2",
+      (standards.open.v1.fdx_options).conditional = "Payload.SfdrPeriodicReport.Article9Subfunds.0.SubfundLiquidatedIndicator?1:2"
+    ];
+    // The subfund made sustainable investments with an environmental objective
+    YesNo  sustainable_investments_indicator = 4 [
+      json_name = "sustainableInvestmentsIndicator",
+      (standards.open.v1.fdx_options).question = "The subfund made sustainable investments with an environmental objective",
+      (standards.open.v1.fdx_options).default = "2"
+    ];
+    // Proportion of sustainable investments with an environmental objective
+    double sustainable_investments_environmental_proportion1 = 5 [
+      json_name = "sustainableInvestmentsEnvironmentalProportion1",
+      (standards.open.v1.fdx_options).question = "Proportion of sustainable investments with an environmental objective"
+    ];
+    // In economic activities that qualify as environmentally sustainable under the EU Taxonomy
+    YesNo  environmental_objective_taxonomy_indicator = 6 [
+      json_name = "environmentalObjectiveTaxonomyIndicator",
+      (standards.open.v1.fdx_options).question = "In economic activities that qualify as environmentally sustainable under the EU Taxonomy",
+      (standards.open.v1.fdx_options).default = "2"
+    ];
+    // with an environmental objective in economic activities that do not qualify as environmentally sustainable under the EU Taxonomy
+    // The field is required if the value of the field sustainableInvestmentsIndicator is Y
+    YesNo  environmental_objective_no_taxonomy_indicator = 7 [
+      json_name = "environmentalObjectiveNoTaxonomyIndicator",
+      (standards.open.v1.fdx_options).question = "In economic activities that do not qualify as environmentally sustainable under the EU Taxonomy",
+      (standards.open.v1.fdx_options).default = "2"
+    ];
+    // The subfund made sustainable investments with a social objective
+    YesNo  social_objective_indicator = 8 [
+      json_name = "socialObjectiveIndicator",
+      (standards.open.v1.fdx_options).required = true,
+      (standards.open.v1.fdx_options).question = "The subfund made sustainable investments with a social objective",
+      (standards.open.v1.fdx_options).default = "2"
+    ];
+    // Proportion of sustainable investments with a social objective
+    double sustainable_investments_social_proportion1 = 9 [
+      json_name = "sustainableInvestmentsSocialProportion1",
+      (standards.open.v1.fdx_options).question = "Proportion of sustainable investments with a social objective"
+    ];
+    // Were good governance practices of the investee companies considered for investments with sustainable objectives?
+    YesNo  good_governance_practices_indicator = 10 [
+      json_name = "goodGovernancePracticesIndicator",
+      (standards.open.v1.fdx_options).required = true,
+      (standards.open.v1.fdx_options).question = "Were good governance practices of the investee companies considered for investments with sustainable objectives?",
+      (standards.open.v1.fdx_options).default = "2"
+    ];
+    // If no to goodGovernancePracticesIndicator, please explain
+    // The field is required if the value of the field goodGovernancePolicyIndicator is N
+    string no_good_governance_practices_description = 11 [
+      json_name = "noGoodGovernancePracticesDescription",
+      (standards.open.v1.fdx_options).question = "If no, please explain",
+      (standards.open.v1.fdx_options).description = "The field is required if the value of the field goodGovernancePolicyIndicator is N",
+      (standards.open.v1.fdx_options).conditional = "Payload.SfdrPeriodicReport.Article9Subfunds.0.GoodGovernancePolicyIndicator?2:1"
+    ];
+    enum SustainableInvestmentObjective {
+      SUSTAINABLE_INVESTMENT_OBJECTIVES_UNSPECIFIED = 0; // Not Applicable
+      CCM = 1; // Climate change mitigation
+      CCA = 2; // Climate change adaptation
+      UPWM = 3; // The sustainable use and protection of water and marine resources
+      TCE = 4; // The transition to a circular economy
+      PPC = 5; // Pollution prevention and control
+      PRBE = 6; // The protection and restoration of biodiversity and ecosystems
+      SO = 7; // Social objective
+      RCE = 8; //
+    }
+    // What were the objectives of the sustainable investments that the subfund made?
+    repeated SustainableInvestmentObjective sustainable_investments_objectives = 12 [
+      json_name="sustainableInvestmentsObjectives",
+      (standards.open.v1.fdx_options).required = true,
+      (standards.open.v1.fdx_options).question = "What were the objectives of the sustainable investments that the subfund made?"
+    ];
+    // Did the subfund consider principle adverse impacts on sustainability factors?
+    YesNo  principal_adverse_impact_consideration_indicator = 16 [
+      json_name = "principalAdverseImpactConsiderationIndicator",
+      (standards.open.v1.fdx_options).required = true,
+      (standards.open.v1.fdx_options).question = "Did the subfund consider principle adverse impacts on sustainability factors?",
+      (standards.open.v1.fdx_options).default = "2"
+    ];
+    // Proportion of sustainable environmental investments (in %)
+    double sustainable_investments_environmental_proportion2 = 17 [
+      json_name = "sustainableInvestmentsEnvironmentalProportion2",
+      (standards.open.v1.fdx_options).question = "Proportion of sustainable environmental investments (in %)"
+    ];
+    // Proportion of Taxonomy-aligned (in %)
+    double sustainable_investments_environmental_ta_proportion = 18 [
+      json_name = "sustainableInvestmentsEnvironmentalTaProportion",
+      (standards.open.v1.fdx_options).question = "Proportion of Taxonomy-aligned (in %)"
+    ];
+    // Proportion of sustainable social investments (in %)
+    double sustainable_investments_social_proportion2 = 19 [
+      json_name = "sustainableInvestmentsSocialProportion2",
+      (standards.open.v1.fdx_options).question = "Proportion of sustainable social investments (in %)"
+    ];
+    // Proportion of not sustainable investments (in%)
+    double not_sustainable_investments_proportion = 20 [
+      json_name = "notSustainableInvestmentsProportion",
+      (standards.open.v1.fdx_options).required = true,
+      (standards.open.v1.fdx_options).question = "Proportion of not sustainable investments (in%)"
+    ];
+    // Did the subfund invest in fossil gas related activities complying with the EU Taxonomy ?
+    YesNo fossil_gas_investments_indicator = 21 [
+      json_name = "fossilGasInvestmentsIndicator",
+      (standards.open.v1.fdx_options).question = "Did the subfund invest in fossil gas related activities complying with the EU Taxonomy ?"
+    ];
+    // Did the subfund invest in nuclear energy related activities complying with the EU Taxonomy ?
+    YesNo  nuclear_energy_investments_indicator = 22 [
+      json_name = "nuclearEnergyInvestmentsIndicator",
+      (standards.open.v1.fdx_options).question = "Did the subfund invest in nuclear energy related activities complying with the EU Taxonomy ?",
+      (standards.open.v1.fdx_options).default = "2"
+    ];
+    // Taxonomy aligned investments in fossil gas related activities  including sovereign bonds expressed as a share of turnover (in %)
+    double fossil_gas_investments_incl_sovereign_bonds_turnover_proportion = 23 [
+      json_name = "fossilGasInvestmentsInclSovereignBondsTurnoverProportion",
+      (standards.open.v1.fdx_options).question = "Taxonomy aligned investments in fossil gas related activities  including sovereign bonds expressed as a share of turnover (in %)"
+    ];
+    // Taxonomy aligned investments in nuclear energy related activities  including sovereign bonds expressed as a share of turnover (in %).
+    double nuclear_energy_investments_incl_sovereign_bonds_turnover_proportion = 28 [
+      json_name = "nuclearEnergyInvestmentsInclSovereignBondsTurnoverProportion",
+      (standards.open.v1.fdx_options).question = "Taxonomy aligned investments in nuclear energy related activities  including sovereign bonds expressed as a share of turnover (in %)"
+    ];
+    // Taxonomy aligned investments (excluding fossil gas and nuclear energy related activities) including sovereign bonds expressed as a share of turnover (in %)
+    double remaining_investments_incl_sovereign_bonds_turnover_proportion = 29 [
+      json_name = "remainingInvestmentsInclSovereignBondsTurnoverProportion",
+      (standards.open.v1.fdx_options).question = "TTaxonomy aligned investments (excluding fossil gas and nuclear energy related activities) including sovereign bonds expressed as a share of turnover (in %)"
+    ];
+    // Taxonomy aligned investments (excluding fossil gas and nuclear energy related activities) including sovereign bonds expressed as a share of turnover (in %)
+    double fossil_gas_investments_incl_sovereign_bonds_capex_proportion = 30 [
+      json_name = "fossilGasInvestmentsInclSovereignBondsCapexProportion",
+      (standards.open.v1.fdx_options).question = "Taxonomy aligned investments in fossil gas related activities  including sovereign bonds expressed as a share of CapEx (in %)"
+    ];
+    // Taxonomy aligned investments in nuclear energy related activities including sovereign bonds expressed as a share of CapEx (in %)
+    double nuclear_energy_investments_incl_sovereign_bonds_capex_proportion = 31 [
+      json_name = "nuclearEnergyInvestmentsInclSovereignBondsCapexProportion",
+      (standards.open.v1.fdx_options).question = "Taxonomy aligned investments in nuclear energy related activities including sovereign bonds expressed as a share of CapEx (in %)"
+    ];
+    // Taxonomy aligned investments (excluding fossil gas and nuclear energy related activities)  including sovereign bonds expressed as a share of CapEx (in %)
+    double remaining_investments_incl_sovereign_bonds_capex_proportion = 32 [
+      json_name = "remainingInvestmentsInclSovereignBondsCapexProportion",
+      (standards.open.v1.fdx_options).question = "Taxonomy aligned investments (excluding fossil gas and nuclear energy related activities)  including sovereign bonds expressed as a share of CapEx (in %)"
+    ];
+    // Taxonomy aligned investments in fossil gas related activities including sovereign bonds expressed as a share of OpEx (in %)
+    double fossil_gas_investments_incl_sovereign_bonds_opex_proportion = 33 [
+      json_name = "fossilGasInvestmentsInclSovereignBondsOpexProportion",
+      (standards.open.v1.fdx_options).question = "Taxonomy aligned investments in fossil gas related activities including sovereign bonds expressed as a share of OpEx (in %)"
+    ];
+    // Taxonomy aligned investments in nuclear energy related activities including sovereign bonds expressed as a share of OpEx (in %)
+    double nuclear_energy_investments_incl_sovereign_bonds_opex_proportion = 34 [
+      json_name = "nuclearEnergyInvestmentsInclSovereignBondsOpexProportion",
+      (standards.open.v1.fdx_options).question = "Taxonomy aligned investments in nuclear energy related activities including sovereign bonds expressed as a share of OpEx (in %)"
+    ];
+    // Taxonomy aligned investments (excluding fossil gas and nuclear energy related activities)  including sovereign bonds expressed as a share of OpEx (in %)
+    double remaining_investments_incl_sovereign_bonds_opex_proportion = 35 [
+      json_name = "remainingInvestmentsInclSovereignBondsOpexProportion",
+      (standards.open.v1.fdx_options).question = "Taxonomy aligned investments (excluding fossil gas and nuclear energy related activities)  including sovereign bonds expressed as a share of OpEx (in %)"
+    ];
+    // Taxonomy aligned investments in fossil gas related activities excluding sovereign bonds expressed as a share of turnover (in %)
+    double fossil_gas_investments_excl_sovereign_bonds_turnover_proportion = 36 [
+      json_name = "fossilGasInvestmentsExclSovereignBondsTurnoverProportion",
+      (standards.open.v1.fdx_options).question = "Taxonomy aligned investments in fossil gas related activities excluding sovereign bonds expressed as a share of turnover (in %)"
+    ];
+    // Taxonomy aligned investments in nuclear energy related activities excluding sovereign bonds expressed as a share of turnover (in %)
+    double nuclear_energy_investments_excl_sovereign_bonds_turnover_proportion = 37 [
+      json_name = "nuclearEnergyInvestmentsExclSovereignBondsTurnoverProportion",
+      (standards.open.v1.fdx_options).question = "Taxonomy aligned investments in nuclear energy related activities excluding sovereign bonds expressed as a share of turnover (in %)"
+    ];
+    // Taxonomy aligned investments (excluding fossil gas and nuclear energy related activities)  excluding sovereign bonds expressed as a share of turnover (in %)
+    double remaining_investments_excl_sovereign_bonds_turnover_proportion = 38 [
+      json_name = "remainingInvestmentsExclSovereignBondsTurnoverProportion",
+      (standards.open.v1.fdx_options).question = "Taxonomy aligned investments (excluding fossil gas and nuclear energy related activities)  excluding sovereign bonds expressed as a share of turnover (in %)"
+    ];
+    // Taxonomy aligned investments in fossil gas related activities excluding sovereign bonds expressed as a share of CapEx (in %)
+    double fossil_gas_investments_excl_sovereign_bonds_capex_proportion = 39 [
+      json_name = "fossilGasInvestmentsExclSovereignBondsCapexProportion",
+      (standards.open.v1.fdx_options).question = "Taxonomy aligned investments in fossil gas related activities excluding sovereign bonds expressed as a share of CapEx (in %)"
+    ];
+    // Taxonomy aligned investments in nuclear energy related activities excluding sovereign bonds expressed as a share of CapEx (in %)
+    double nuclear_energy_investments_excl_sovereign_bonds_capex_proportion = 40 [
+      json_name = "nuclearEnergyInvestmentsExclSovereignBondsCapexProportion",
+      (standards.open.v1.fdx_options).question = "Taxonomy aligned investments in nuclear energy related activities excluding sovereign bonds expressed as a share of CapEx (in %)"
+    ];
+    // Taxonomy aligned investments (excluding fossil gas and nuclear energy related activities)  excluding sovereign bonds expressed as a share of
+    double remaining_investments_excl_sovereign_bonds_capex_proportion = 41 [
+      json_name = "remainingInvestmentsExclSovereignBondsCapexProportion",
+      (standards.open.v1.fdx_options).question = "Taxonomy aligned investments (excluding fossil gas and nuclear energy related activities)  excluding sovereign bonds expressed as a share of"
+    ];
+    // Taxonomy aligned investments in fossil gas related activities excluding sovereign bonds expressed as a share of OpEx (in %)
+    double fossil_gas_investments_excl_sovereign_bonds_opex_proportion = 42 [
+      json_name = "fossilGasInvestmentsExclSovereignBondsOpexProportion",
+      (standards.open.v1.fdx_options).question = "Taxonomy aligned investments in fossil gas related activities excluding sovereign bonds expressed as a share of OpEx (in %)"
+    ];
+    // Taxonomy aligned investments in nuclear energy related activities excluding sovereign bonds expressed as a share of OpEx (in %)
+    double nuclear_energy_investments_excl_sovereign_bonds_opex_proportion = 43 [
+      json_name = "nuclearEnergyInvestmentsExclSovereignBondsOpexProportion",
+      (standards.open.v1.fdx_options).question = "Taxonomy aligned investments in nuclear energy related activities excluding sovereign bonds expressed as a share of OpEx (in %)"
+    ];
+    // Taxonomy aligned investments (excluding fossil gas and nuclear energy related activities)  excluding sovereign bonds expressed as a share of OpEx (in %)
+    double remaining_investments_excl_sovereign_bonds_opex_proportion = 44 [
+      json_name = "remainingInvestmentsExclSovereignBondsOpexProportion",
+      (standards.open.v1.fdx_options).question = "Taxonomy aligned investments (excluding fossil gas and nuclear energy related activities)  excluding sovereign bonds expressed as a share of OpEx (in %)"
+    ];
+    // What was the share of investments made in transitional activities (in %)?
+    double transitional_activities_investments_share = 45 [
+      json_name = "transitionalActivitiesInvestmentsShare",
+      (standards.open.v1.fdx_options).question = "What was the share of investments made in transitional activities (in %)?"
+    ];
+    // What was the share of investments made in enabling activities (in %)?
+    double enabling_activities_investments_share = 46 [
+      json_name = "enablingActivitiesInvestmentsShare",
+      (standards.open.v1.fdx_options).question = "What was the share of investments made in enabling activities (in %)?"
+    ];
+    // Has a specific index been designated as a reference benchmark for the purpose of attaining the environmental and/or social characteristics promoted by the subfund?
+    YesNo  reference_benchmark_designated_indicator = 47 [
+      json_name = "referenceBenchmarkDesignatedIndicator",
+      (standards.open.v1.fdx_options).required = true,
+      (standards.open.v1.fdx_options).question = "Has a specific index been designated as a reference benchmark for the purpose of attaining the environmental and/or social characteristics promoted by the subfund?",
+      (standards.open.v1.fdx_options).default = "1"
+    ];
+    // Is an ISIN code available for the reference benchmark?
+    YesNo  reference_benchmark_isin_code_indicator = 48 [
+      json_name = "referenceBenchmarkIsinCodeIndicator",
+      (standards.open.v1.fdx_options).question = "Is an ISIN code available for the reference benchmark?",
+      (standards.open.v1.fdx_options).default = "2",
+      (standards.open.v1.fdx_options).conditional = "Payload.SfdrPrecontractualReport.Article9Subfunds.0.ReferenceBenchmarkDesignatedIndicator?1:2"
+    ];
+    // Specify the ISIN code of the reference benchmark
+    string reference_benchmark_isin_code = 49 [
+      json_name = "referenceBenchmarkIsinCode",
+      (standards.open.v1.fdx_options).question = "Specify the ISIN code of the reference benchmark",
+      (standards.open.v1.fdx_options).conditional = "Payload.SfdrPrecontractualReport.Article9Subfunds.0.ReferenceBenchmarkIsinCodeIndicator?1:2"
+    ];
+    // Specify the name of the reference benchmark
+    string reference_benchmark_name = 50 [
+      json_name = "referenceBenchmarkName",
+      (standards.open.v1.fdx_options).question = "Specify the name of the reference benchmark",
+      (standards.open.v1.fdx_options).conditional = "Payload.SfdrPrecontractualReport.Article9Subfunds.0.ReferenceBenchmarkDesignatedIndicator?1:2"
+    ];
+    // Out/under performance of the subfund compared to the reference benchmark (in %):
+    double performance_compared_reference_benchmark = 51 [
+      json_name = "performanceComparedReferenceBenchmark",
+      (standards.open.v1.fdx_options).question = "Out/under performance of the subfund compared to the reference benchmark (in %):"
+    ];
+    // Proportion of Other (in %)
+    double sustainable_investments_environmental_other_proportion = 52 [
+      json_name = "sustainableInvestmentsEnvironmentalOtherProportion",
+      (standards.open.v1.fdx_options).question = "Proportion of Other (in %)"
+    ];
+  }
+  // Definition of information to be provided for the topInvestmentsSubfunds section
+  message TopInvestmentsSubfunds {
+     // CSSF code of the sub-fund. Number corresponding to the compartment without zero in front of the number. For a stand-alone fund, please enter 0. For a multiple compartment fund, please indicate the corresponding number.
+    int32 subfund_cssf_code = 1 [
+      json_name="subfundCssfCode",
+      (standards.open.v1.fdx_options).required = true,
+      (standards.open.v1.fdx_options).question = "CSSF code of the sub-fund. (Integer)",
+      (standards.open.v1.fdx_options).description = "Number corresponding to the compartment without zero in front of the number. For a stand-alone fund, please enter 0. For a multiple compartment fund, please indicate the corresponding number."
+    ];
+    // ISIN code available?
+    YesNo  largest_investment_i_s_n_code_indicator = 2 [
+      json_name = "largestInvestmentISINCodeIndicator",
+      (standards.open.v1.fdx_options).required = true,
+      (standards.open.v1.fdx_options).question = "ISIN code available?",
+      (standards.open.v1.fdx_options).default = "2"
+    ];
+    // Largest investments ISIN code
+    string largest_investment_i_s_i_n_code = 3 [
+      json_name = "largestInvestmentISINCode",
+      (standards.open.v1.fdx_options).question = "Largest investments ISIN code",
+      (standards.open.v1.fdx_options).conditional = "Payload.SfdrPrecontractualReport.TopInvestmentsSubfunds.0.LargestInvestmentISINCodeIndicator?1:2"
+    ];
+    // Largest investments name
+    string largest_investment_name = 4 [
+      json_name = "largestInvestmentName",
+      (standards.open.v1.fdx_options).question = "Largest investments ISIN code"
+    ];
+    // Percentage of assets
+    double largest_investment_assets_percentage = 5 [
+      json_name = "largestInvestmentAssetsPercentage",
+      (standards.open.v1.fdx_options).required = true,
+      (standards.open.v1.fdx_options).question = "Percentage of assets"
+    ];
+  }
+  // Y / N requiring no further explanation
+  enum YesNo {
+    // Not Applicable
+    YES_NO_NA_UNSPECIFIED = 0;
+    // Yes
+    Y = 1;
+    // No
+    N = 2;
+  }
+}

@@ -1,0 +1,1043 @@
+syntax = "proto3";
+
+package standards.open.v1;
+
+import "google/api/annotations.proto";
+import "google/api/client.proto";
+import "google/api/resource.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/field_mask.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
+import "google/type/month.proto";
+import "google/type/date.proto";
+import "standards/open/v1/rag.proto";
+
+option go_package = "github.com/standards-exchange/protobuf-go/standards/open/v1";
+
+
+// Fund Accounting Monthly KPI & MI Report for governance oversight and reporting for UCITS funds
+message RT000FTL8 {
+    // Definition of a metric
+    message Metric {
+        // The date the data was produced
+        google.type.Date production_date = 1;
+        // The end date of the reporting period of the metric (inclusive)
+        // For example, if the metric measures data for the month of December 2022, 2022-12-31
+        google.type.Date reporting_period_end = 2;
+        // The start date of the reporting period of the metric (inclusive)
+        // For example, if the metric measures data for the month of December 2022, 2022-12-01
+        google.type.Date reporting_period_start = 3;
+        // The internal identifier of the umbrella
+        string umbrella_fund_identifier = 4;
+        // The name of the umbrella
+        // Should conform to: https://openfunds.org/OFST005010 (Umbrella)
+        // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information
+        string umbrella_fund = 5;
+        // The identifier of the fund (typically the sub-fund fund or standalone fund) that holds the security
+        // Should conform to: https://openfunds.org/OFST010110 (Legal Fund Name Only)
+        // Refers to the Sub-Fund in the case of an umbrella structure
+        // or Fund in the case of a standalone structure
+        // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information
+        string fund_identifier = 6;
+        // The name of the fund (typically the sub-fund fund or standalone fund) that holds the security
+        // Should conform to: https://openfunds.org/OFST010110 (Legal Fund Name Only)
+        // Refers to the Sub-Fund in the case of an umbrella structure
+        // or Fund in the case of a standalone structure
+        // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information
+        string fund = 7;
+        // Enumeration of metricIDs
+        enum MetricID {
+            // The enumeration of the metrics measured
+            METRIC_ID_UNSPECIFIED = 0;
+            // Number of NAVs calculated during the month
+            NAVS_CALCULATED = 1;
+            //  Count of the number of delays in the period caused by the provider
+            NAVS_PROVIDER_DELAYED = 2;
+            //  Count of the number of delays in the period not caused by the provider
+            NAVS_NON_PROVIDER_DELAYED = 3;
+            //  Percentage of total NAVs delivered within the agreed timescale during the reporting month.
+            //  NAV_TIMELINESS should equal  1- (NAVS_PROVIDER_DELAYED + NAVS_NON_PROVIDER_DELAYED) / NAVS_CALCULATED
+            //  in a period
+            NAV_TIMELINESS = 4;
+            //  Percentage of total NAVs delivered within the agreed timescale during the reporting month,
+            //  excluding non-provider caused delays.
+            //  NAVS_TIMELINESS_PROVIDER should equal 1 - (NAVS_PROVIDER_DELAYED / NAVS_CALCULATED)
+            NAV_TIMELINESS_PROVIDER = 5;
+            // Percentage of valuations produced during the reporting month where no error(s) has been identified.
+            NAV_ACCURACY = 6;
+            // Percentage of valuations produced during the reporting month where no error(s) has been identified.
+            // This percentage is not impacted by errors where the root cause was identified as not the delegate.
+            NAV_ACCURACY_PROVIDER = 7;
+            // The count of material nav errors where the delegate was responsible
+            NAV_ERRORS_MATERIAL_PROVIDER = 8;
+            // The count of material nav errors where the delegate was not responsible
+            NAV_ERRORS_MATERIAL_NON_PROVIDER = 9;
+            // The count of material nav errors where the delegate was responsible
+            NAV_ERRORS_NON_MATERIAL_PROVIDER = 10;
+            // The count of material nav errors where the delegate was not responsible
+            NAV_ERRORS_NON_MATERIAL_NON_PROVIDER = 11;
+            // The number of securities for which there has not been a price movement for an agreed number of consecutive business days.
+            STALE_SECURITIES = 12;
+            // Total number of
+            // Number of cash reconciliations reported between 31 to 60 days
+            CASH_RECONCILIATIONS_31_TO_60_DAYS = 13;
+            // Number of cash reconciliations reported greater than or equal to 61 days
+            CASH_RECONCILIATIONS_GREATER_THAN_60_DAYS = 14;
+            // Number of stock reconciliations reported between 31 to 60 days
+            STOCK_RECONCILIATIONS_31_TO_60_DAYS = 15;
+            // Number of stock reconciliations reported greater than or equal to 61 days
+            STOCK_RECONCILIATIONS_GREATER_THAN_60_DAYS = 16;
+            // The count of system issues that occurred during the period
+            COUNT_SYSTEM_ISSUES = 17;
+            // The number of late financial reports
+            NUMBER_LATE_FINANCIAL_REPORTS = 18;
+            // The net asset value at the end of the period in reporting currency
+            NET_ASSET_VALUE_REPORTING_CURRENCY = 19;
+            // The net asset value at the end of the period in subject currency
+            NET_ASSET_VALUE_SUBJECT_CURRENCY = 20;
+            // A security is considered difficult to price when (a) the security is fair-valued, (b) there is a single broker price, (d) stale or unchanged price, (d) it is suspended or delisted, (e) distressed fixed income, (f) defaulted fixed income as of the reporting date
+            DIFFICULT_TO_PRICE_SECURITIES = 21;
+            // Number of securities where trading has been stopped as of the reporting date
+            SUSPENDED_OR_DELISTED_SECURITIES = 22;
+            // Number of fixed income securities where the company or government entity is experiencing financial or operational distress, but has not defaulted as of the reporting date
+            DISTRESSED_FIXED_INCOME_SECURITIES = 23;
+            // Number of fixed income securities where the company or government entity has defaulted as of the reporting date
+            DEFAULTED_FIXED_INCOME_SECURITIES = 24;
+            // The number of securities held across portfolios
+            SECURITIES_HELD = 25;
+            // The annualized TER for the reporting period
+            ANNUALIZED_TER = 26;
+            // The annualized TER, year-to-date, as of the end of the reporting period
+            ANNUALIZED_YTD_TER = 27;
+            // The self-assessment rating (typically on a scale of 1 - below expectations to 9 - well above expectations)
+            PROVIDER_SELF_ASSESSMENT = 28;
+            // The service assessment rating (typically on a scale of 1 - below expectations to 9 - well above expectations)
+            CUSTOMER_SERVICE_ASSESSMENT = 29;
+            // The number of nav delays caused by pricing
+            NAV_DELAYS_PRICING = 30;
+            // The total number of nav delays
+            NAV_DELAYS_TOTAL = 31;
+            // The total number of nav delays caused by trade inputs
+            NAV_DELAYS_TRADE_INPUT = 32;
+            // The total number of nav delays caused by FX
+            NAV_DELAYS_FX = 33;
+            // The total number of nav delays caused by cash income
+            NAV_DELAYS_CASH_INCOME = 34;
+            // The total number of nav delays caused by corporate actions
+            NAV_DELAYS_CORPORATE_ACTIONS = 35;
+            // The total number of nav delays caused by valuation validation
+            NAV_DELAYS_VALUATION_VALIDATION = 36;
+            // The total number of nav delays caused by quality control
+            NAV_DELAYS_QUALITY_CONTROL = 37;
+            // The total number of nav delays caused by system issues
+            NAV_DELAYS_SYSTEM = 38;
+            // The total number of nav delays caused by client or third party
+            NAV_DELAYS_CLIENT_OR_THIRD_PARTY = 39;
+            // The total number of nav delays caused by other causes
+            NAV_DELAYS_OTHER = 40;
+            // The number of funds impacted by provider errors errors
+            FUNDS_IMPACTED_BY_PROVIDER_ERRORS = 41;
+            // The number of funds impacted by provider errors errors
+            FUNDS_IMPACTED_BY_PROVIDER_NON_PROVIDER_ERRORS = 42;
+            // The number of valuations impacted by provider errors
+            VALUATIONS_IMPACTED_PROVIDER_ERRORS = 43;
+            // The number of valuations impacted by non-provider errors
+            VALUATIONS_IMPACTED_NON_PROVIDER_ERRORS = 44;
+            // The number of valuations impacted in the current reporting period by provider errors
+            VALUATIONS_IMPACTED_CURRENT_REPORTING_PERIOD_PROVIDER_ERRORS = 45;
+            // The number of valuations impacted in the current reporting period by non-provider errors
+            VALUATIONS_IMPACTED_CURRENT_REPORTING_PERIOD_NON_PROVIDER_ERRORS = 46;
+            // The number of materially impacted valuations
+            MATERIALLY_IMPACTED_VALUATIONS_PROVIDER_ERROR = 47;
+        }
+        // The identifier of what the metric measures
+        MetricID metric_id = 8;
+        // The type of value used to measure the metric
+        enum ValueType {
+            METRIC_TYPE_UNSPECIFIED = 0;
+            NUMBER = 1;
+            PERCENTAGE = 2;
+            CURRENCY = 3;
+        }
+        // Enumeration for how to interpret the metric value
+        ValueType value_type = 9;
+        // If the metric type is "MONEY" then a 3-letter currency code defined in ISO 4217 must be provided.
+        // The country code is required to comply with the 3-letter ISO 3166-1 alpha-3 standard.
+        // The ISO 3166-1 alpha-3 is a set of 3-letter country codes to represent countries and dependent areas.
+        // Make sure the provided country code is in uppercase.
+        // Example: 'USA' for the United States, 'GBR' for Great Britain, 'DEU' for Germany, etc.
+        string currency_code = 10;
+        // The value of the metric
+        double metric = 11;
+        // Options for how to evaluate the metric
+        enum EvaluationType {
+            EVALUATION_TYPE_UNSPECIFIED = 0;
+            // A higher result is more favorable
+            MAXIMISE = 1;
+            // A lower result is more favorable
+            MINIMISE = 2;
+        }
+        // How to evaluate the metric (i.e. is a higher or lower value more favorable)
+        EvaluationType evaluation_type = 12;
+        // The "RED/AMBER/GREEN" designation if applicable
+        RedAmberGreen rag = 13;
+        // The amber cutoff (i.e. the value above which the metric is no longer classified as "RED") if applicable
+        double amber_cutoff = 14;
+        // The green cutoff (i.e. the value above which the metric is no longer classified as "AMBER")  if applicable
+        double green_cutoff = 15;
+        // Optional. The name of the provider
+        string provider = 20;
+        // Optional. The metric ID used by the provider
+        string provider_metric_id = 21;
+        // Optional. The KPI name used by the provider
+        string provider_metric_name = 22;
+        // Optional. Any comments attached to the metric
+        string comments = 99;
+    }
+    // KPIs & other key quantitative metrics
+    repeated Metric metrics = 20;
+    // The Assets Under Management Definition
+    message NetAssetValueSnapshot {
+        // The date for which the nav snapshot is provided
+        google.type.Date effective_date = 1;
+        // The common identifier of the subject.
+        // In most instances the subject (i.e the entity being measured by the snapshot) should be the umbrella for which the report is provided.
+        // Metrics related to specific sub-funds, however, can be reported alongside the aggregated values
+        // so long as the this is consistently applied
+        string subject_id = 2;
+        // The human readable name of the subject of the snapshot
+        string subject_name = 3;
+        // The currency code is required to comply with the 3-letter ISO 4217 standard.
+        // The ISO 4217 is a set of 3-letter currency codes to represent countries' currencies.
+        // Make sure the provided currency code is in uppercase.
+        // Example: 'USD' for United States Dollar, 'GBP' for Great Britain Pound, 'EUR' for Euro, etc.
+        string base_currency = 11;
+        // The assets under management as of the effective date in the base currency of the fund
+        double aum_base_currency = 12;
+        // The currency code is required to comply with the 3-letter ISO 4217 standard.
+        // The ISO 4217 is a set of 3-letter currency codes to represent countries' currencies.
+        // Make sure the provided currency code is in uppercase.
+        // Example: 'USD' for United States Dollar, 'GBP' for Great Britain Pound, 'EUR' for Euro, etc.
+        string reporting_currency = 13;
+        // The assets under management as of the effective date in the reporting currency
+        double aum_reporting_currency = 14;
+    }
+    // Time series of historic net asset value data
+    repeated NetAssetValueSnapshot net_asset_values = 51;
+    // Definition of a pricing error occurred in the pricing of a share class
+    message SecurityPricingError {
+        // The date the information is being reported
+        google.type.Date reporting_date = 1;
+        // The date of the error
+        google.type.Date error_date = 2;
+        // The date the error was identified
+        google.type.Date identification_date = 3;
+        // The date the error was resolved
+        google.type.Date resolution_date = 4;
+        // The internal identifier of the umbrella
+        string umbrella_fund_identifier = 5;
+        // The name of the umbrella
+        // Should conform to: https://openfunds.org/OFST005010 (Umbrella)
+        // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information
+        string umbrella_fund = 6;
+        // The identifier of the fund (typically the sub-fund fund or standalone fund) that holds the security
+        // Should conform to: https://openfunds.org/OFST010110 (Legal Fund Name Only)
+        // Refers to the Sub-Fund in the case of an umbrella structure
+        // or Fund in the case of a standalone structure
+        // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information
+        string fund_identifier = 7;
+        // The name of the fund (typically the sub-fund fund or standalone fund) that holds the security
+        // Should conform to: https://openfunds.org/OFST010110 (Legal Fund Name Only)
+        // Refers to the Sub-Fund in the case of an umbrella structure
+        // or Fund in the case of a standalone structure
+        // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information
+        string fund = 8;
+        // The identifier used by the producer to track the case internally
+        string case_identifier = 9;
+        // The human readable name of the security
+        string security_name = 50;
+        // The ISO 6166 code of ISIN when available
+        string isin = 52;
+        // CUSIP (The Committee on Uniform Securities Identification Procedures number assigned by the CUSIP Service Bureau for U.S. and Canadian companies)
+        string cusip = 53;
+        // SEDOL (Stock Exchange Daily Official List for the London Stock Exchange)
+        string sedol = 54;
+        // Bloomberg Ticker (Bloomberg letters code that identify a company's securities)
+        string bbg_ticker = 55;
+        // Reuters RIC (Reuters instrument code)
+        string ric = 56;
+        // FIGI (Financial_Instrument Global Identifier)
+        string figi = 57;
+        // PermID - Refinitiv Permanent Identifiers
+        string perm_id = 58;
+        // WKN (Wertpapier Kenn-Nummer, the alphanumeric German identification number)
+        string wkn = 59;
+        // LEI (Legal Entity Identifier)
+        string lei = 60;
+        // The identifier used by the producer internally
+        string producer_identifier = 61;
+        // The primary identifier relied on to identify the stale security
+        // The producer should populate this field with the highest utility security identifier available
+        // Tier 1: FIGI or PermID
+        // Tier 2: BBG Ticker, RIC
+        // Tier 3: WKN, ISIN, CUSIP, SEDOL
+        // Tier 4: LEI
+        string primary_identifier = 71;
+        // Enumerations of financial identifiers
+        enum FinancialInstrumentIdentifier {
+            // Source not specified by the user.
+            IDENTIFIER_UNSPECIFIED = 0;
+            // ISO 6166 code of ISIN when available
+            ISIN = 1;
+            // CUSIP (The Committee on Uniform Securities Identification Procedures number assigned by the CUSIP Service Bureau for U.S. and Canadian companies)
+            CUSIP = 2;
+            // SEDOL (Stock Exchange Daily Official List for the London Stock Exchange)
+            SEDOL = 3;
+            // WKN (Wertpapier Kenn-Nummer, the alphanumeric German identification number)
+            WKN = 4;
+            // Bloomberg Ticker (Bloomberg letters code that identify a company's securities)
+            BBG_TICKER = 5;
+            // BBGID (The Bloomberg Global ID)
+            BBGID = 6;
+            // Reuters RIC (Reuters instrument code)
+            RIC = 7;
+            // FIGI (Financial_Instrument Global Identifier)
+            FIGI = 8;
+            // LEI 0 Legal Entity Identifier
+            LEI = 9;
+            // PermID - Refinitiv Permanent Identifiers
+            PERM_ID = 10;
+        }
+        // The type of identifier used as the primary identifier
+        FinancialInstrumentIdentifier primary_identifier_type = 72;
+        // Enumeration of asset class
+        enum AssetClass {
+            // Asset class not specified
+            ASSET_CLASS_UNSPECIFIED = 0;
+            // Commodities
+            COMMODITY = 1;
+            // Corporate Bonds
+            CORPORATE = 2;
+            // Currency
+            CURRENCY = 3;
+            // Equity
+            EQUITY = 4;
+            // Market index
+            INDEX = 5;
+            // Money Market
+            MONEY_MARKET = 6;
+            // Government Bonds
+            GOVERNMENT = 7;
+            // Mortgage Backed
+            MTGE = 8;
+            // Municipal Bonds
+            MUNI = 9;
+            // Total return swap on a basket
+            TOTAL_RETURN_SWAP = 10;
+        }
+        // The asset class of the security
+        AssetClass asset_class = 10;
+        // Magnitude of the error in decimal (position / nav -1)
+        double materiality = 11;
+        // Cause of the error
+        string cause = 12;
+        // Remediation
+        string remediation = 13;
+        // Comments
+        string comments = 14;
+    }
+    // Recent instrument pricing errors. Convention is to provide 13 months of history.
+    repeated SecurityPricingError security_pricing_errors = 53;
+    // Definition of a stale security
+    message StaleSecurity {
+        // The date of the stale security report
+        google.type.Date reporting_date = 1;
+        // The internal identifier of the umbrella
+        string umbrella_fund_identifier = 2;
+        // The name of the umbrella
+        // Should conform to: https://openfunds.org/OFST005010 (Umbrella)
+        // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information
+        string umbrella_fund = 3;
+        // The identifier of the fund (typically the sub-fund fund or standalone fund) that holds the security
+        // Should conform to: https://openfunds.org/OFST010110 (Legal Fund Name Only)
+        // Refers to the Sub-Fund in the case of an umbrella structure
+        // or Fund in the case of a standalone structure
+        // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information
+        string fund_identifier = 4;
+        // The name of the fund (typically the sub-fund fund or standalone fund) that holds the security
+        // Should conform to: https://openfunds.org/OFST010110 (Legal Fund Name Only)
+        // Refers to the Sub-Fund in the case of an umbrella structure
+        // or Fund in the case of a standalone structure
+        // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information
+        string fund = 5;
+        // The identifier used by the producer to track the case internally
+        string case_identifier = 6;
+        // The human readable name of the security
+        string security_name = 50;
+        // The ISO 6166 code of ISIN when available
+        string isin = 52;
+        // CUSIP (The Committee on Uniform Securities Identification Procedures number assigned by the CUSIP Service Bureau for U.S. and Canadian companies)
+        string cusip = 53;
+        // SEDOL (Stock Exchange Daily Official List for the London Stock Exchange)
+        string sedol = 54;
+        // Bloomberg Ticker (Bloomberg letters code that identify a company's securities)
+        string bbg_ticker = 55;
+        // Reuters RIC (Reuters instrument code)
+        string ric = 56;
+        // FIGI (Financial_Instrument Global Identifier)
+        string figi = 57;
+        // PermID - Refinitiv Permanent Identifiers
+        string perm_id = 58;
+        // WKN (Wertpapier Kenn-Nummer, the alphanumeric German identification number)
+        string wkn = 59;
+        // LEI (Legal Entity Identifier)
+        string lei = 60;
+        // The identifier used by the producer internally
+        string producer_identifier = 61;
+        // The primary identifier relied on to identify the stale security
+        // The producer should populate this field with the highest utility security identifier available
+        // Tier 1: FIGI or PermID
+        // Tier 2: BBG Ticker, RIC
+        // Tier 3: WKN, ISIN, CUSIP, SEDOL
+        // Tier 4: LEI
+        string primary_identifier = 71;
+        // Enumerations of financial identifiers
+        enum FinancialInstrumentIdentifier {
+            // Source not specified by the user.
+            IDENTIFIER_UNSPECIFIED = 0;
+            // ISO 6166 code of ISIN when available
+            ISIN = 1;
+            // CUSIP (The Committee on Uniform Securities Identification Procedures number assigned by the CUSIP Service Bureau for U.S. and Canadian companies)
+            CUSIP = 2;
+            // SEDOL (Stock Exchange Daily Official List for the London Stock Exchange)
+            SEDOL = 3;
+            // WKN (Wertpapier Kenn-Nummer, the alphanumeric German identification number)
+            WKN = 4;
+            // Bloomberg Ticker (Bloomberg letters code that identify a company's securities)
+            BBG_TICKER = 5;
+            // BBGID (The Bloomberg Global ID)
+            BBGID = 6;
+            // Reuters RIC (Reuters instrument code)
+            RIC = 7;
+            // FIGI (Financial_Instrument Global Identifier)
+            FIGI = 8;
+            // LEI 0 Legal Entity Identifier
+            LEI = 9;
+            // PermID - Refinitiv Permanent Identifiers
+            PERM_ID = 10;
+        }
+        // The type of identifier used as the primary identifier
+        FinancialInstrumentIdentifier primary_identifier_type = 72;
+        // Enumeration of asset class
+        enum AssetClass {
+            // Asset class not specified
+            ASSET_CLASS_UNSPECIFIED = 0;
+            // Commodities
+            COMMODITY = 1;
+            // Corporate Bonds
+            CORPORATE = 2;
+            // Currency
+            CURRENCY = 3;
+            // Equity
+            EQUITY = 4;
+            // Market index
+            INDEX = 5;
+            // Money Market
+            MONEY_MARKET = 6;
+            // Government Bonds
+            GOVERNMENT = 7;
+            // Mortgage Backed
+            MTGE = 8;
+            // Municipal Bonds
+            MUNI = 9;
+            // Total return swap on a basket
+            TOTAL_RETURN_SWAP = 10;
+        }
+        // The asset class of the security
+        AssetClass asset_class = 7;
+        // The date the stale price was raised
+        google.type.Date raised_date = 21;
+        // The date the security was last priced
+        google.type.Date price_latest_date = 22;
+        // The number of days staled
+        int32 days_staled = 9;
+        // The pricing currency
+        // The currency code is required to comply with the 3-letter ISO 4217 standard.
+        // The ISO 4217 is a set of 3-letter currency codes to represent countries' currencies.
+        // Make sure the provided currency code is in uppercase.
+        // Example: 'USD' for United States Dollar, 'GBP' for Great Britain Pound, 'EUR' for Euro, etc.
+        string pricing_currency = 10;
+        // The staled price (i.e. the last price) in the "pricing currency"
+        double price_latest = 11;
+        // The quantity of securities held in the security
+        double quantity = 12;
+        // The total value of the position in the security (price_latest * quantity)
+        double position_value = 13;
+        // The fund currency
+        // The currency code is required to comply with the 3-letter ISO 4217 standard.
+        // The ISO 4217 is a set of 3-letter currency codes to represent countries' currencies.
+        // Make sure the provided currency code is in uppercase.
+        // Example: 'USD' for United States Dollar, 'GBP' for Great Britain Pound, 'EUR' for Euro, etc.
+        string fund_currency = 14;
+        // The position value in the fund currency (using report date FX)
+        double position_value_fund_currency = 15;
+        // The NAV of the fund in the fund currency
+        double fund_nav = 16;
+        // Magnitude of the error in decimal (position_value_fund_currency / nav -1)
+        double materiality = 17;
+        // The primary source of price information
+        string primary_price_source = 18;
+        // The secondary source of price information
+        string secondary_price_source = 19;
+        // The reasoning given for the stale price
+        string reasoning = 20;
+        // Additional comments
+        string comments = 30;
+    }
+    // Stale prices as of the end of the reporting month
+    repeated StaleSecurity stale_securities = 54;
+    // Definition of a break that occurred in agreement on the non-cash holdings of a sub-fund
+    message StockBreak {
+        // The date of the stale security report
+        google.type.Date report_date = 1;
+        // The date the stock break was identified
+        google.type.Date identification_date = 2;
+        // The date the stock break was resolved
+        google.type.Date resolution_date = 3;
+        // The internal identifier of the umbrella
+        string umbrella_fund_identifier = 4;
+        // The name of the umbrella
+        // Should conform to: https://openfunds.org/OFST005010 (Umbrella)
+        // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information
+        string umbrella_fund = 5;
+        // The identifier used to ID the sub-fun applicable)
+        // Should conform to: https://openfunds.org/OFST010110 (Legal Fund Name Only)
+        // Refers to the Sub-Fund in the case of an umbrella structure
+        // or Fund in the case of a standalone structure
+        // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information
+        string fund_identifier = 6;
+        // Names of the relevant sub-fund (if applicable)
+        // Should conform to: https://openfunds.org/OFST010110 (Legal Fund Name Only)
+        // Refers to the Sub-Fund in the case of an umbrella structure
+        // or Fund in the case of a standalone structure
+        // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information
+        string fund = 7;
+        // The identifier used by the producer to track the case internally
+        string case_identifier = 8;
+        // The human readable name of the security
+        string security_name = 50;
+        // The ISO 6166 code of ISIN when available
+        string isin = 52;
+        // CUSIP (The Committee on Uniform Securities Identification Procedures number assigned by the CUSIP Service Bureau for U.S. and Canadian companies)
+        string cusip = 53;
+        // SEDOL (Stock Exchange Daily Official List for the London Stock Exchange)
+        string sedol = 54;
+        // Bloomberg Ticker (Bloomberg letters code that identify a company's securities)
+        string bbg_ticker = 55;
+        // Reuters RIC (Reuters instrument code)
+        string ric = 56;
+        // FIGI (Financial_Instrument Global Identifier)
+        string figi = 57;
+        // PermID - Refinitiv Permanent Identifiers
+        string perm_id = 58;
+        // WKN (Wertpapier Kenn-Nummer, the alphanumeric German identification number)
+        string wkn = 59;
+        // LEI (Legal Entity Identifier)
+        string lei = 60;
+        // The identifier used by the producer internally
+        string producer_identifier = 61;
+        // The primary identifier relied on to identify the stale security
+        // The producer should populate this field with the highest utility security identifier available
+        // Tier 1: FIGI or PermID
+        // Tier 2: BBG Ticker, RIC
+        // Tier 3: WKN, ISIN, CUSIP, SEDOL
+        // Tier 4: LEI
+        string primary_identifier = 71;
+        // Enumerations of financial identifiers
+        enum FinancialInstrumentIdentifier {
+            // Source not specified by the user.
+            IDENTIFIER_UNSPECIFIED = 0;
+            // ISO 6166 code of ISIN when available
+            ISIN = 1;
+            // CUSIP (The Committee on Uniform Securities Identification Procedures number assigned by the CUSIP Service Bureau for U.S. and Canadian companies)
+            CUSIP = 2;
+            // SEDOL (Stock Exchange Daily Official List for the London Stock Exchange)
+            SEDOL = 3;
+            // WKN (Wertpapier Kenn-Nummer, the alphanumeric German identification number)
+            WKN = 4;
+            // Bloomberg Ticker (Bloomberg letters code that identify a company's securities)
+            BBG_TICKER = 5;
+            // BBGID (The Bloomberg Global ID)
+            BBGID = 6;
+            // Reuters RIC (Reuters instrument code)
+            RIC = 7;
+            // FIGI (Financial_Instrument Global Identifier)
+            FIGI = 8;
+            // LEI 0 Legal Entity Identifier
+            LEI = 9;
+            // PermID - Refinitiv Permanent Identifiers
+            PERM_ID = 10;
+        }
+        // The type of identifier used as the primary identifier
+        FinancialInstrumentIdentifier primary_identifier_type = 72;
+        // Enumeration of asset class
+        enum AssetClass {
+            // Asset class not specified
+            ASSET_CLASS_UNSPECIFIED = 0;
+            // Commodities
+            COMMODITY = 1;
+            // Corporate Bonds
+            CORPORATE = 2;
+            // Currency
+            CURRENCY = 3;
+            // Equity
+            EQUITY = 4;
+            // Market index
+            INDEX = 5;
+            // Money Market
+            MONEY_MARKET = 6;
+            // Government Bonds
+            GOVERNMENT = 7;
+            // Mortgage Backed
+            MTGE = 8;
+            // Municipal Bonds
+            MUNI = 9;
+            // Total return swap on a basket
+            TOTAL_RETURN_SWAP = 10;
+        }
+        // The asset class of the security
+        AssetClass asset_class = 9;
+        // The date of the stock break
+        google.type.Date effective_date = 10;
+        // Magnitude of the error in decimal (position / nav -1)
+        double materiality = 11;
+        // Cause of the break
+        string cause = 12;
+        // Remediation
+        string remediation = 13;
+        // Comments
+        string comment = 14;
+    }
+    // Recent Stock Breaks greater than 5 days.
+    repeated StockBreak stock_breaks = 55;
+    // Definition of break that has occurred in agreement on the cash holdings of a sub-fund
+    message CashBreak {
+        // The date of the stale security report
+        google.type.Date report_date = 1;
+        // The date the stock break was identified
+        google.type.Date identification_date = 2;
+        // The date the stock break was resolved
+        google.type.Date resolution_date = 3;
+        // The internal identifier of the umbrella
+        string umbrella_fund_identifier = 4;
+        // The name of the umbrella
+        // Should conform to: https://openfunds.org/OFST005010 (Umbrella)
+        // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information
+        string umbrella_fund = 5;
+        // The identifier used to ID the sub-fun applicable)
+        // Should conform to: https://openfunds.org/OFST010110 (Legal Fund Name Only)
+        // Refers to the Sub-Fund in the case of an umbrella structure
+        // or Fund in the case of a standalone structure
+        // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information
+        string fund_identifier = 6;
+        // Names of the relevant sub-fund (if applicable)
+        // Should conform to: https://openfunds.org/OFST010110 (Legal Fund Name Only)
+        // Refers to the Sub-Fund in the case of an umbrella structure
+        // or Fund in the case of a standalone structure
+        // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information
+        string fund = 7;
+        // The identifier used by the producer to track the case internally
+        string case_identifier = 8;
+        // Magnitude of the error in decimal (position / nav -1)
+        double materiality = 9;
+        // Cause of the break
+        string cause = 10;
+        // Remediation
+        string remediation = 11;
+        // Comments
+        string comment = 12;
+    }
+    // Recent Cash Breaks greater than 5 days.
+    repeated CashBreak cash_breaks = 56;
+    // Definition of a Total Expense Ratio
+    message TotalExpenseRatio {
+        // The date of the report
+        google.type.Date reporting_date = 1;
+        // The date of the TER (should be the last day of the relevant month)
+        google.type.Date ter_date = 2;
+        // The global identifier of the share class
+        string share_class_id = 3;
+        // Enumerations of financial identifiers
+        enum ShareClassIdentifierTypes {
+            // Source not specified by the user.
+            IDENTIFIER_UNSPECIFIED = 0;
+            // ISO 6166 code of ISIN when available
+            ISIN = 1;
+            // CUSIP (The Committee on Uniform Securities Identification Procedures number assigned by the CUSIP Service Bureau for U.S. and Canadian companies)
+            CUSIP = 2;
+            // SEDOL (Stock Exchange Daily Official List for the London Stock Exchange)
+            SEDOL = 3;
+            // WKN (Wertpapier Kenn-Nummer, the alphanumeric German identification number)
+            WKN = 4;
+            // Bloomberg Ticker (Bloomberg letters code that identify a company's securities)
+            BBG_TICKER = 5;
+            // BBGID (The Bloomberg Global ID)
+            BBGID = 6;
+            // Reuters RIC (Reuters instrument code)
+            RIC = 7;
+            // FIGI (Financial_Instrument Global Identifier)
+            FIGI = 8;
+            // LEI 0 Legal Entity Identifier
+            LEI = 9;
+            // PermID - Refinitiv Permanent Identifiers
+            PERM_ID = 10;
+        }
+        // Codification chosen to identify the share class
+        ShareClassIdentifierTypes share_class_id_type = 4;
+        // Extension that identifies the share class.
+        // Should conform to: https://openfunds.org/OFST020050 (Share Class Extension)
+        string share_class_extension = 5;
+        // The expense ratio over the current calendar month
+        double ter_current_month = 6;
+        // The monthly expense ratio annualized
+        double ter_current_month_annualized = 7;
+        // The expense ratio YTD
+        double ter_ytd = 8;
+        // The YTD expense ratio annualized
+        double ter_ytd_annualized = 9;
+        // Comments on the expense ratio
+        string comments = 10;
+    }
+    // The timeseries of TERs per share class.
+    repeated TotalExpenseRatio total_expense_ratios = 57;
+    // Definition of an invoice
+    message Invoice {
+        // The date of the report
+        google.type.Date reporting_date = 1;
+        // The internal identifier of the umbrella
+        string umbrella_fund_identifier = 2;
+        // The name of the umbrella
+        // Should conform to: https://openfunds.org/OFST005010 (Umbrella)
+        // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information
+        string umbrella_fund = 3;
+        // The identifier of the fund (typically the sub-fund fund or standalone fund) that holds the security
+        // Should conform to: https://openfunds.org/OFST010110 (Legal Fund Name Only)
+        // Refers to the Sub-Fund in the case of an umbrella structure
+        // or Fund in the case of a standalone structure
+        // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information
+        string fund_identifier = 4;
+        // The name of the fund (typically the sub-fund fund or standalone fund) that holds the security
+        // Should conform to: https://openfunds.org/OFST010110 (Legal Fund Name Only)
+        // Refers to the Sub-Fund in the case of an umbrella structure
+        // or Fund in the case of a standalone structure
+        // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information
+        string fund = 5;
+        // The invoice date
+        google.type.Date invoice_date = 6;
+        // The date of authorisation
+        google.type.Date authorisation_date = 7;
+        // The date of payment
+        google.type.Date payment_date = 8;
+        // The invoice number or identifier
+        string invoice_identifier = 9;
+        // The Recipient of the invoice
+        string recipient = 10;
+        // The type of fee
+        string fee_type = 11;
+        // The invoiced amount
+        double invoiced_amount = 12;
+        // The invoiced amount specific to the fund in question
+        double fund_specific_amount = 13;
+    }
+    // Recent invoices paid. Convention is to provide 6 months of history.
+    repeated Invoice recent_invoices = 58;
+    // Definition of a Swing Pricing Events.
+    message SwingPricingEvent {
+        // The date of the report
+        google.type.Date reporting_date = 1;
+        // The internal identifier of the umbrella
+        string umbrella_fund_identifier = 2;
+        // The name of the umbrella
+        // Should conform to: https://openfunds.org/OFST005010 (Umbrella)
+        // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information
+        string umbrella_fund = 3;
+        // The identifier of the fund (typically the sub-fund fund or standalone fund) that holds the security
+        // Should conform to: https://openfunds.org/OFST010110 (Legal Fund Name Only)
+        // Refers to the Sub-Fund in the case of an umbrella structure
+        // or Fund in the case of a standalone structure
+        // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information
+        string fund_identifier = 4;
+        // The name of the fund (typically the sub-fund fund or standalone fund) that holds the security
+        // Should conform to: https://openfunds.org/OFST010110 (Legal Fund Name Only)
+        // Refers to the Sub-Fund in the case of an umbrella structure
+        // or Fund in the case of a standalone structure
+        // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information
+        string fund = 5;
+        // The effective date on which swing pricing was applied
+        google.type.Date swing_price_date = 6;
+        // The threshold that was used to evaluate whether swing pricing should be applied
+        double swing_threshold = 7;
+        // The adjustment factor applied to the nav to account for the anticipated effective of subscriptions or redemptions
+        double swing_factor = 8;
+        // The NAV before the swing factor had been applied
+        double nav_without_swing_factor = 9;
+        // The NAV after the swing factor had been applied
+        double nav_with_swing_factor = 10;
+    }
+    // The list of Swing Pricing events within the fund. Swing pricing is a method used by collective investment schemes to adjust the net asset value (NAV) of the fund in order to protect existing shareholders from the negative impact of large purchases or redemptions by new or existing shareholders. This is done by adjusting the NAV of the fund to reflect the anticipated costs associated with buying or selling the underlying assets of the fund. The adjustment is typically made by charging or crediting a "swing factor" to the NAV of the fund, which is based on the size of the purchase or redemption relative to the fund's assets under management (AUM). The goal of swing pricing is to ensure that the costs of buying and selling assets are borne by those who cause the costs, rather than by all shareholders of the fund.
+    repeated SwingPricingEvent swing_pricing_events = 59;
+    // Definition of NAV information shared per share class at a point in time.
+    message PerShareClassNAV {
+        // The date of the report
+        google.type.Date reporting_date = 1;
+        // The date of the TER (should be the last day of the relevant month)
+        google.type.Date nav_date = 2;
+        // The global identifier of the share class
+        string share_class_id = 3;
+        // Enumerations of financial identifiers
+        enum ShareClassIdentifierTypes {
+            // Source not specified by the user.
+            IDENTIFIER_UNSPECIFIED = 0;
+            // ISO 6166 code of ISIN when available
+            ISIN = 1;
+            // CUSIP (The Committee on Uniform Securities Identification Procedures number assigned by the CUSIP Service Bureau for U.S. and Canadian companies)
+            CUSIP = 2;
+            // SEDOL (Stock Exchange Daily Official List for the London Stock Exchange)
+            SEDOL = 3;
+            // WKN (Wertpapier Kenn-Nummer, the alphanumeric German identification number)
+            WKN = 4;
+            // Bloomberg Ticker (Bloomberg letters code that identify a company's securities)
+            BBG_TICKER = 5;
+            // BBGID (The Bloomberg Global ID)
+            BBGID = 6;
+            // Reuters RIC (Reuters instrument code)
+            RIC = 7;
+            // FIGI (Financial_Instrument Global Identifier)
+            FIGI = 8;
+            // LEI 0 Legal Entity Identifier
+            LEI = 9;
+            // PermID - Refinitiv Permanent Identifiers
+            PERM_ID = 10;
+        }
+        // Codification chosen to identify the share class
+        ShareClassIdentifierTypes share_class_id_type = 4;
+        // Extension that identifies the share class.
+        // Should conform to: https://openfunds.org/OFST020050 (Share Class Extension)
+        string share_class_extension = 5;
+        // The number of issued units of the share class
+        double units = 6;
+        // The currency code is required to comply with the 3-letter ISO 4217 standard.
+        double nav_per_unit_base_currency = 7;
+        // The currency code is required to comply with the 3-letter ISO 4217 standard.
+        double total_nav_base_currency = 8;
+        // The nav per unit in the reporting currency at at the effective_date
+        double nav_per_unit_reporting_currency = 9;
+        // The current total nav of the share class in the reporting currency
+        double total_nav_reporting_currency = 10;
+    }
+    // Share class specific nav information
+    repeated PerShareClassNAV per_share_class_nav_historical = 60;
+    // Definition of a NAV calculation error
+    message NAVCalculationErrorInformation {
+        // The reporting date for the information
+        google.type.Date reporting_date = 1;
+        // The internal referenceID used to track the error
+        string reference_id = 2;
+        // The  identifier of the umbrella
+        string umbrella_fund_identifier = 3;
+        // The name of the umbrella
+        // Should conform to: https://openfunds.org/OFST005010 (Umbrella)
+        // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information
+        string umbrella_fund = 4;
+        // The identifier of the fund (typically the sub-fund fund or standalone fund) that holds the security
+        // Should conform to: https://openfunds.org/OFST010110 (Legal Fund Name Only)
+        // Refers to the Sub-Fund in the case of an umbrella structure
+        // or Fund in the case of a standalone structure
+        // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information
+        string fund_identifier = 5;
+        // The name of the fund (typically the sub-fund fund or standalone fund) that holds the security
+        // Should conform to: https://openfunds.org/OFST010110 (Legal Fund Name Only)
+        // Refers to the Sub-Fund in the case of an umbrella structure
+        // or Fund in the case of a standalone structure
+        // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information
+        string fund = 6;
+        // The date the error was detected
+        google.type.Date detection_date = 7;
+        // Period of the impact - Start Date
+        google.type.Date error_period_start_date = 8;
+        // Period of the impact - End Date
+        google.type.Date error_period_end_date = 9;
+        // The date the error was resolved
+        google.type.Date resolution_date = 10;
+        // Enumerations of types of errors
+        enum ErrorType {
+            ERROR_TYPE_UNSPECIFIED = 0;
+            SECURITIES_EXCEPT_DERIVATIVES_VALUATION_ERROR = 1;
+            ACCOUNTING_ERROR = 2;
+            FEES_AND_ACCRUALS_ERROR = 3;
+            CORPORATE_ACTION_ERROR = 4;
+            DERIVATIVES_VALUATION_ERROR = 5;
+            OTHER_ERROR = 6;
+        }
+        // The nature of the error
+        ErrorType error_type = 11;
+        // Description and cause of the error
+        string cause = 12;
+        // Remediation
+        string remediation = 13;
+        // Enumerations of impact of the error
+        enum Impact {
+            IMPACT_UNSPECIFIED = 0;
+            WITHOUT_IMPACT = 1;
+            IMMATERIAL_IMPACT = 2;
+            MATERIAL_IMPACT = 3;
+        }
+        // The impact of the error
+        Impact impact = 14;
+        // The indemnification amount (in the fund currency)
+        double total_indemnification_amount = 15;
+        // The indemnification amount for the sub-fund
+        double fund_indemnification_amount = 16;
+        // The indemnification amount for investors
+        double investors_indemnification_amount = 17;
+        // Maximum impact as a % of NAV
+        double maximum_impact = 18;
+        // Whether "De Minimis" amount is applied
+        bool de_minimis_applied = 19;
+        // Level of de miniis
+        double level_of_de_minimis = 20;
+        // Currency of de minimis
+        string currency_of_de_minimis = 21;
+        // Other information regarding nav impact
+        string other_information_regarding_nav_impact = 22;
+        // Date of booking / recording of the indemnification provision (in the accounting)
+        google.type.Date indemnification_booking_date = 23;
+        // Date of payment of the indemnification
+        google.type.Date indemnification_payment_date = 24;
+        // Entity responsible for payment of the indemnification amount
+        string entity_responsible_for_payment = 25;
+        // Other Comments
+        string comments = 51;
+    }
+    // NAV Calculation Errors
+    repeated NAVCalculationErrorInformation nav_calculation_errors = 61;
+    // Definition of an investment breach
+    message InvestmentBreach {
+        // The reporting date for the information
+        google.type.Date reporting_date = 1;
+        // The internal referenceID used to track the breach
+        string reference_id = 2;
+        // The identifier of the umbrella
+        string umbrella_fund_identifier = 3;
+        // The name of the umbrella
+        // Should conform to: https://openfunds.org/OFST005010 (Umbrella)
+        // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information
+        string umbrella_fund = 4;
+        // The identifier of the fund (typically the sub-fund fund or standalone fund) that holds the security
+        // Should conform to: https://openfunds.org/OFST010110 (Legal Fund Name Only)
+        // Refers to the Sub-Fund in the case of an umbrella structure
+        // or Fund in the case of a standalone structure
+        // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information
+        string fund_identifier = 5;
+        // The name of the fund (typically the sub-fund fund or standalone fund) that holds the security
+        // Should conform to: https://openfunds.org/OFST010110 (Legal Fund Name Only)
+        // Refers to the Sub-Fund in the case of an umbrella structure
+        // or Fund in the case of a standalone structure
+        // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information
+        string fund = 6;
+        // The date the breach was detected
+        google.type.Date detection_date = 7;
+        // Period of the breach - Start Date
+        google.type.Date breach_period_start_date = 8;
+        // Period of the breach - End Date
+        google.type.Date breach_period_end_date = 9;
+        // Enumerations of types of breaches
+        enum BreachType {
+            BREACH_TYPE_UNSPECIFIED = 0;
+            // Luxembourg UCI Art. 41 (1) L2010 - Eligibility requirements
+            LUX_ART_41_ELIGIBILITY_REQUIREMENTS = 1;
+            // Luxembourg UCI Art. 41 (2) L2010 - 10% TS/MMI (Trash Ratio)
+            LUX_ART_41_10_PERCENT_TS_MMI_TRASH_RATIO = 2;
+            // Luxembourg UCI Art. 43 (1) L2010 - 10% issuer TS/MMI
+            LUX_ART_43_10_PERCENT_ISSUER = 3;
+            // Luxembourg UCI Art. 43 (1) L2010 - 20% deposits
+            LUX_ART_43_20_PERCENT_DEPOSITS = 4;
+            // Luxembourg UCI Art. 43 (1) L2010 - 5%/10% FDI counterparty risk
+            LUX_ART_43_FDI_COUNTERPARTY_RISK = 5;
+            // Luxembourg UCI Art. 43 (2) L2010 - 5%/10%/40% - issuer TS/MMI
+            LUX_ART_43_ISSUER_TS_MMI = 6;
+            // Luxembourg UCI Art. 43 (2) L2010 - 20% combined limit TS/MMI/deposits/FDI
+            LUX_ART_43_20_PERCENT_COMBINED_LIMIT = 7;
+            // Luxembourg UCI Art. 43 (3) L2010 - 35% TS/MMI
+            LUX_ART_43_35_PERCENT_TS_MMI = 8;
+            // Luxembourg UCI Art. 45 (1) L2010 - 100%/6 issues/30% TS/MMI (above 35%)
+            LUX_ART_45_100_PERCENT_6_ISSUES = 9;
+            // Luxembourg UCI Art. 46 (1) L2010 - 20% UCITS/UCI
+            LUX_ART_46_20_PERCENT_UCITS_UCI = 10;
+            // Luxembourg UCI Art. 48 (2) L2010 - significant influence
+            LUX_ART_48_SIGNIFICANT_INFLUENCE = 11;
+            // Luxembourg UCI Art. 50 (2) L2010 - 10% borrowings on a temporary basis
+            LUX_ART_50_10_PERCENT_BORROWINGS_TEMP_BASIS = 12;
+            // Luxembourg UCI Art. 52 L2010 - No uncovered sales
+            LUX_ART_52_NO_UNCOVERED_SALES = 13;
+            // ESMA guidelines (Eligibility/Diversification of collateral)
+            ESMA_GUIDELINES_COLLATERAL = 14;
+            // LUX SIF - 30% issuer
+            LUX_SIF_30_PERCENT_ISSUER = 15;
+            // Breach of specific prospectus rules
+            BREACH_OF_PROSPECTUS_RULES = 16;
+            // Breach of other investment restriction rule
+            BREACH_OF_OTHER_RULE = 17;
+
+
+        }
+        // The nature of the error
+        BreachType breach_type = 10;
+        // Description and cause of the error
+        string cause = 11;
+        // Corrective measures taken to close the investment breach
+        string corrective_measures = 12;
+        // Measures taken to avoid recurrence
+        string remediation = 13;
+        // Enumerations of impact of the error
+        enum Impact {
+            IMPACT_UNSPECIFIED = 0;
+            WITHOUT_IMPACT = 1;
+            IMMATERIAL_LOSS = 2;
+            IMMATERIAL_GAIN = 3;
+            MATERIAL_LOSS = 4;
+            MATERIAL_GAIN = 5;
+        }
+        // The impact of the error
+        Impact impact = 14;
+        // The amount of impact (in currency terms)
+        double impact_amount = 15;
+        // The currency code of the impact amount
+        // The country code is required to comply with the 3-letter ISO 3166-1 alpha-3 standard.
+        // The ISO 3166-1 alpha-3 is a set of 3-letter country codes to represent countries and dependent areas.
+        // Make sure the provided country code is in uppercase.
+        // Example: 'USA' for the United States, 'GBR' for Great Britain, 'DEU' for Germany, etc.
+        string impact_amount_currency = 16;
+        // Description of the impact calculation method
+        string calculation_method = 17;
+
+
+        // Date of booking / recording of the indemnification provision (in the accounting)
+        google.type.Date indemnification_booking_date = 23;
+        // Date of payment of the indemnification
+        google.type.Date indemnification_payment_date = 24;
+        // Entity responsible for payment of the indemnification amount
+        string entity_responsible_for_payment = 25;
+        // Other Comments
+        string comments = 51;
+    }
+    // Investment breaches
+    repeated InvestmentBreach investment_breaches = 62;
+}
+
+// Batch set of RT000FTL8 responses
+message RT000FTL8_batch {
+    repeated RT000FTL8 response = 1;
+}
+

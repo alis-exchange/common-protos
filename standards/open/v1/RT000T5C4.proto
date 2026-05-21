@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package standards.open.v1;
+
+import "google/type/date.proto";
+
+option go_package = "github.com/standards-exchange/protobuf-go/standards/open/v1";
+
+// CSSF report containing identifiers of registered ManCos
+message RT000T5C4 {
+  // The records provided in the report
+  repeated Record records = 1;
+  // Definition of an individual record in the report
+  message Record {
+    // The S or O code of the management company
+    string code = 1;
+    // The CSSF's indenfifier for the manco
+    string cssf_identifier = 2;
+    // The name of the manco
+    string name = 3;
+  }
+}

@@ -1,0 +1,134 @@
+syntax = "proto3";
+
+package standards.open.v1;
+
+import "google/api/annotations.proto";
+import "google/api/field_behavior.proto";
+import "google/protobuf/field_mask.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/any.proto";
+
+option go_package = "github.com/standards-exchange/protobuf-go/standards/open/v1";
+
+// Message defining an data file resource.
+message DataFile {
+  // Fully qualified resource name
+  // Format: datafiles/{name}
+  // Example: datafiles/1234ABC
+  string name = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // The display name of the data room file
+  string display_name = 2;
+  // Created time of the reportTemplate.
+  google.protobuf.Timestamp create_time = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Update time of the reportTemplate.
+  google.protobuf.Timestamp update_time = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // Data standard type of the data file's marshalled data
+  string type = 5;
+  // The data of the file
+  google.protobuf.Any data = 6;
+
+  // Field Annotations
+  map<string, FieldAnnotation> field_annotations = 7;
+  // Attachments
+  repeated FileAttachment  file_attachments = 8;
+  // File Attachment message definition
+  message FileAttachment {
+    // Previously deleted fields
+    reserved 1, 2, 3, 4;
+
+    // Name of the supporting file
+    // Format: dataFiles/{dataFile}fileAttachments/{fileAttachment}
+    //
+    // The supportingFile identifier has a one-to-one
+    // mapping to a file in GCS. On creation, a check
+    // is done to see whether the file exists and
+    // a FAILED_PRECONDITION error is returned in the
+    // case that it does not exist.
+    string name = 5;
+    // The name of the file
+    string filename = 6;
+    // Download URI for the file.
+    //
+    // The URI is a [self-signed URI](https://cloud.google.com/storage/docs/access-control/signed-urls)
+    // which expires after creation.
+    //
+    // Suggested usage is to immediately access the file on receiving the link,
+    // as the link will not remain valid after the expiry time.
+    string download_uri = 7;
+    // The email address of the entity that uploaded the file.
+    string uploader = 8;
+    // The time the file was uploaded.
+    google.protobuf.Timestamp upload_time = 9;
+    // Can extend with metadata such as upload_time, uploaded_by, etc..
+  }
+  // Field Annotation message definition
+  message FieldAnnotation {
+    // Reference field key in the flat object structure where the field name is preceded by all parent level object
+    // names separated by a '.'.
+    string reference_key = 1;
+    // Person responsible for completing the field
+    repeated string responsible_individuals = 2;
+    // Status of the field
+    FieldState field_status = 3;
+    // FieldStatus emum
+    enum FieldState {
+      // FIELD_STATE_UNSPECIFIED
+      FIELD_STATE_UNSPECIFIED = 0;
+      // COMPLETED
+      COMPLETED = 1;
+      // IN_PROGRESS
+      IN_PROGRESS = 2;
+      // PENDING_APPROVAL
+      PENDING_APPROVAL = 3;
+      // APPROVED
+      APPROVED = 4;
+    }
+    // Comments on field
+    repeated string comments = 4 [deprecated = true];
+    // Field description
+    string field_description = 5;
+    // Update time of field
+    google.protobuf.Timestamp update_time = 6;
+    // Field Tags
+    repeated string tags = 7;
+    // File Attachment Reference
+    repeated FileAttachmentReference file_attachments = 8;
+    // Definition of a file attachment reference
+    message FileAttachmentReference {
+      // Comment on file attachment reference
+      string comment = 1;
+      // Page number reference by field annotation
+      string page_number = 2;
+      // File attachment name
+      // Format: FDX/dataFiles/{dataFile}/fileAttachments/{fileAttachment}
+      string file_attachment_ref = 3;
+      // File name
+      string file_name = 4;
+    }
+    // List of field annotation comments
+    repeated FieldAnnotationComment field_annotation_comments = 9;
+    // Definition of a field annotation comment
+    message FieldAnnotationComment {
+      // Sender Email
+      string sender_email = 1;
+      // Sent time
+      google.protobuf.Timestamp sent_time = 2;
+      // Update time
+      google.protobuf.Timestamp update_time = 3;
+      // Content is the message to display
+      string content = 4;
+      // Mentioned user's resource names
+      repeated string mentioned_users = 5;
+    }
+  }
+
+
+  // DataRoom Reference
+  string dataroom_reference = 9;
+  // The reference to the user who is owner of the dataRoomFile.
+  string owner = 10;
+}
+
+
+// only support excel & pdf type

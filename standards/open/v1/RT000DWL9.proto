@@ -1,0 +1,65 @@
+syntax = "proto3";
+
+package standards.open.v1;
+
+import "google/api/annotations.proto";
+import "google/api/client.proto";
+import "google/api/resource.proto";
+import "google/type/money.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/field_mask.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/descriptor.proto";
+import "google/type/date.proto";
+import "standards/open/v1/yesno.proto";
+import "standards/open/v1/fieldOptionsExtentions.proto";
+
+option go_package = "github.com/standards-exchange/protobuf-go/standards/open/v1";
+
+// Openfunds Fund definition
+message RT000DWL9 {
+  // "Legal name of the collective investment scheme as mentioned in official documents (i.e. prospectus). If the fund belongs to an umbrella, the name of the umbrella must be included, too. Umbrella and sub-fund's name should be separated by "" - "", i.e. ""blank"" (ASCII 32) ""dash"" (ASCII 45) ""blank"" (ASCII 32).
+  // In combination with the fund's domicile (OFST010010 Fund Domicile Alpha-2) the Legal Fund Name should be unique in order to avoid mix-ups in cases where no identifier like an ISIN is available.
+  // This field's OF-ID can also include a language tag, i.e. OFST010020(zh-Hant) for Legal Fund Name Including Umbrella written in traditional Chinese. For more information please refer to https://www.openfunds.org/en/language-tags."
+  //
+  // Openfunds: OFST010020 (https://openfunds.org/OFST010020)
+  string legal_fund_name_including_umbrella = 1; 
+  // "Name of fund or sub-fund, as listed in prospectus. Neither an available umbrella, nor the specifications of the share class such as currency, distribution policy etc. must be included. In case the fund is not part of an umbrella structure, please maintain the indication of the fund name as listed in the prospectus.
+  // In case the umbrella name is part of the sub-fund name in official legal documents such as prospectus, openfunds recommends listing the unique sub-fund name only, without repeating the umbrella name. The intention of the OFST010110 Legal Fund Name Only is to provide an option for generating the OFST010020 Legal Fund Name Including Umbrella by combining OFST010110 Legal Fund Name Only and OFST005010 Umbrella.
+  // This field's OF-ID can also include a language tag, i.e. OFST010110(zh-Hant) for Legal Fund Name Only written in traditional Chinese. For more information please refer to https://www.openfunds.org/en/language-tags."
+  //
+  // Openfunds: OFST010110 (https://openfunds.org/OFST010110)
+  string legal_fund_name_only = 2;
+  // Domicile of the fund. Please use ISO 3166-1-alpha-2 code (i.e. SE for Sweden).
+  // [List] of ISO 3166-1-alpha-2 country codes as it can be found on https://en.wikipedia.org/wiki/ISO_3166-1 or on https://www.iso.org.
+  // Openfunds: OFST010010 (https://openfunds.org/OFST010010)
+  string fund_domicile_alpha_2 = 3;
+  // "Domicile of the fund. Please use ISO 3166-1-alpha-3 code (i.e. SWE for Sweden).
+  //Please note: openfunds recommends using ""OFST010010 Fund Domicile Alpha-2"" instead as this seems to be used more often compared to alpha-3 country codes."
+  // [List] of ISO 3166-1-alpha-3 country codes as it can be found on https://en.wikipedia.org/wiki/ISO_3166-1 or on https://www.iso.org.
+  // Openfunds: OFST010011 (https://openfunds.org/OFST010011)
+  string fund_domicile_alpha_3 = 4;
+  // "Date of launch of the fund, i.e. its first share class. This field represents the age of the fund even if the eldest share class is dormant or liquidated. Therefore, it may happen, that there is no correspondent OFST020560 Share Class Launch Date.
+  // Must be in the format YYYY-MM-DD
+  // This field was not introduced by the European Working Group with their PRIIPS Data Dictionary Template (EPT), but with the CEPT and can be considered as an addition to the EPT.
+  // CEPT-PRICES: 10080_Portfolio_Historical_Start_Date//"
+  // Openfunds: OFST010240 (https://openfunds.org/OFST010240)
+  string fund_launch_date = 5;
+  // "Description of the investment objective.
+  // This field's OF-ID can also include a language tag, i.e. OFST010300(zh-Hant) for Investment Objective written in traditional Chinese. For more information please refer to https://www.openfunds.org/en/language-tags."
+  // Openfunds: OFST010300 (https://openfunds.org/OFST010300)
+  string investment_objective = 6;
+  // Base currency of the fund. Please use ISO 4217 (e.g. EUR). The fund currency reflects the accounting currency for the fund and should not be mixed up with the Share Class Currency (OFST020540).
+  // [List] of currencies. Please use ISO code 4217 as it can be found on https://www.currency-iso.org/en/home/tables/table-a1.html.
+  // Openfunds: OFST010410 (https://openfunds.org/OFST010410)
+  string fund_currency = 7;
+  enum OpenEndedOrClosedEndedStructure {
+    OPEN_ENDED_OR_CLOSED_ENDED_STRUCTURE_UNSPECIFIED = 0;
+    OPEN_ENDED = 1;
+    CLOSED_ENDED = 2;
+  }
+  // Is it possible to subscribe or redeem shares of the fund on a regular basis, i.e. daily? If yes, it is an open-ended fund. If no, it is a closed-ended fund.
+  // "open-ended fund" / "closed-ended fund"
+  // Openfunds: OFST010420 (https://openfunds.org/OFST010420)
+  OpenEndedOrClosedEndedStructure open_ended_or_closed_ended_fund_structure = 8; 
+}

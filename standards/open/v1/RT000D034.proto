@@ -1,0 +1,1232 @@
+syntax = "proto3";
+
+package standards.open.v1;
+
+import "google/api/annotations.proto";
+import "google/api/client.proto";
+import "google/api/resource.proto";
+import "google/type/money.proto";
+import "google/type/postal_address.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/field_mask.proto";
+import "google/protobuf/timestamp.proto";
+import "google/type/date.proto";
+
+option go_package = "github.com/standards-exchange/protobuf-go/standards/open/v1";
+
+// The CSSF self-assessment questionnaire to be submitted annually by Undertakings for Collective Investment as per Circular CSSF 21/790. See https://www.cssf.lu/en/Document/circular-cssf-21-790/
+message RT000D034 {
+    // Definition of questions related to a fund specific cost
+    message FundSpecificExplanation {
+        // The CSSF of the fund / sub-fund
+        string cssf_code = 1;
+        // The name of the fund to which the financial instrument belongs. // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information.
+        string fund_name = 2;
+        // Description of the cost
+        string explanation = 3;
+    }
+    // Standard frequency responses
+    enum Frequency {
+        FREQUENCY_UNSPECIFIED = 0;
+        DAILY = 1;
+        WEEKLY = 2;
+        MONTHLY = 3;
+        QUARTERLY = 4;
+        BI_ANNUALLY = 5;
+        ANNUALLY = 6;
+        AD_HOC = 7;
+    }
+    message YesNoExplain {
+        enum Response {
+            RESPONSE_UNSPECIFIED = 0;
+            YES = 1;
+            NO = 2;
+        }
+        // Primary Yes / No response.
+        Response response = 1;
+        // Explanation if required
+        string explanation = 2;
+    }
+    // The legal identifier of the fund.
+    // Should conform to: https://openfunds.org/OFST005010 (Umbrella).
+    // Note: The Luxembourg market typically uses the Fund / Sub-fund nomenclature. We have made a decision to standardize on
+    // UmbrellaFund / Fund to keep the nomenclature consistent with reports from other markets.
+    // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information
+    string umbrella_fund = 1;
+    // The CSSF entity code
+    string cssf_code = 2;
+    // The address street and number of the entity
+    string address_street_and_number = 3;
+    // The address postal code of the entity
+    string postal_code_and_city = 4;
+    // What is the number of staff members (including the management) involved/dealing with AML/CFT?
+    int32 number_of_staff_dealing_with_aml_cft = 5;
+    // Enumeration of license types
+    enum License {
+        LICENSE_UNSPECIFIED = 0;
+        UCITS = 1;
+        AIF = 2;
+        MONEY_MARKET = 3;
+    }
+    // What licenses does the entity have
+    repeated License licenses = 6;
+    // Financial year end of the entity
+    google.type.Date entity_year_end = 7;
+    // Definition of a manager of a fund
+    message Manager {
+        // The first name
+        string first_name = 1;
+        // The last name
+        string last_name = 2;
+        // The phone number including country code
+        string phone_number = 3;
+        // The email address of the manager
+        string email_address = 4;
+        // The three letter ISO code of the country of residence
+        string country_of_residence = 5;
+    }
+    // Information regarding Members of the Management of the Fund
+    repeated Manager managers = 8;
+    // Definition for data to be provided per fund (i.e. sub-fund or standalone fund).
+    message DescriptiveFundInformation {
+        // CSSF Code of the (sub-)fund
+        string cssf_code = 1;
+        // Name of the (sub-)fund
+        string fund_name = 2;
+        // ISO code (https://en.wikipedia.org/wiki/ISO_4217) of base currency of (sub-)fund
+        string fund_currency = 4;
+        // Active at any time during the year
+        bool active_during_year = 5;
+        // Applicable nav materiality threshold (see CSSF circular 02/77)
+        double materiality_threshold = 6;
+        // Active at year end
+        bool active_at_year_end = 7;
+        // Whether in liquidation
+        bool in_liquidation = 8;
+        // Whether open ended
+        bool open_ended = 9;
+        // Whether in a lock-up period
+        bool in_lockup_period = 10;
+        // Whether redemptions suspended at year-end
+        bool redemptions_suspended_at_year_end = 11;
+        // frequency of investor redemptions
+        string redemption_frequency = 12;
+    }
+    // Descriptive information per (sub-)fund
+    repeated DescriptiveFundInformation fund_descriptions = 9;
+    // 2. Did the Fund record any capital transaction(s) in its accounts for any (sub-)fund during the year?
+    google.type.Money subscriptions_value = 10;
+    google.type.Money redemptions_value = 11;
+    // Enumeration of types of instruments
+    enum InstrumentType {
+        INSTRUMENT_TYPE_UNSPECIFIED = 0;
+        MONEY_MARKET_INSTRUMENTS = 1;
+        DEPOSITS_TERM_OR_CASH = 2;
+        REPURCHASE_TRANSACTIONS_REPO_OR_REVERSE_REPO = 3;
+        SECURITIES_LENDING = 4;
+        LISTED_EQUITIES = 5;
+        CORPORATE_BONDS = 6;
+        GOVERNMENT_OR_MUNICIPAL_BONDS = 7;
+        REAL_ESTATE_INVESTMENT_TRUSTS_REITS = 8;
+        CONVERTIBLE_BONDS = 9;
+        LOANS_OR_PRIVATE_CREDITS = 10;
+        STRUCTURED_OR_SECURITIZED_PRODUCTS = 11;
+        EQUITY_DERIVATIVES = 12;
+        FIXED_INCOME_DERIVATIVES = 13;
+        CREDIT_DERIVATIVES = 14;
+        FX_DERIVATIVES = 15;
+        COMMODITY_DERIVATIVES = 16;
+        OTHER_DERIVATIVES = 17;
+        HEDGE_FUNDS_HF = 18;
+        REAL_ESTATE_OR_INFRASTRUCTURE_OR_RENEWABLES_DIRECT_OR_INDIRECT = 19;
+        PRIVATE_EQUITY_DIRECT_OR_INDIRECT = 20;
+        OPEN_ENDED_FUNDS_EXCL_HF_OR_RE_OR_PE = 21;
+        CLOSED_ENDED_FUNDS_EXC_HF_OR_RE_OR_PE = 22;
+        PHYSICAL_ASSETS_DIRECT_INVESTMENTS_IN_REAL_OR_TANGIBLE_ASSETS_EXCL_RE_OR_INFRASTRUCTURE_OR_RENEWABLES = 23;
+        PHYSICAL_ASSETS_INDIRECT_INVESTMENTS_IN_REAL_OR_TANGIBLE_ASSETS_EXCL_RE_OR_INFRASTRUCTURE_OR_RENEWABLES = 24;
+        OTHER = 25;
+    }
+    // 3. In which types of investments was the Fund invested at year-end (direct investments, except where
+    repeated InstrumentType instrument_types_invested_in = 12;
+    repeated string other_instrument_types_invested_in = 13;
+    // 4. Was any (sub-)fund invested at year-end at the level of its portfolio in a special purpose vehicle
+    bool invested_in_spv = 14;
+    // 4.1. If the answer to Q4. is YES, specify the number of sub-funds investing in SPVs or other similar intermediate vehicles/entities for facilitating the investment in the underlying assets?
+    int32 number_of_spvs = 15;
+    // Definition of questions relating to the organization of the fund
+    message Organisation {
+        // SECTION#2.1 Organization|
+        // NUMBER#2.17|
+        // CONDITIONAL#Q1.17?Y:N|
+        // QUESTION#Did the Management of the Fund convene any extraordinary general meeting which was organized during the year?]]
+        // DESCRIPTION#
+        YesNoExplain extraordinary_general_meetings = 1;
+        // 2.2. How many formal meetings of the Management of the Fund have taken place during the financial year?
+        int32 number_formal_management_meetings = 2;
+        // 2.1.3. Were all the meetings subject to documented minutes?
+        YesNoExplain documented_minutes = 3;
+        // 2.1.4. Has any member of the Management of the Fund resigned during the year?
+        // 2.1.4.1. If the answer to Q4. is YES, how many members of the Management of the Fund have resigned during the year?
+        int32 number_of_management_resignations = 4;
+        // Enumeration of management meeting subjects
+        enum ManagementMeetingSubjects {
+            MANAGEMENT_MEETING_SUBJECT_UNSPECIFIED = 0;
+            DELEGATE_OVERSIGHT_IFM = 1;
+            DELEGATE_OVERSIGHT_CENTRAL_ADMINISTRATION = 2;
+            DELEGATE_OVERSIGHT_TRANSFER_OR_REGISTRAR_AGENT = 3;
+            DELEGATE_OVERSIGHT_DISTRIBUTORS = 4;
+            DELEGATE_OVERSIGHT_PORTFOLIO_MANAGERS = 5;
+            DELEGATE_OVERSIGHT_INVESTMENT_ADVISORS = 6;
+            PORTFOLIO_MANAGEMENT_OF_FUND = 7;
+            RISK_MANAGEMENT_AND_FUND_RISKS = 8;
+            CYBER_AND_IT_RISKS = 9;
+            FUND_DEVELOPMENT_AND_PERFORMANCE = 10;
+            INVESTMENT_COMPLIANCE = 11;
+            VALUATION_AND_NAV_DETERMINATION = 12;
+            FEES_AND_EXPENSES = 13;
+            // i. Capital transactions at the level of the Fund (e.g. subscriptions, redemptions, distributions, liquidity management tools, capital calls, etc...)
+            CAPITAL_TRANSACTIONS = 14;
+            CONFLICTS_OF_INTEREST = 15;
+            AML_CFT = 16;
+            CENTRAL_ADMINISTRATION_OR_ACCOUNTING_ISSUES = 17;
+            MARKETING = 18;
+            RELATIONSHIP_WITH_DEPOSITORY = 19;
+            REGULATORY_DEVELOPMENTS = 20;
+            OTHER = 21;
+        }
+        // 2.1.5. Which subjects were covered in the meetings held by the Management of the Fund during the financial year?
+        repeated ManagementMeetingSubjects management_meeting_subjects = 5;
+        // If the answer to Q5.p. is YES, specify the subject(s)
+        string other_management_meeting_subjects = 6;
+        // 2.1.6. Did the Management of the Fund attend trainings during the year?: a. professional training(s) update and develop their skills.
+        YesNoExplain management_attend_training_professional = 7;
+        // 2.1.6. Did the Management of the Fund attend trainings during the year?: b. AML/CFT training(s)
+        YesNoExplain management_attend_training_aml = 8;
+        // 2.1.7. Did the Fund identify any material organizational deficiency regarding legal, regulatory or contractual responsibilities for one of its delegates/service providers (including depositary) which or could have had an impact on the Fund and its investors during the year? If YES, explain.
+        YesNoExplain material_deficiency_ifm = 9;
+        // 2.1.7. Did the Fund identify any material organizational deficiency regarding legal, regulatory or contractual responsibilities for one of its delegates/service providers (including depositary) which or could have had an impact on the Fund and its investors during the year? If YES, explain.
+        YesNoExplain material_deficiency_central_administration = 10;
+        // 2.1.7. Did the Fund identify any material organizational deficiency regarding legal, regulatory or contractual responsibilities for one of its delegates/service providers (including depositary) which or could have had an impact on the Fund and its investors during the year? If YES, explain.
+        YesNoExplain material_deficiency_transfer_or_registrar_agent = 11;
+        // 2.1.7. Did the Fund identify any material organizational deficiency regarding legal, regulatory or contractual responsibilities for one of its delegates/service providers (including depositary) which or could have had an impact on the Fund and its investors during the year? If YES, explain.
+        YesNoExplain material_deficiency_distributor = 12;
+        // 2.1.7. Did the Fund identify any material organizational deficiency regarding legal, regulatory or contractual responsibilities for one of its delegates/service providers (including depositary) which or could have had an impact on the Fund and its investors during the year? If YES, explain.
+        YesNoExplain material_deficiency_portfolio_manager = 13;
+        // 2.1.7. Did the Fund identify any material organizational deficiency regarding legal, regulatory or contractual responsibilities for one of its delegates/service providers (including depositary) which or could have had an impact on the Fund and its investors during the year? If YES, explain.
+        YesNoExplain material_deficiency_investment_advisor = 14;
+        // 2.1.7. Did the Fund identify any material organizational deficiency regarding legal, regulatory or contractual responsibilities for one of its delegates/service providers (including depositary) which or could have had an impact on the Fund and its investors during the year? If YES, explain.
+        YesNoExplain material_deficiency_depository = 15;
+        // 2.1.7. Did the Fund identify any material organizational deficiency regarding legal, regulatory or contractual responsibilities for one of its delegates/service providers (including depositary) which or could have had an impact on the Fund and its investors during the year? If YES, explain.
+        YesNoExplain material_deficiency_other_delegate = 16;
+        // 2.1.8. Did the Fund meet at year-end the minimum capital requirement as laid down in the applicable sectorial law?
+        bool meet_minimum_capital_requirements = 17;
+        // 2.1.8.1. If the answer to Q8. is NO, did the Fund convene an Extraordinary General Meeting and/or inform the CSSF in accordance with the applicable sectorial laws?
+        bool if_not_meeting_cap_reqs_did_board_convene_extraordinary_general_meeting_and_inform_cssf = 18;
+        // 2.1.9. Did the Fund or a service provider of the Fund receive during the year a specific request from a foreign national competent authority concerning a potential issue in relation to the functioning of the Fund?
+        bool received_request_from_foreign_competent_authority_concerning_potential_issue = 19;
+        // 2.1.10. Did the Fund or a service provider of the Fund receive during the year any sanction from a foreign national competent authority regarding wrondoings at the level of the Fund?
+        bool received_request_from_foreign_competent_authority_concerning_wrongdoings = 20;
+        // 2.1.11. Did the Fund or a service provider of the Fund receive any investor claim and/or complaint during the year in relation to the functioning of the Fund?
+        bool fund_received_investor_complaint_during_year = 21;
+        // 2.1.11.1. If the answer to Q11. is YES, indicate the number
+        int32 number_of_investor_complaints_received_during_year = 22;
+        // 2.1.11.2. If the answer to Q11. is YES, could any claim and/or complaint received from investor(s) during the year have a material impact on the Fund/sub-fund or its investors?
+        YesNoExplain could_any_complaint_have_material_impact_on_fund = 23;
+        // 2.1.12. Was the Fund involved in a litigation or judicial proceeding during the year? 12.1. If the answer to Q12. is YES, explain.
+        YesNoExplain fund_involved_in_litigation_during_year = 24;
+        // 2.1.13. Is the Management of the Fund aware of any case(s) of suspected or actual fraud (at Fund level or investment level) which could have an impact on the Fund/sub-fund or its investors?. 13.1. If the answer to Q10. is YES, explain.
+        YesNoExplain any_cases_of_suspected_or_actual_fraud = 25;
+        // 2.1.14. Did the Fund notify (respectively did any service provider notify on behalf of the Fund) a suspected fraud and/or a suspected case of money laundering/terrorist financing to the State Attorney’s Office (“Parquet”) and/or the Financial Intelligence Unit (“Cellule de Renseignement Financier”) during the year?
+        bool notification_of_suspected_fraud = 26;
+        // 2.1.14. Did the Fund notify (respectively did any service provider notify on behalf of the Fund) a suspected fraud and/or a suspected case of money laundering/terrorist financing to the State Attorney’s Office (“Parquet”) and/or the Financial Intelligence Unit (“Cellule de Renseignement Financier”) during the year?.
+        // 2.1.14.1. If the answer to Q14. is YES, indicate the number
+        int32 number_of_notifications_of_suspected_fraud = 27;
+        // 2.1.14. Did the Fund notify (respectively did any service provider notify on behalf of the Fund) a suspected fraud and/or a suspected case of money laundering/terrorist financing to the State Attorney’s Office (“Parquet”) and/or the Financial Intelligence Unit (“Cellule de Renseignement Financier”) during the year?.
+        // 2.1.14.2. If the answer to Q14. is YES, did the Fund send a copy of all these communication(s) to the CSSF as required by the Circular CSSF 11/528?
+        YesNoExplain notifications_of_suspected_fraud_shared_with_cssf = 28;
+        // 2.1.15. Did the Management of the Fund, in accordance with article 4(5) of the CSSF Regulation N° 15-07, formally adopt the risk management system of the SIF and, subsequently, have it reviewed and documented on a regular basis?
+        // 2.1.15.1. If the response to Q15. is NO, explain
+        YesNoExplain adopted_risk_management_system_of_sif = 29;
+        // 2.1.15. Did the Management of the Fund, in accordance with article 4(5) of the CSSF Regulation N° 15-07, formally adopt the risk management system of the SIF and, subsequently, have it reviewed and documented on a regular basis?
+        // 2.1.15.2. If the answer to Q15. is YES, indicate the date of the last regular review.
+        google.type.Date risk_management_system_of_sif_date_of_last_review = 30;
+        // 2.2.1 Were an effective conflicts of interest policy and effective procedures in place for the Fund
+        // (including at IFM level if applicable) (i) to identify the circumstances which constitute or may give rise to a conflict of interest entailing a material risk of damage to the interests of the Fund and/or its investors and (ii) to manage existing (if any) material conflict(s) of interests?
+        bool effective_conflicts_of_interest_policy_in_place = 31;
+        // 2.2.1.1 If the answer to Q16. is YES, did the Management of the Fund (or its IFM if any) identify such material conflict(s) of interests?
+        // 2.2.1.1.1. If the answer to Q16.1. is YES, explain
+        YesNoExplain any_conflicts_of_interest_identified = 32;
+        // 2.2.1.1.2. If the answer to Q16.1. is YES, did the Fund or its IFM (if any) keep an exhaustive and up-todate register of such conflicts of interests?
+        YesNoExplain register_of_conflicts_maintained = 33;
+        // 2.2.1.1.2.1. If the answer to Q16.1.2. is YES, how many conflict(s) of interests are recorded in the register?
+        int32 number_of_conflicts_recorded = 34;
+        // 2.2.1.1.3. If the answer to Q16.1. is YES, were the procedures in place for the Fund sufficient to ensure, with reasonable confidence, that the risks of damage to the interests of the Fund and/or its sub-fund(s) and/or of its investors are prevented?
+        // 2.2.1.1.3.1.1. If the answer to Q16.1.3.1. is NO, explain
+        YesNoExplain procedures_in_place_to_protect_fund = 35;
+        // 16.1.3.1. If the answer to Q 16.1.3. is NO, did the Management of the Fund or its IFM (if any) take the necessary decisions to act in the best interests of the Fund and/or its investors?
+        YesNoExplain if_no_procedures_did_management_act_in_interest_of_investors = 36;
+        // 16.1.3.2. If the answer to Q16.1.3. is NO, did the Management of the Fund ensure that such material conflicts of interest situations are reported to investors?
+        // 16.1.3.2.1. If the answer to Q16.1.3.2. is NO, explain
+        YesNoExplain if_no_procedure_were_conflicts_reported_to_investors = 37;
+        // 17. Was the share/unit class of any (sub-)fund sold to retail investors (on a look-through basis) at year-end?
+        bool sold_to_retail_investors_on_lookthrough_basis = 38;
+        // 17.1. If the answer to Q17. is YES, mention the number of sub-funds
+        int32 number_funds_sold_to_retail_investors_on_lookthrough_basis = 39;
+        // enumeration of types of informed investors
+        enum InformedInvestorCategories {
+            INFORMED_INVESTOR_CATEGORY_UNSPECIFIED = 0;
+            // a. Institutional investors / professional investors
+            INSTITUTIONAL_OR_PROFESSIONAL_INVESTORS = 1;
+            // b. Investors confirmed in writing that they adhere to the status of well-informed investor AND investeda minimum of 125,000 Euro
+            LARGE_AND_CONFIRMED_INFORMED_INVESTOR = 2;
+            // c. Investors confirmed in writing that they adhere to the status of well-informed investor and have been the subject of an assessment made by a credit institution within the meaning of Directive 2006/48/EC, by an investment firm within the meaning of Directive 2004/39/EC or by a management company within the meaning of “Directive 2009/65/EC”4 certifying his expertise, his experience and his knowledge in adequately apprising an investment in the specialised investment fund
+            CONFIRMED_INFORMED_AND_ASSESSED_TO_CERTIFY_EXPERTISE = 3;
+        }
+        // 2.3.2. WELL-INFORMED INVESTORS -SIF/ SICAR.
+        // 18. Did the investors in the Fund at year-end belong to one or more of the following categories?
+        repeated InformedInvestorCategories investor_categories = 40;
+        // 19. Are procedures in place for the Fund to ensure that all investors are well-informed investors in accordance with article 2 of the SIF Law or with article 2 of the SICAR Law?
+        YesNoExplain procedures_in_place_to_ensure_investors_well_informed = 41;
+        // 20. Are procedures in place for the Fund to ensure that
+        // a. the audited annual report complies with the legal/regulatory provisions?.
+        // 20.1. If one of the answers to Q.20. [a. to d.] is NO, explain.
+        YesNoExplain procedures_in_place_to_ensure_audited_annual_report_complies_with_regulation = 42;
+        // b. the audited annual report complies with the constitutive documents? 20.1. If one of the answers to Q.20. [a. to d.] is NO, explain .
+        YesNoExplain procedures_in_place_to_ensure_audited_annual_report_complies_with_constitutive_documents = 43;
+        // c. the audited annual report complies with the accounting standard adopted by the Fund? 20.1. If one of the answers to Q.20. [a. to d.] is NO, explain
+        YesNoExplain procedures_in_place_to_ensure_audited_annual_report_complies_with_fund_accounting_standard = 44;
+        // d. the "report on the activities" included in the audited annual report provides a complete, consistent and fair description of the activity of the Fund for the year? 20.1. If one of the answers to Q.20. [a. to d.] is NO, explain.
+        YesNoExplain report_on_activities_included_in_annual_report_and_accurate = 45;
+    }
+    // Responses to questions relating to the organization of the fund
+    Organisation organisation = 16;
+    // Definition of questions relating to the investment compliance of the fund
+    message InvestmentCompliance {
+        // 1. Does the investment compliance control framework in place for the Fund provide for materialized, standardized and/or automated pre-trade investment compliance controls (including controls at portfolio manager level)? 1.1. If the answer to Q1. is NO, explain.
+        YesNoExplain pre_trade_investment_compliance_at_portfolio_manager_level = 1;
+        // 2. Does the investment compliance control framework in place for the Fund provide for materialized, standardized and/or automated post-trade (ex post) investment compliance controls (i.e. controls realized by the IFM or specialized service provider independent from the portfolio manager)? 2.1. If the answer to Q2. is NO, explain.
+        YesNoExplain post_trade_investment_compliance_at_portfolio_manager_level = 2;
+        // 3. Does the investment compliance control framework in place for the Fund provide for a delegation of the ongoing ex post investment compliance controls to a specialized service provider? 3.1. If the answer to Q3. is YES, provide the name of the specialized service provider
+        YesNoExplain delegation_of_ongoing_ex_post_investment_compliance = 3;
+        // Definition of an investment restriction not verified
+        message NotVerifiedInvestmentRestrictionsByFund {
+            // The CSSF of the fund / sub-fund
+            string cssf_code = 1;
+            // The name of the fund to which the financial instrument belongs. // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information.
+            string fund_name = 2;
+            // Is the fund active (false if in liquidation)
+            bool active = 4;
+            // Concerned Investment Restriction
+            repeated string not_verified_investment_restrictions = 5;
+        }
+        // 4. Does the ex post investment compliance control framework in place for the Fund cover all legal and regulatory investment restrictions (eligibility and investment restrictions limits) applicable to the Fund?
+        bool ex_post_investment_compliance_covers_all_legal_and_regulatory_investment_restrictions = 4;
+        // 4.1.1. If the answer to Q4.1. is YES, mention the concerned investment restrictions
+        repeated string legal_and_regulatory_investment_restrictions = 5;
+        // 4.2. If the answer to Q4. is NO, are there any investment restrictions that are not verified for only certain sub-funds?
+        repeated NotVerifiedInvestmentRestrictionsByFund not_verified_legal_and_regulatory_investment_restrictions_by_fund = 6;
+        // 5. Does the ex post investment compliance control framework in place for the Fund cover all contractual investment restrictions applicable to the Fund as laid down in the prospectus of the Fund (i.e. investment policy, etc.)?
+        bool ex_post_investment_compliance_covers_all_investment_restrictions_in_prospectus = 7;
+        // 5.1.1. If the answer to Q5.1. is YES, mention the concerned investment restrictions
+        repeated string investment_restrictions_in_prospectus = 8;
+        // 5.2. If the answer to Q5. is NO, are there any investment restrictions that are not verified for only certain sub-funds?
+        repeated NotVerifiedInvestmentRestrictionsByFund not_verified_prospectus_investment_restrictions_by_fund = 9;
+        // 6. Does the ex post investment compliance control framework in place for the Fund ensure, for each sub-fund, that all legal, regulatory and contractual investment restrictions are complied with at each NAV calculation?
+        bool ex_post_investment_compliance_covers_all_legal_and_regulatory_investment_restrictions_at_nav_calc = 10;
+        // 6.1.1. If the answer to Q6.1. is YES, mention the concerned investment restrictions
+        repeated string legal_and_regulatory_investment_restrictions_at_nav_calc = 11;
+        // 6.2. If the answer to Q6. is NO, are there any investment restrictions that are not verified for only certain sub-funds?
+        repeated NotVerifiedInvestmentRestrictionsByFund not_verified_legal_and_regulatory_investment_restrictions_at_nav_time_by_fund = 12;
+        // Questions related to LEGAL/REGULATORY INVESTMENT RESTRICTIONS - UCITS
+        message LegalAndRegulatoryRestrictionsUCITS {
+            // 7. Did the transferable securities held by the (sub-)fund(s) during the year comply on an ongoing basis with the provisions of article 41(1) (a) to (d) of the UCI Law, article 2 of the EAD GDR 2008 and the CESR/07-044b in the sense that there was NO active breach?. 7.1. If the answer to Q7. is NO -not reported in a 02/77 report, explain
+            YesNoExplain transferable_securities_no_active_breaches = 1;
+            // 8. Did the money market instruments held by the (sub-)fund(s) during the year comply on an ongoing basis with the provisions of article 41(1) (a) to (d) of the UCI Law, articles 3 and 4 of the EAD GDR 2008 and the CESR/07-044b in the sense that there was NO active breach? 8.1. If the answer to Q8. is NO -not reported in a 02/77 report, explain
+            YesNoExplain money_market_securities_no_active_breaches = 2;
+            // 9. Did the shares/units of undertakings for collective investment (UCITS and other UCIs) held by the (sub-)fund(s) during the year comply on an ongoing basis with the provisions of article 41(1)(e) of the UCI Law, the EAD GDR 2008 and the CESR/07-044b in the sense that there was NO active breach? 9.1. If the answer to Q9. is NO -not reported in a 02/77 report, explain
+            YesNoExplain shares_or_uints_of_undertakings_no_active_breaches = 3;
+            // 10. Did the deposits held by the (sub-)fund(s) during the year comply on an ongoing basis with the provisions of article 41(1)(f) of the UCI Law, the EAD GDR 2008 and the CESR/07-044b in the sense that there was NO active breach? 10.1. If the answer to Q10. is NO -not reported in a 02/77 report, explain
+            YesNoExplain deposits_no_active_breaches = 4;
+            // 11. Did the Financial Derivative Instruments (‘FDIs’) held by the (sub-)fund(s) during the year comply on an ongoing basis with the provisions of article 41(1)(g) of the UCI Law, the EAD GDR 2008, the CESR/07-044b and the Circular CSSF 14/592 in the sense that there was NO active breach? 11.1. If the answer to Q11. is NO -not reported in a 02/77 report, explain
+            YesNoExplain financial_derivative_investments_no_active_breaches = 5;
+            // 11.2. If the answer to Q11. is not N/A, did the underlying financial index of any FDI held by the (sub-)fund(s) during the year comply on an ongoing basis with the provisions of article 44(1) of the UCI Law, the EAD GDR 2008, CESR/07-044b and the Circular CSSF 08/339 in the sense that there was NO active breach? 11.2.1. If the answer to Q11.2. is NO -not reported in a 02/77 report, explain
+            YesNoExplain financial_derivative_investments_compliant_underlying_index = 6;
+            // 12. Did the money market instruments held by the (sub-)fund(s) during the year comply on an ongoing basis with the provisions of article 41(1)(h) of the UCI Law, article 3 of the EAD GDR 2008 and the CESR/07-044b in the sense that there was NO active breach? 12.1. If the answer to Q12. is NO -not reported in a 02/77 report, explain
+            YesNoExplain money_market_investments_no_active_breaches = 7;
+            // 13. Did the techniques and instruments relating to transferable securities and money market instruments concluded by the (sub-)fund(s) during the year for the purpose of EPM comply on an ongoing basis with the provisions of article 42(2) of the UCI Law, the article 11 of the EAD GDR 2008, CESR/07-044b and the Circular CSSF 14/592 in the sense that there was NO active breach? 13.1. If the answer to Q13. is NO -not reported in a 02/77 report, explain
+            YesNoExplain efficient_portfolio_management_instruments_no_active_breaches = 8;
+            // 14. Did the financial collateral received by the (sub-)fund(s) during the year in relation with OTC FDI and EPM comply on an ongoing basis with the Circular CSSF 14/592 in the sense that there was NO active breach? 14.1. If the answer to Q14. is NO -not reported in a 02/77 report, explain
+            YesNoExplain financial_collateral_no_active_breaches = 9;
+            // 15. Did the trash ratio in accordance with article 41(2)(a) of the UCI Law in respect to any (sub-)fund of the Fund represent more than 5% of the TNA as at year-end?
+            bool trash_ratio_exceeded_five_percent_at_year_end = 10;
+            // Definition of an investment restriction not verified
+            message TrashRatioByFund {
+                // The CSSF of the fund / sub-fund
+                string cssf_code = 1;
+                // The name of the fund to which the financial instrument belongs. // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information.
+                string fund_name = 2;
+                // Is the fund active (false if in liquidation)
+                bool active = 4;
+                // Trash ratio (in % of NAV)
+                double trash_ratio = 5;
+            }
+            // 15.1. If the answer to Q15. is YES, mention the corresponding sub-funds concerned and the level of the trash ratio in percentage of the NAV of the sub-fund as at year-end
+            repeated TrashRatioByFund trash_ratio_by_fund = 11;
+            // 16. Did the investments held by the (sub-)fund(s) in the trash ratio during the year comply on an ongoing basis with the provisions of article 41(2)(a) of the UCI Law, article 2 of the EAD GDR 2008 and the CESR/07-044b in the sense that there was NO active breach? 16.1. If the answer to Q16. is NO -not reported in a 02/77 report, explain
+            YesNoExplain trash_ratio_investments_no_active_breaches = 12;
+            // 17. Do the pre-trade controls in place for the Fund provide for (i) the identification of any investments to be qualified in accordance with Article 41(2) (a) (i.e. trash ratio) of the UCI Law, (ii) the carrying out (in accordance with the CSSF Feedback report dated 22 June 2021 on the ESMA Common Supervisory Action on UCITS Liquidity Risk Management) of adequate and documented liquidity analyses and forecasts at pre-investment level for trash ratio investments and (iii) the verification of compliance with all applicable regulatory requirements for such investments? 17.1. If the answer to Q17. is NO, explain
+            YesNoExplain pre_trade_controls_in_place_to_identify_and_monitor_trash_instruments = 13;
+            // 18. Did the (sub-)fund(s) comply on an ongoing basis during the year with all legal investment restrictions of articles 42 to 52 of the UCI Law, including notably the following (non-exhaustive list): a. the global exposure limit of article 42(3). If NO -not reported in a 02/77 report, explain
+            YesNoExplain complied_with_global_exposure_investment_restrictions = 14;
+            // 18. Did the (sub-)fund(s) comply on an ongoing basis during the year with all legal investment restrictions of articles 42 to 52 of the UCI Law, including notably the following (non-exhaustive list): b. the issuer limitations of article 43(1) (10%), 43(3) (35%) and 45(1) (100% / 6-30%). If NO -not reported in a 02/77 report, explain
+            YesNoExplain complied_with_issuer_limitation_investment_restrictions = 15;
+            // 18. Did the (sub-)fund(s) comply on an ongoing basis during the year with all legal investment restrictions of articles 42 to 52 of the UCI Law, including notably the following (non-exhaustive list): c. the 20% deposit limit of article 43(1) . If NO -not reported in a 02/77 report, explain
+            YesNoExplain complied_with_twenty_percent_deposit_limit_investment_restrictions = 16;
+            // 18. Did the (sub-)fund(s) comply on an ongoing basis during the year with all legal investment restrictions of articles 42 to 52 of the UCI Law, including notably the following (non-exhaustive list): d. the 5%/10% OTC counterparty limit of article 43(1). If NO -not reported in a 02/77 report, explain
+            YesNoExplain complied_with_otc_counterparty_limit_investment_restrictions = 17;
+            // 18. Did the (sub-)fund(s) comply on an ongoing basis during the year with all legal investment restrictions of articles 42 to 52 of the UCI Law, including notably the following (non-exhaustive list): e. the 5%/40% issuer limit of article 43(2). If NO -not reported in a 02/77 report, explain
+            YesNoExplain complied_with_issuer_limit_limit_investment_restrictions = 18;
+            // 18. Did the (sub-)fund(s) comply on an ongoing basis during the year with all legal investment restrictions of articles 42 to 52 of the UCI Law, including notably the following (non-exhaustive list): f. the combined 20% limit of article 43(2) . If NO -not reported in a 02/77 report, explain
+            YesNoExplain complied_with_combined_twenty_percent_limit_investment_restrictions = 19;
+            // 18. Did the (sub-)fund(s) comply on an ongoing basis during the year with all legal investment restrictions of articles 42 to 52 of the UCI Law, including notably the following (non-exhaustive list): g. the target UCITS / other UCI limits of 20% (per target fund) and 30% (total other UCI) of article 46. If NO -not reported in a 02/77 report, explain
+            YesNoExplain complied_with_target_uci_and_ucits_limit_investment_restrictions = 20;
+            // 18. Did the (sub-)fund(s) comply on an ongoing basis during the year with all legal investment restrictions of articles 42 to 52 of the UCI Law, including notably the following (non-exhaustive list): h. the concentration limits of article 48 . If NO -not reported in a 02/77 report, explain
+            YesNoExplain complied_with_concentration_limit_investment_restrictions = 21;
+            // 18. Did the (sub-)fund(s) comply on an ongoing basis during the year with all legal investment restrictions of articles 42 to 52 of the UCI Law, including notably the following (non-exhaustive list): i. the borrowing limit of article 50. If NO -not reported in a 02/77 report, explain
+            YesNoExplain complied_with_borrowing_limit_investment_restrictions = 22;
+            // 18. Did the (sub-)fund(s) comply on an ongoing basis during the year with all legal investment restrictions of articles 42 to 52 of the UCI Law, including notably the following (non-exhaustive list): j. the restriction to carry out uncovered sales of article 52 . If NO -not reported in a 02/77 report, explain
+            YesNoExplain complied_with_uncovered_sale_investment_restrictions = 23;
+            // 18. Did the (sub-)fund(s) comply on an ongoing basis during the year with all legal investment restrictions of articles 42 to 52 of the UCI Law, including notably the following (non-exhaustive list): k. the 10% trash ratio limit of article 41(2) (a) . If NO -not reported in a 02/77 report, explain
+            YesNoExplain complied_with_ten_percent_trash_investment_restrictions = 24;
+            // 18. Did the (sub-)fund(s) comply on an ongoing basis during the year with all legal investment restrictions of articles 42 to 52 of the UCI Law, including notably the following (non-exhaustive list): l. other. If NO -not reported in a 02/77 report, explain
+            YesNoExplain complied_all_other_investment_restrictions = 25;
+        }
+        // Self assessment of compliance with UCITS legal and regulatory investment restrictions
+        LegalAndRegulatoryRestrictionsUCITS legal_and_regulatory_investment_compliance_ucits = 13;
+        // Questions related to LEGAL/REGULATORY INVESTMENT RESTRICTIONS - SIF
+        message LegalAndRegulatoryRestrictionsSIF {
+            // 19. Did the (sub-)fund(s) comply on an ongoing basis during the year with the investment restrictions laid down in Circular CSSF 07/309 on the risk-spreading? 20.1. If the answer to Q20. is NO, explain
+            YesNoExplain complied_with_scar_law_and_cssf_circular = 1;
+        }
+        // Self assessment of compliance with SIF legal and regulatory investment restrictions
+        LegalAndRegulatoryRestrictionsSIF legal_and_regulatory_investment_compliance_sif = 14;
+        // Questions related to LEGAL/REGULATORY INVESTMENT RESTRICTIONS - MMF
+        message LegalAndRegulatoryRestrictionsMMF {
+            // 21. Did the MMF (sub-)fund(s) comply on an ongoing basis during the year with the following eligibility requirements of the MMF Regulation If NO -not reported in a 02/77 report, explain: a. article 9 on eligible assets
+            YesNoExplain complied_with_article9_on_eligible_assets = 1;
+            // 21. Did the MMF (sub-)fund(s) comply on an ongoing basis during the year with the following eligibility requirements of the MMF Regulation If NO -not reported in a 02/77 report, explain: b. article 10 on eligible MMI
+            YesNoExplain complied_with_article9_on_eligible_mmi = 2;
+            // 21. Did the MMF (sub-)fund(s) comply on an ongoing basis during the year with the following eligibility requirements of the MMF Regulation If NO -not reported in a 02/77 report, explain: c. article 11 on eligible securitizations and ABCPs
+            YesNoExplain complied_with_article11_on_eligible_securities_and_abcps = 3;
+            // 21. Did the MMF (sub-)fund(s) comply on an ongoing basis during the year with the following eligibility requirements of the MMF Regulation If NO -not reported in a 02/77 report, explain: d. article 12 on eligible deposits with credit institutions
+            YesNoExplain complied_with_article12_on_eligible_deposits_with_credit_institutions = 4;
+            // 21. Did the MMF (sub-)fund(s) comply on an ongoing basis during the year with the following eligibility requirements of the MMF Regulation If NO -not reported in a 02/77 report, explain: e. article 13 on financial derivative instruments
+            YesNoExplain complied_with_article13_on_financial_derivative_instruments = 5;
+            // 21. Did the MMF (sub-)fund(s) comply on an ongoing basis during the year with the following eligibility requirements of the MMF Regulation If NO -not reported in a 02/77 report, explain: f. article 14 on eligible repurchase agreements
+            YesNoExplain complied_with_article14_on_eligible_repurchase_agreements = 6;
+            // 21. Did the MMF (sub-)fund(s) comply on an ongoing basis during the year with the following eligibility requirements of the MMF Regulation If NO -not reported in a 02/77 report, explain: g. article 15 on eligible reverse repurchase agreements
+            YesNoExplain complied_with_article15_on_reverse_repurchase_agreements = 7;
+            // 21. Did the MMF (sub-)fund(s) comply on an ongoing basis during the year with the following eligibility requirements of the MMF Regulation If NO -not reported in a 02/77 report, explain: h. article 16 on eligible units or shares of MMFs
+            YesNoExplain complied_with_article16_on_eligible_shares_or_units_of_mmfs = 8;
+            // 22.   Did the credit quality of each MMI (except exempted MMIs as per MMF Regulation Article 10 (3)), taking into account the issuer of the instrument and the characteristics of the instrument itself, held by the MMF (sub-)fund(s) during the year have a favorable assessment according to an ICQAP in accordance with article 10 and articles 19 to 23 of the MMF Regulation further supplemented by articles 3 to 6 of CDR 2018/990?
+            YesNoExplain credit_quality_assessment_of_each_mmi_favorable = 9;
+            // 23.   Did the credit quality of each securitization and ABCP, taking into account the issuer of the instrument and the characteristics of the instrument itself, held by the MMF (sub-)fund(s) during the year have a favorable assessment in accordance with article 11(1) and articles 19 to 23 of the MMF Regulation further supplemented by articles 3 to 6 of CDR 2018/990?
+            YesNoExplain credit_quality_assessment_of_each_securitization_and_abcp_favorable = 10;
+            // 3.2.4.2. Legal Investment Restrictions applicable to MMF
+            repeated string legal_restrictions_applicable = 11;
+            // 24.   Did the MMF (sub-)fund(s) comply on an ongoing basis during the year with the following provisions and related investment restrictions of the MMF Regulation (If NO -not reported in a 02/77 report, explain): a. article 17 on diversification
+            YesNoExplain complied_on_ongoing_basis_with_article17_on_diversification = 12;
+            // 24.   Did the MMF (sub-)fund(s) comply on an ongoing basis during the year with the following provisions and related investment restrictions of the MMF Regulation (If NO -not reported in a 02/77 report, explain): b. article 18 on concentration
+            YesNoExplain complied_on_ongoing_basis_with_article18_on_concentration = 13;
+            // 24.   Did the MMF (sub-)fund(s) comply on an ongoing basis during the year with the following provisions and related investment restrictions of the MMF Regulation (If NO -not reported in a 02/77 report, explain): c. articles 24 and 25 on portfolio rules
+            YesNoExplain complied_on_ongoing_basis_with_article24_and_article25_on_portfolio_rules = 14;
+        }
+        // Self assessment of compliance with MMF legal and regulatory investment restrictions
+        LegalAndRegulatoryRestrictionsMMF legal_and_regulatory_investment_compliance_mmf = 15;
+        // 25. Did the (sub-)fund(s) hold during the year investments in securitizations that are in the scope of the Securitization Regulation?
+        bool held_investments_in_securitizations = 16;
+        // 25.1. If the answer to Q25. is YES, did the (sub-)fund(s) comply on an ongoing basis during the year with the Securitization Regulation? 25.1.1. If the answer to Q25.1. is NO, explain
+        YesNoExplain complied_with_securitization_regulation = 17;
+        // 26. Did the (sub-)fund(s) comply on an ongoing basis during the year with the contractual investment restrictions laid down in the prospectus?
+        YesNoExplain complied_with_investment_restrictions_in_prospectus = 18;
+        // 27. Does the organizational set up in place for the Fund (incl. at IFM level if applicable) provide for a formalized policy that covers the treatment of active and passive investment breaches that occur at the level of the (sub-)fund(s)? 27.1. If the answer to Q27. is NO, explain
+        YesNoExplain formalized_policy_in_place_to_handle_active_and_passive_breaches = 19;
+        // 28. How many passive investment breaches of legal / regulatory restrictions AND contractual investment restrictions did occur at the level of the (sub-)fund(s) during the year?
+        int32 number_of_passive_breaches = 20;
+        // 29. How many active investment breaches of legal / regulatory restrictions AND contractual investment restrictions did occur at the level of the (sub-)fund(s) during the year and were reported to the CSSF in accordance with Circular 02/77?
+        int32 number_of_active_investment_breaches = 21;
+        // 30. Did the Fund notify to the CSSF, prior to the issuance of the present SAQ, all detected active breaches of legal / regulatory restrictions AND contractual investment restrictions?
+        YesNoExplain cssf_notified_of_all_prior_active_breaches = 22;
+    }
+    // Responses to questions relating to investment compliance
+    InvestmentCompliance investment_compliance = 17;
+    // Definition of questions relating to valuation
+    message Valuation {
+        // 1. Are the valuation policies for all types of investment(s) permitted by the prospectus subject to an appropriate description/disclosure in the prospectus? 1.1. If the answer to Q1. is NO, mention the type(s) of investment(s) not covered
+        YesNoExplain valuation_policies_appropriately_disclosed_in_prospectus = 1;
+        // 2. Are written valuation procedures covering all types of investment(s) held by the Fund during the year in place for the Fund (including at IFM level if applicable)? 2.1. If the answer to Q2. is NO, mention the type(s) of investment(s) not covered.
+        YesNoExplain written_valuation_procedures_covering_all_investments_in_place = 2;
+        // 3. Did the Management of the Fund perform the following actions regarding the oversight of valuation: a. approve formally (e.g. minutes of a meeting, resolution) the valuation policies and procedures applicable for the Fund. If NO, explain.
+        YesNoExplain management_formally_approved_valuation_policies = 3;
+        // 3. Did management of the Fund ensure, in the context of the formal approval of the valuation policies and procedures applicable for the Fund, their compliance with the legal and regulatory requirements and their appropriateness considering the investments held by the Fund? If NO, explain.
+        YesNoExplain management_ensured_valuation_policies_compliant = 4;
+        // 3. Did management of the Fund c. approve formally the use of a model in the context of valuation of investments. If NO, explain.
+        YesNoExplain management_approved_formally_use_of_valuation_model = 5;
+        // 3. Did management d. approve formally the independence of the external valuer appointed, if any. If NO, explain
+        YesNoExplain management_approved_formally_independence_of_external_valuer_appointed = 6;
+        // 4. Does the oversight by the Management of the Fund provide for a periodic review of the ongoing adequacy of the written valuation policies and procedures applicable for the Fund? 4.1. If the answer to Q4. is NO, explain
+        YesNoExplain management_conducts_periodic_review_of_adequacy_of_valuation_policies_and_prodcedures = 7;
+        // 4. Date of the last review of the written valuation policies and procedures applicable for the Fund.
+        google.type.Date date_of_latest_periodic_review_of_valuation_policies = 8;
+        // 5. Does the organisation of the Fund provide for an escalation process to the Management of the Fund (e.g. escalation by the IFM if any) in case of valuation issues, if any? 5.1. If the answer to Q5. is NO, explain
+        YesNoExplain organisation_of_fund_provides_for_escalation_process_to_management_in_case_of_valuation_issues = 9;
+        // Questions related to LEGAL/REGULATORY Valuation Requirements - UCITS
+        message LegalAndRegulatoryValuationRequirementsUCITS {
+            // 6. Were all the transferable securities held by the (sub-)fund(s) during the year, under article 41(1) (a) to (d) of the UCI Law, valued on an ongoing basis, with accurate, reliable and regular prices, as required by the article 2(1)(c)(i) of the EAD GDR 2008, which are: (i) either market prices (ii) prices made available by valuation systems independent from issuers. 6.1. If the answer to Q6. is NO, explain
+            YesNoExplain all_transferable_securities_valued_at_market_prices_or_independent_of_issuers = 1;
+            // 7. Were all the money market instruments held by the (sub-)fund(s) during the year, as defined in article 1 point 23 of the UCI Law, valued on an ongoing basis accurately at any time based on accurate and reliable valuations systems, which fulfil the criteria of article 4(2) of the EAD GDR 2008? 7.1. If the answer to Q7. is NO, explain
+            YesNoExplain all_money_market_securities_valued_accurately_on_an_ongoing_basis = 2;
+            // 8. Were all the OTC FDI held by the (sub-)fund(s) during the year, as referred to in article 41(1)(g) of the UCI Law, valued on an ongoing basis with reliable and verifiable prices: (i) which are at fair value as referred to in the Article 8(3) of the EAD GDR 2008 (ii) which do not rely only on market quotations by the counterparty and (iii) which fulfil the criteria of the Article 8(4) of the EAD GDR 2008. 8.1. If the answer to Q8. is NO, explain
+            YesNoExplain all_otc_fdi_valued_on_an_ongoing_basis_with_reliable_and_verifiable_prices = 3;
+            // 9. Were all the transferable securities / money market instruments held by the (sub-)funds in the trash ratio valued on a periodic basis using information provided by the issuer of the security or using competent investment research as required by the article 2(1)(c)(ii) of the EAD GDR 2008? 9.1. If the answer to Q9. is NO, explain
+            YesNoExplain all_instruments_in_trash_ratio_valued_on_an_ongoing_basis_using_issuer_information_or_competent_research = 4;
+            // 10. Did any (sub-)fund(s) invest a material portion of the NAV in investments valued on the basis of valuation model(s) as at year-end?
+            bool material_portion_of_nav_in_investments_valued_by_model = 5;
+            // 10.1 If any (sub-)fund(s) invest a material portion of the NAV in investments valued on the basis of valuation model(s) as at year-end, mention the number of concerned sub-funds AND the min / max % ofNAV over the concerned sub-funds.
+            repeated ProportionOfNavValuedByModelByFund proportion_of_nav_valued_by_model_by_fund = 6;
+            // Definition of an valuation exposure by fund
+            message ProportionOfNavValuedByModelByFund {
+                // The CSSF of the fund / sub-fund
+                string cssf_code = 1;
+                // The name of the fund to which the financial instrument belongs. // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information.
+                string fund_name = 2;
+                // Minimum % NAV valued by model
+                double minimum = 3;
+                // Maximum % NAV valued by model
+                double maximum = 4;
+            }
+        }
+        // Self assessment of adherence to legal and regulatory valuation requirements - UCITS
+        LegalAndRegulatoryValuationRequirementsUCITS legal_and_regulatory_valuation_requirements_ucits = 10;
+        // Questions related to LEGAL/REGULATORY Valuation Requirements - UCI, SIF, SICAR
+        message LegalAndRegulatoryValuationRequirements_UCI_SIF_SICAR {
+            // 11. Were all the assets and FDIs held by any (sub-)fund(s) valued on an ongoing basis at fair value during the year?
+            bool all_assets_and_fdis_valued_on_ongoing_basis_at_fair_value = 1;
+            // 11.1. If not all the assets and FDIs held by any (sub-)fund(s) valued on an ongoing basis at fair value during the year. is NO, were the assets and FDIs, which are not valued on an ongoing basis at fair value during the year, valued in compliance with the prospectus? 11.1.1. If the answer to Q11.1. is NO, explain.
+            YesNoExplain all_assets_and_fdis_valued_on_according_to_prospectus = 2;
+            // Definition of max / min exposure by fund
+            message MaxMinExposureByFund {
+                // The CSSF of the fund / sub-fund
+                string cssf_code = 1;
+                // The name of the fund to which the financial instrument belongs. // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information.
+                string fund_name = 2;
+                // Minimum % NAV valued by model
+                double minimum = 3;
+                // Maximum % NAV valued by model
+                double maximum = 4;
+            }
+            // 12. Did any (sub-)fund(s) invest a material portion of the NAV in unquoted assets and/or OTC FDIs which are valued by an external valuer as at year-end?
+            bool invested_material_portion_of_nav_in_unquoted_assets_or_otc_fdis = 3;
+            // 12.1. If the answer to Q12. is YES, mention the number of concerned sub-funds AND the min / max % ofNAV over the concerned sub-funds
+            repeated MaxMinExposureByFund proportion_of_nav_unquoted_assets_or_otc_fdis_by_fund = 6;
+            // 13. Did any (sub-)fund(s) invest a material portion of the NAV in investments valued on the basis of model(s) developed by the Fund and/or its IFM, if any, as at year-end?
+            bool invested_material_portion_of_nav_investments_valued_by_model = 7;
+            // 13.1. If the answer to Q13. is YES, mention the number of concerned sub-funds AND the min / max % ofNAV over the concerned sub-funds
+            repeated MaxMinExposureByFund proportion_of_nav_valued_by_model_by_fund = 8;
+        }
+        // Self assessment of adherence to legal and regulatory valuation requirements - UCI, SIF, SICAR
+        LegalAndRegulatoryValuationRequirements_UCI_SIF_SICAR legal_and_regulatory_valuation_requirements_uci_sif_sicar = 11;
+        // Questions related to LEGAL/REGULATORY Valuation Requirements - UCI, SIF, SICAR
+        message LegalAndRegulatoryValuationRequirements_MMF {
+            // 14. Were all the assets held by the MMF valued on an ongoing basis during the year in compliance with the chapter IV (articles 29-33) of the MMF Regulation? 14.1. If the answer to Q14. is NO, explain.
+            YesNoExplain all_assets_in_compliance = 1;
+        }
+        // Self assessment of adherence to legal and regulatory valuation requirements - MMF
+        LegalAndRegulatoryValuationRequirements_MMF legal_and_regulatory_valuation_requirements_mmf = 12;
+        // 15. Were all the investments held by the (sub-)fund(s) valued on an ongoing basis in accordance with the valuation policies laid down in the prospectus and the written valuation procedures applicable for the Fund? 15.1. If the answer to Q15. is NO, explain.
+        YesNoExplain all_investments_held_valued_in_accordance_with_valuation_policies_in_prospectus = 13;
+        // 16. Did any (sub-)fund(s) invest a material portion of the NAV at year-end in assets or FDIs which are valued at a lower frequency than the net asset value determination?
+        bool any_funds_invest_material_portion_of_nav_in_assets_or_fdis_valued_at_lower_frequency_than_nav = 14;
+        // Definition of types of instruments valued at lower frequency
+        message InstrumentTypesValuedAtLowerThanNavFrequencyByFund {
+            // The CSSF of the fund / sub-fund
+            string cssf_code = 1;
+            // The name of the fund to which the financial instrument belongs. // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information.
+            string fund_name = 2;
+            // Minimum % NAV valued by model
+            double minimum = 3;
+            // Maximum % NAV valued by model
+            double maximum = 4;
+            // Types of investments
+            repeated string investment_types = 5;
+        }
+        // Lower than NAV valuation frequency exposure across sub-funds
+        repeated InstrumentTypesValuedAtLowerThanNavFrequencyByFund instrument_types_valued_at_lower_than_nav_frequency_by_fund = 15;
+        // Definition of valuation exposure by fund
+        message MaxMinExposureByFund {
+            // The CSSF of the fund / sub-fund
+            string cssf_code = 1;
+            // The name of the fund to which the financial instrument belongs. // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information.
+            string fund_name = 2;
+            // Minimum % NAV valued by model
+            double minimum = 3;
+            // Maximum % NAV valued by model
+            double maximum = 4;
+        }
+        // 17. Did any (sub-)fund(s) invest a material portion of the NAV in non-standard OTC FDIs at year-end? 32
+        bool any_funds_invested_material_portion_of_nav_in_non_standard_otc_fdis = 16;
+        // 17. List any (sub-)fund(s) that invested a material portion of the NAV in non-standard OTC FDIs at year-end
+        repeated MaxMinExposureByFund funds_investing_material_portion_of_nav_in_non_standard_otc_fdis = 17;
+        // 18. Did any (sub-)fund(s) invest a material portion of the NAV in investments for which the Management of the Fund decided to apply a haircut after the application (including at IFM level if applicable) of the valuation policies / procedures as at year-end?
+        bool any_funds_invested_material_portion_of_nav_haircut_investments = 18;
+        // 18. List any (sub-)fund(s) invest a material portion of the NAV in investments for which the Management of the Fund decided to apply a haircut after the application (including at IFM level if applicable) of the valuation policies / procedures as at year-end?
+        repeated MaxMinExposureByFund funds_investing_material_portion_of_nav_haircut_investments = 19;
+        // 18.2. If the answer to Q18. is YES, was the haircut decided by the Management of the Fund subject to an appropriate documentation, available to the CSSF upon request, that covers the following elements: (i) the valuation method and related rational (ii) the input (iii) the frequency of review. 18.2.1. If the answer to Q18.2. is NO, explain.
+        YesNoExplain haircut_decided_by_mangement_subject_to_appropriate_documentation = 20;
+        // 19. Did any (sub-)fund(s) invest a material portion of NAV in investments (assets and/or FDIs) facing, according to the Management of the Fund and based on the input of the IFM, if any, valuation uncertainties which could lead to an impact above materiality of the NAV of the Fund /concerned subfund(s) as at year-end?
+        bool any_funds_invested_material_portion_of_nav_valuation_uncertain_investments = 21;
+        // 19. List any (sub-)fund(s) invest a material portion of NAV in investments (assets and/or FDIs) facing, according to the Management of the Fund and based on the input of the IFM, if any, valuation uncertainties which could lead to an impact above materiality of the NAV of the Fund /concerned subfund(s) as at year-end?
+        repeated MaxMinExposureByFund funds_investing_material_portion_of_nav_valuation_uncertain_investments = 22;
+        // 20. Did any (sub-)fund(s) experience the materialization of an operational/IT risk (i.e. system outage) that did impact the NAV determination process? If Yes, explain each issue.
+        YesNoExplain experienced_operational_or_it_risk_impacting_nav_determination_across_all_subfunds = 23;
+        // Definition of data provided on an issue only impacting a specific sub-fund
+        message FundSpecificExplanation {
+            // The CSSF of the fund / sub-fund
+            string cssf_code = 1;
+            // The name of the fund to which the financial instrument belongs. // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information.
+            string fund_name = 2;
+            // Is the sub-fund active or in liquidation?
+            bool active = 3;
+            // Explanation of issue & impact
+            repeated string explanation_of_issues_and_impact = 4;
+        }
+        // 20. Did specific (sub-)fund(s) experience the materialization of an operational/IT risk (i.e. system outage) that did impact the NAV determination process? If Yes, explain each issue.
+        repeated FundSpecificExplanation fund_specific_operational_valuation_issues = 24;
+        // 21. Do the written valuation policies and procedures in place for the Fund in relation to quoted assets and listed FDIs provide for checks ensuring that the fair valuation applied is supported by sufficient market liquidity (i.e. trading volumes) for that asset? 21.1. If the answer to Q21. is NO, explain.
+        YesNoExplain written_valuation_policies_provide_for_liquidity_checks = 25;
+        // 22. Did any (sub-)fund(s) invest a material portion of the NAV in assets or FDIs which are valued on the basis of stale prices as at year-end?
+        bool any_funds_invested_material_portion_valued_on_stale_prices = 26;
+        // 22. List (sub-)fund(s) invest a material portion of the NAV in assets or FDIs which are valued on the basis of stale prices as at year-end
+        repeated MaxMinExposureByFund funds_invested_material_portion_valued_on_stale_prices = 27;
+        // 23. Did any (sub-)fund(s) invest at year-end a material portion of the NAV in investments (each type of investments : e.g. structured products, OTC FDIs, loans, bonds, unlisted securities, private equity companies) which are valued with prices / valuations coming from a source which is not independent as at year-end (e.g. from the portfolio manager/adviser or from the issuer of the investment)?
+        bool any_funds_invested_material_portion_valued_by_non_independent_source = 28;
+        // 23. List any (sub-)fund(s) invest at year-end a material portion of the NAV in investments (each type of investments : e.g. structured products, OTC FDIs, loans, bonds, unlisted securities, private equity companies) which are valued with prices / valuations coming from a source which is not independent as at year-end (e.g. from the portfolio manager/adviser or from the issuer of the investment)
+        repeated MaxMinExposureByFund funds_invested_material_portion_valued_by_non_independent_source = 29;
+        // 23.2. If the answer to Q23. is YES, were any procedures (notably based on independent up-to-date financial data) carried out for any (sub-)fund(s) to ensure that all the prices / values, obtained from a source which is not independent at year-end, correspond to the fair value of the investment?
+        YesNoExplain if_valuation_not_independent_procedures_carried_out_to_ensure_fair_valuation = 30;
+        // 24. Did the Management of the Fund refuse to approve a valuation provided by a external valuer?
+        bool management_refused_valuation_provided_by_external_valuer = 31;
+        // Definition of details on management refused external valuation
+        message InvestmentDetailsByFund {
+            // The CSSF of the fund / sub-fund
+            string cssf_code = 1;
+            // The name of the fund to which the financial instrument belongs. // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information.
+            string fund_name = 2;
+            // The investment concerned
+            string investment = 3;
+            // Explanation
+            string explanation = 4;
+        }
+        // 24. List instances where the Management of the Fund refuse to approve a valuation provided by a external valuer
+        repeated InvestmentDetailsByFund instances_management_refused_external_valuation = 32;
+        // 25. Did an external valuer apply a disclaimer as a result of uncertainties around the fair valuation provided OR refuse to provide a fair valuation during the year, notably due to uncertainties in valuation or lack of information?
+        bool external_valuer_refused_to_provide_valuation = 33;
+        // 25. List instances where an external valuer apply a disclaimer as a result of uncertainties around the fair valuation provided OR refuse to provide a fair valuation during the year, notably due to uncertainties in valuation or lack of information
+        repeated InvestmentDetailsByFund instances_valuer_refused_to_provide_valuation = 34;
+        // 26. Did any (sub-)fund(s) invest a material portion of the NAV in target investment funds (excluding ETF, UCITS, UCITS equivalent and MMFs) as at year-end?
+        bool any_fund_invested_material_portion_of_nav_in_target_investment_funds = 35;
+        // 26.1. If any (sub-)fund(s) invest a material portion of the NAV in target investment funds, were all these target investment funds (excluding ETF, UCITS, UCITS equivalent and MMFs) held by (sub-)fund(s) at year-end subject to a documented valuation control based on their latest audited financial statements (i.e. audit opinion, comparison with audited NAV)? If no, explain.
+        YesNoExplain target_investment_funds_subject_to_documented_valuation_controls = 36;
+        // 27. Did any (sub-)fund invest at year end a material portion of the NAV in unquoted investments (assets and/or FDIs) which expose the (sub-)fund to a company for which the financial statements are audited?
+        bool any_fund_invested_material_portion_in_unquoted_investments_in_audited_company = 37;
+        // 27.1. If the answer to Q27. is YES, were all such investments held by any (sub-)fund at year-end subject to a documented valuation control based on their latest audited financial statements issued (i.e. audit opinion, NAV)? 27.1.1. If the answer to Q27.1. is NO, explain
+        YesNoExplain relied_on_audited_statements_for_material_unquoted_investments_in_audited_company = 38;
+        // 28. Did any (sub-)fund sell an investment (asset or FDI) with a material discount compared to its last valuation?
+        bool any_fund_sold_investment_at_material_discount = 39;
+        // 28. List investments (asset or FDI) sold at a material discount compared to its last valuation, by fund
+        repeated InvestmentDetailsByFund instruments_sold_at_material_discount_by_fund = 40;
+        // 29. Does the organizational set up in place for the Fund (incl. at IFM level if applicable) provide for a documented procedure whose objective is to ensure that transactions on quoted and unquoted investments (incl. FDIs) concluded with related parties to the Fund are done on an arm’s length basis ? If no, explain.
+        YesNoExplain documented_procedure_in_place_to_ensure_related_party_transactions_arms_length = 41;
+        // 30. Were all transactions on assets or FDIs (purchases or sales) concluded by any (sub-)fund(s) during the year done on arm’s length basis?
+        bool all_transactions_on_assets_and_fdis_in_year_arms_length = 42;
+        // 30. List all  investment(s) that were not made on arm's length, related conditions and impacts
+        repeated InvestmentDetailsByFund non_arms_length_investments = 43;
+        // 30. List all concerned transactions concluded with a related party (e.g. of the Fund, the IFM, the depositary, the portfolio manager/adviser)?
+        repeated InvestmentDetailsByFund non_arms_length_investments_related_party = 44;
+        // 30.2.2. If the answer to Q30.2. is YES, will the Management of the Fund ensure that these transactions with a related party are described in the notes to the annual report of the year as required by the article 65 7ter of the Law of 19 December 2002?
+        YesNoExplain non_arms_length_related_party_transactions_described_in_annual_report_notes = 45;
+    }
+    // Responses to questions relating to valuation
+    Valuation valuation = 18;
+    // Definition of questions relating to NAV determination
+    message NAVDeterminiation {
+        // 1. Which accounting standards were adopted by the Fund for the preparation of the annual report?
+        string adopted_accounting_standards = 1;
+        // 2. Has the Fund consistently been applying the accounting standards, policies and principles in the context of the determination of each NAV during the year?
+        bool consistent_application_of_accounting_standards_to_nav_determination = 3;
+        // 2. 2.1. If changes, will the material changes in accounting standards, policies and principles implemented during the year be properly disclosed in the audited annual report in compliance with the applicable accounting standard? If no, explain
+        YesNoExplain material_changes_disclosed_in_audited_annual_report = 4;
+        // 3. Was a documented assessment performed for the Fund regarding the risk of market timing for all the active sub-funds? If no, explain.
+        YesNoExplain documented_assessment_performed_regarding_market_timing_risk = 5;
+        // 4. Are there any (sub-)fund(s), due to their structure/set-up, exposed to the risk of market timing?
+        bool any_funds_exposed_to_risk_of_market_timing = 6;
+        // FundInformation
+        message FundInformation {
+            // The CSSF of the fund / sub-fund
+            string cssf_code = 1;
+            // The name of the fund to which the financial instrument belongs. // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information.
+            string fund_name = 2;
+        }
+        // List any sub funds which, due to their structure/set-up, are exposed to the risk of market timing?
+        repeated FundInformation funds_exposed_to_market_timing = 7;
+        // 4.2. If any (sub-)fund(s) exposed to market timing, have adequate measures of protection and/or control been put in placefor the Fund (considering also service provider(s)) to prevent and avoid market timing? If no explain.
+        YesNoExplain adequate_measures_in_place_to_avoid_market_timing = 8;
+        // 4.3. If the answer to Q4. is YES, have adequate measures been taken by the Fund (considering also service providers of the Fund) to avoid the risk that any employee of the service providers acting for the Fund or any person who holds or is likely to hold privileged information can take advantage of this information either directly or through another person? If no, explain.
+        YesNoExplain adequate_measures_in_place_to_avoid_market_timing_by_employees = 9;
+        // 5. Was any instance of market timing practice identified during the year? If Yes, explain
+        YesNoExplain any_instance_of_market_timing_identified = 10;
+        // 5. Was an identified instance of market timing executed (not blocked). If Yes, explain.
+        YesNoExplain any_instance_of_market_timing_executed = 11;
+        // 6. Were appropriate measures put in place for the Fund to ensure an ongoing compliance with the cutoff time disclosed in the prospectus?  If no, explain.
+        YesNoExplain appropriate_measures_in_place_to_ensure_compliance_with_prospectus_cutoff_time = 12;
+        // 7. Was an instance of late trading practice identified during the year? If Yes, explain.
+        YesNoExplain instance_of_late_trading_identified_during_year = 13;
+        // 8. Has any intermediary been appointed on behalf of the Fund to be in charge of the marketing of the Fund?
+        bool has_any_intermediary_been_appointed_to_market_fund = 14;
+        // 8.1. If the answer to Q8. is YES, did the Fund obtain from each intermediary a written confirmation/signed contract mentioning to not allow transactions which the intermediary knows to be or has reasons to believe to be related to market timing? If no, explain
+        YesNoExplain written_confirmation_prohibiting_market_timing_if_intermediary_appointed = 15;
+        // 8.2. If the answer to Q8. is YES, did the Fund obtain from each intermediary a written confirmation/signed contract pursuant to which the intermediary undertakes towards the UCI to transmit to the transfer agent of the UCI, for the processing at the NAV applicable on such day, only such orders which were received before such cut-off time?
+        YesNoExplain written_confirmation_from_intermediary_to_transmit_orders_same_day = 16;
+        // 9. Does the prospectus allow the use of an Anti-Dilution Levy (ADL)?
+        bool prospectus_allows_for_use_of_adl = 17;
+        // 9.1. If prospectus allows for ADL, does the prospectus indicate clear circumstances under which an ADL may be used by any (sub-)fund(s)? If NO, explain.
+        YesNoExplain prospectus_indicates_circumstances_where_adl_may_be_used = 18;
+        // 9.2. If prospectus allows for ADL, does the prospectus disclose the maximum ADL (as a % of NAV per share/unit) authorised under normal circumstances for any (sub-)fund? If NO, explain.
+        YesNoExplain prospectus_discloses_maximum_adl_authorised = 19;
+        // 9.2.2. If prospectus allows for ADL, what is the maximum ADL (as a % of NAV per share/unit) across the (sub-)funds (under normal circumstances)?
+        double maximum_adl = 20;
+        // 9.2.3. If prospectus allows for ADL, does the prospectus provide for the possibility to temporarily increase under exceptional circumstances the ADL beyond the maximum level?
+        bool prospectus_allows_temporary_increase_in_adl_under_exceptional_circumstances = 21;
+        // 9.2.3.1. If prospectus allows temporary increases in adl under exceptional circumstances, does the prospectus disclose the maximum ADL (as a % of NAV per share/unit) that is temporarily authorised under exceptional circumstances for any (sub-)fund? If NO, explain.
+        YesNoExplain prospectus_discloses_maximum_adl_authorised_under_exceptional_circumstances = 22;
+        // 9.2.3.1.1. If prospectus allows temporary increases in adl under exceptional circumstances, provide the maximum ADL (as a % of NAV per share/unit) authorised for any (sub-)fund by the prospectus under exceptional circumstances
+        double maximum_adl_under_exceptional_circumstances = 23;
+        // 9.3. If the answer to Q9. is YES, have ADL been applied to subscribing and/or redeeming investors for any sub-fund during the year?
+        bool have_adl_been_applied_to_any_sub_fund_during_year = 24;
+        // 9.3.1. If ADL have been applied to subscribing and/or redeeming investors for any sub-fund during the year, are ADL covered by a robust internal governance process/formalized methodology (incl. market/transaction data-based analysis) providing for accurate ADL representative of trading costs at prevailing market conditions? If NO explain.
+        YesNoExplain are_adl_covered_by_robust_internal_governance = 25;
+        // 9.3.2. If ADL have been applied to subscribing and/or redeeming investors for any sub-fund during the year, has the maximum ADL authorised under normal circumstances in the prospectus been increased during the year for any (sub-)fund?
+        bool has_maximum_adl_authorised_been_increased_during_year = 26;
+        // 9.3.2.1. If maximum ADL authorised been increased during the year, was an appropriate communication made to investors regarding the change to the maximum ADL? If NO, explain.
+        YesNoExplain increase_in_maximum_adl_appropriately_communicated_to_investors = 27;
+        // 9.3.3. If ADL have been applied to subscribing and/or redeeming investors for any sub-fund during the year, were all (sub-)funds in compliance with the prospectus regarding the use of ADL during the year? If NO, explain.
+        YesNoExplain all_funds_in_compliance_with_prospectus_regarding_use_of_adl = 28;
+        // 9.3.4. If ADL have been applied to subscribing and/or redeeming investors for any sub-fund during the year, is the ADL mechanism policy, processes and procedures subject to periodic review by the Management of the Fund? If NO, explain.
+        YesNoExplain adl_subject_to_periodic_review_by_management = 29;
+        // 10. Does the prospectus allow for the use of a Swing Pricing (SWPR) mechanism?
+        bool prospectus_allows_for_use_of_swpr = 30;
+        // 10.1. If the prospectus allows SWPR, does the prospectus indicate clear circumstances under which a SWPR may be used by any (sub-)fund?  If NO, explain.
+        YesNoExplain prospectus_indicates_circumstances_where_swpr_may_be_used = 31;
+        // 10.2. If the prospectus allows SWPR, does the prospectus disclose the maximum SWPR (as a % of NAV per share/unit) authorised under normal circumstances for any (sub-)fund? If NO, explain.
+        YesNoExplain prospectus_discloses_maximum_swpr_authorised = 32;
+        // 10.2.2. If prospectus allows for SWPR, what is the maximum SWPR (as a % of NAV per share/unit) across the (sub-)funds?
+        double maximum_swpr = 33;
+        // 10.2.3. If prospectus allows for SWPR, does the prospectus provide the possibility to temporarily increase under exceptional circumstances the SWPR beyond the maximum level?
+        bool prospectus_allows_temporary_increase_in_swpr_under_exceptional_circumstances = 34;
+        // 10.2.3.1. If prospectus allows for increasing SWPR under exeptional circumsances beyond max, does the prospectus disclose the maximum SWPR (as a % of NAV per share/unit) that is temporarily authorised under exceptional circumstances for any (sub-)fund?
+        bool prospectus_discloses_max_temporary_increase_in_swpr_under_exceptional_circumstances = 35;
+        // 10.2.3.1.1. If prospectus allows for increasing SWPR under exeptional circumsances beyond max, provide the maximum SWPR authorised for any (sub-)fund by the prospectus (as a % of NAV per share/unit) under exceptional circumstances?
+        double maximum_swpr_under_exceptional_circumstances = 36;
+        // 10.3. If the prospectus allows SWPR, has SWPR been applied to subscribing and/or redeeming investors for any (sub-)fund during the year?
+        bool has_swpr_been_applied_to_any_sub_fund_during_year = 37;
+        // 10.3.1. If SWPR has been applied to any (sub-)fund during the year, is SWPR covered by robust internal governance process/formalized methodology (incl. market/transaction data-based analysis) providing for accurate SWPR representative of trading costs at prevailing market conditions? If NO, explain.
+        YesNoExplain swpr_covered_by_robust_internal_governance_processes = 38;
+        // 10.3.2. If SWPR has been applied, has an increase in the maximum SWPR been authorised under normal circumstances in the prospectus been increased during the year for any (sub-)fund?
+        bool swpr_maximum_increased_during_year = 39;
+        // 10.3.2.1. If SWPR an increase in the maximum SWPR has been authorised, was an appropriate communication made to investors regarding the change to the maximum SWPR? If NO, explain.
+        YesNoExplain has_maximum_swpr_authorised_been_increased_during_year = 40;
+        // 10.3.3. If SWPR has been applied to any (sub-)fund during the year, were all (sub-)funds in compliance with the prospectus regarding the use of SWPR during the year? If NO, explain.
+        YesNoExplain if_swpr_applied_were_all_funds_in_compliance = 41;
+        // 10.3.4. If SWPR has been applied to any (sub-)fund during the year, is the SWPR mechanism policy, processes and procedures subject to periodic review by the Management of the Fund? If NO, explain.
+        YesNoExplain if_swpr_applied_were_policy_subject_to_periodic_review = 42;
+        // 11. Did all sub-funds comply with the prospectus concerning lock-ups during the year? If NO, explain
+        YesNoExplain did_all_funds_comply_with_prospectus_concerning_lock_ups = 43;
+        // 12. Does the prospectus allow for the use of redemption gating? 60
+        bool prospectus_allows_for_redemption_gating = 44;
+        // 12.1. If prospectus allows for redemption gating, does the prospectus indicate clear circumstances under which redemption gating may be used by a (sub-)fund? If NO, explain.
+        YesNoExplain prospectus_states_circumstances_for_gating = 45;
+        // 12.2. If prospectus allows for redemption gating, does the prospectus disclose any redemption threshold (as % of NAV per share/unit) that may trigger redemption gating? If NO, explain.
+        bool prospectus_discloses_redemption_threshold_for_gating = 46;
+        // 12.2.1. If prospectus discloses redemption threshold, what is the redemption threshold (as % of NAV per share/unit) laid down in the prospectus that may trigger redemption gating?
+        double prospectus_disclosed_redemption_threshold = 47;
+        // 12.2.2. If prospectus discloses redemption threshold, does the prospectus provide for the possibility for the Management of the Fund to decrease this redemption treshold in exceptional circumstances for any (sub-)fund?
+        bool prospectus_allows_management_to_decrease_redemption_threshold_in_exceptional_circumstances = 48;
+        // 12.3. If prospectus allows for redemption gating, does the prospectus specify a time limit for redemption gating (e.g. redemption gates are limited for a period up to a given number of working days)? If NO, explain.
+        YesNoExplain prospectus_specifies_time_limit_for_redemption_gating = 49;
+        // 12.4. If the answer to Q12. is YES, has redemption gating been used by any (sub-)fund during the year?
+        bool has_redemption_gating_been_used_during_year = 50;
+        // 12.4.1. If redemption gating has been used during the year, were investors of the Fund informed through appropriate communication of the application of the redemption gating? If NO, explain.
+        YesNoExplain investors_informed_appropriately_of_redemption_gating = 51;
+        // 12.4.2. If redemption gating has been used during the year, were all sub-funds in compliance with the prospectus regarding redemption gating during the year? If NO, explain.
+        YesNoExplain were_all_funds_in_compliance_with_prospectus_regarding_redemption_gating_during_year = 52;
+        // 12.4.3. If redemption gating has been used during the year, how many redemption gatings have been used during the year?
+        int32 number_of_redemption_gatings_used_during_year = 53;
+        // 12.4.4. If redemption gating has been used during the year, how many sub-funds were concerned by redemption gatings during the year?
+        int32 number_of_funds_concerned_by_redemption_gatings = 54;
+        // 13. Does the prospectus allow the use of redemption deferral?
+        bool prospectus_allows_for_redemption_deferral = 55;
+        // 13.1. If prospectus allows for redemption deferral, does the prospectus indicate clear circumstances under which temporary redemption deferral may be applied by any (sub-)fund? If NO, explain.
+        YesNoExplain prospectus_discloses_redemption_deferral_circumstances = 56;
+        // 13.2. If prospectus allows for redemption deferral does the prospectus specify a concrete maximum time limit (in terms of e.g. days) for the use of redemption deferral? If NO, explain.
+        YesNoExplain prospectus_specifies_time_limit_redemption_deferrals = 57;
+        // 13.3. If prospectus allows for redemption deferral, have redemption deferrals been used by any (sub-)fund during the year?
+        bool have_redemption_deferrals_been_used = 58;
+        // 13.3.1. If redemption deferrals used, were all (sub-)funds in compliance with the prospectus regarding redemption deferral during the year. If NO, explain.
+        YesNoExplain all_funds_in_compliances_with_prospectus_regarding_redemption_deferrals = 59;
+        // 13.3.2. If redemption deferrals used, how many redemption deferrals have been used during the year?
+        int32 number_of_funds_concerned_by_redemption_deferrals = 60;
+        // 14. Does the prospectus allow for the use of redemption in kind?
+        bool prospectus_allows_redemption_in_kind = 61;
+        // 14.1. If prospectus allows for use of redemption in kind, has redemption in kind been used by any (sub-)fund during the year (EXCEPT for index tracker (sub-)funds)?
+        bool redemption_in_kind_has_been_used = 62;
+        // Details number of transactions per fund
+        message NumberOfTransactionsByFund {
+            // The CSSF of the fund / sub-fund
+            string cssf_code = 1;
+            // The name of the fund to which the financial instrument belongs. // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information.
+            string fund_name = 2;
+            // The number of redemption in kind transactions by fund
+            int32 number_of_transactions = 3;
+        }
+        // 14.1.1. Mention the corresponding (sub-)fund(s) concerned and the number of redemption in kind transactions
+        repeated NumberOfTransactionsByFund number_of_redemption_in_kind_transactions_by_fund = 63;
+        // 14.1.2. If redemption in kind used, did the redemptions in kind applied during the year comply with the prospectus as well as with the legal/regulatory requirements applicable (by analogy) to contributions in kind? If NO, explain.
+        YesNoExplain redemptions_in_kind_complied_with_prospectus = 64;
+        // 14.1.3. If redemption in kind used, have the redemptions in kind applied during the year been subject to a report by an auditor when it is required by the prospectus and/or by analogy of the laws /regulatory requirements applicable for the contributions in kind? If NO, explain.
+        YesNoExplain redemptions_in_kind_subject_to_auditor_report_when_required = 65;
+        // 15. Have side pockets been created by any (sub-)fund during the year?
+        bool side_pockets_created_by_any_fund_during_year = 66;
+        // 15.1. If side pockets created, have these side pocket(s) been communicated to the investors? If NO, explain.
+        YesNoExplain created_side_pockets_communicated_to_investors = 67;
+        // 15.2. If side pockets created, have these side pocket(s) been approved by the CSSF?
+        YesNoExplain created_side_pockets_communicated_to_cssf = 68;
+        // 16. Does the prospectus allow for the use of dual pricing?
+        bool prospectus_allows_for_dual_pricing = 69;
+        // 16.1. If prospectus allows for dual pricing, does the prospectus indicate clear circumstances under which dual pricing may be used by any (sub-)fund? If NO, explain.
+        YesNoExplain prospectus_indicates_circumstances_under_which_dual_pricing_may_be_used = 70;
+        // 16.2. If prospectus allows for dual pricing, has dual pricing been used by any (sub-)fund during the year?
+        bool dual_pricing_has_been_used_during_year = 71;
+        // 16.2.1. If dual pricing used during year, were all the sub-funds in compliance with the prospectus regarding dual pricing during the year?
+        YesNoExplain all_funds_in_compliance_with_prospectus_regarding_dual_pricing = 72;
+        // 17. Does the prospectus allow the use of temporary suspension of redemption?
+        bool prospectus_allows_for_temporary_suspension_of_redemption = 73;
+        // 17.1. If temporary suspension allowed, does the prospectus indicate clear circumstances under which temporary suspension of redemption may be used by any (sub-)fund? If NO, explain.
+        YesNoExplain prospectus_clearly_indicates_circumstances_for_temporary_suspension_of_redemptions = 74;
+        // 17.2. If temporary suspension allowed, have any temporary suspensions of redemption been used by any (sub-)fund during the year?
+        bool have_temporary_suspensions_of_redemptions_been_used = 75;
+        // 17.2.1. If temporary suspensions of redemptions have been used, have all (sub-)funds been in compliance with the prospectus as regards suspension of redemption during the year? If NO, explain.
+        YesNoExplain all_funds_in_compliance_with_prospectus_regarding_temporary_suspension_of_redemptions = 76;
+        // 17.2.2. If temporary suspensions of redemptions have been used, were the temporary suspensions of redemption communicated to the CSSF as soon as decided by the Management of the Fund? If NO, explain.
+        YesNoExplain all_temporary_suspension_of_redemptions_communicated_to_cssf = 77;
+        // 17.2.3. If temporary suspensions of redemptions have been used, has the Fund communicated the temporary suspension of redemption to all the national competent authorities of the countries where sub-fund(s) are marketed?
+        YesNoExplain all_temporary_suspension_of_redemptions_communicated_to_all_national_competent_authorities = 78;
+        // 17.2.4. If temporary suspensions of redemptions have been used, how many temporary suspensions of redemption have been used during the year?
+        int32 number_of_temporary_suspension_of_redemptions = 79;
+        // 17.2.5. If temporary suspensions of redemptions have been used, how many sub-funds were concerned by temporary suspensions of redemption during the year?
+        int32 number_of_funds_concerned_by_temporary_suspension_of_redemption = 80;
+        // 18. Does the organizational set up in place for the Fund (incl. an IFM if applicable) provide for a formalized policy that covers the treatment of material NAV calculation errors (as governed by Circular CSSF 02/77)? If NO, explain.
+        YesNoExplain formalized_policy_covering_treatment_of_material_nav_calculation_errors = 81;
+        // 19. How many material NAV calculation errors have been detected during the year for the Fund? 70
+        int32 number_of_material_nav_calcualtion_errors_detected_during_year = 82;
+        // 20. Did the Fund report to the CSSF, before the validation of the SAQ, all detected material NAV calculation errors which occurred for any (sub-)fund during the year? If NO, explain.
+        YesNoExplain fund_reported_to_cssf_all_detected_material_nav_calculation_errors = 83;
+        // 21. Does the prospectus allow for contributions in kind?
+        bool prospectus_allows_for_contributions_in_kind = 84;
+        // 21.1. If prospectus allows for contributions in kind, did the Fund receive contribution(s) in kind for any (sub-)fund during the year (EXCEPT for index tracker (sub-)funds)?
+        bool fund_received_contributions_in_kind_during_year = 85;
+        // 21.1.1. If contributions in kind occurred, mention the corresponding (sub-)fund(s) concerned and the
+        repeated NumberOfTransactionsByFund number_of_contributions_in_kind_by_fund = 86;
+        // 21.1.2. If contributions in kind occurred, did all contributions in kind received during the year comply with the prospectus as well as legal requirements? If NO, explain.
+        YesNoExplain all_contributions_in_kind_complied_with_prospectus = 87;
+        // 21.1.3. If contributions in kind occurred, were all the contributions in kind received during the year subject to a report issued by an auditor when it is required by the prospectus and/or by laws and regulations? If NO, explain.
+        YesNoExplain all_contributions_in_kind_subject_to_report_issued_by_auditor_if_required = 88;
+    }
+    // Responses to questions relating to NAV determination
+    NAVDeterminiation nav_determination = 19;
+    // Definition of questions relating to Expenses & Income
+    message ExpensesAndIncome {
+        // Definition of questions related to a fund specific cost
+        message FundSpecificCostOrFee {
+            // The CSSF of the fund / sub-fund
+            string cssf_code = 1;
+            // The name of the fund to which the financial instrument belongs. // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information.
+            string fund_name = 2;
+            // Description of the cost
+            string cost_description = 3;
+            // The monetary amount of the cost in the fund's base currency
+            google.type.Money amount = 4;
+        }
+        // Questions related to a cost applied to all funds
+        message CostOrFee {
+            // Description of the cost
+            string cost_description = 1;
+            // The monetary amount of the cost in the fund's base currency
+            google.type.Money amount = 2;
+        }
+        // 1.1. Did the costs/fees correspond to a service which could be charged to the Fund / sub-funds in accordance with the prospectus?
+        bool all_costs_and_fees_charged_corresponded_to_chargeable_service_in_accordance_with_prospectus = 1;
+        // 1.1.1.1. If not all costs in accordance with prospectus, mention the concerned costs/fees and the monetary amount(s) in the Fund's base currency
+        repeated CostOrFee costs_or_fees_not_corresponding_to_chargeable_service_charged_to_all_subfunds = 2;
+        // 1.1.2. If not all costs in accordance with prospectus, were the concerned costs/fees charged to certain sub-funds?
+        repeated FundSpecificCostOrFee costs_or_fees_not_corresponding_to_chargeable_service_charged_to_specific_subfunds = 3;
+        // 1.2. Have the costs/fees calculated and booked in the accounts of the Fund / sub-funds been complying on an ongoing basis with the provisions of the prospectus and contracts (including the respect of caps on fees, if any)?
+        bool all_costs_and_fees_calculated_and_booked_comply_with_prospectus = 4;
+        // 1.2.1 If not all costs and fees complying with the provisions of the prospectus, mention the concerned costs/fees and the monetary amount(s) in the Fund's base currency
+        repeated CostOrFee costs_and_fees_calculated_and_booked_comply_with_prospectus_charged_to_all_subfunds = 5;
+        // 1.2.2 If not all costs and fees complying with the provisions of the prospectus, were the concerned costs/fees charged to certain sub-funds?
+        repeated FundSpecificCostOrFee costs_and_fees_calculated_and_booked_comply_with_prospectus_charged_to_specific_subfunds = 6;
+        // 2. Have all costs/fees charged at the level of a special purpose vehicle controlled by the Fund / subfund(s) during the year and thus impacting the Fund / sub-fund(s) been disclosed in an adequate way
+        bool all_costs_and_fees_disclosed_in_adequate_way = 7;
+        // 2.1 If costs/fees not adequately disclosed, mention the concerned fee(s) and the monetary amount(s) in the Fund's base currency that applied to all sub-funds
+        repeated CostOrFee costs_and_fees_not_adequately_disclosed_charged_to_all_subfunds = 8;
+        // 2.1 If costs/fees not adequately disclosed, mention the concerned fee(s) and the monetary amount(s) in the Fund's base currency that applied to specific sub-funds
+        repeated CostOrFee costs_and_fees_not_adequately_disclosed_charged_to_specific_subfunds = 9;
+        // 3. Has a formalized assessment, based on reliable and documented data (available to the CSSF uponrequest), been done for the Fund (including at the level of the IFM if applicable) to verify (If NO explain): a. the costs/fees are proportionate compared to market standards and to the type of service provided?.
+        YesNoExplain formal_assessment_performed_to_verify_costs_proportionate_compared_to_market_standards = 10;
+        // 3. Has a formalized assessment, based on reliable and documented data (available to the CSSF uponrequest), been done for the Fund (including at the level of the IFM if applicable) to verify (If NO explain): b. there is no duplication of costs (e.g. same type of fee not included in two different categories)?
+        YesNoExplain formal_assessment_performed_to_verify_no_duplicate_costs = 11;
+        // 3. Has a formalized assessment, based on reliable and documented data (available to the CSSF uponrequest), been done for the Fund (including at the level of the IFM if applicable) to verify (If NO explain): c. the costs / fees correspond to an effective service in the investor’s best interest?
+        YesNoExplain formal_assessment_performed_to_verify_effective_service_in_investors_best_interest = 12;
+        // Definition of a Total Expense Ratio
+        message ExpenseRatio {
+            // The CSSF of the fund / sub-fund
+            string cssf_code = 1;
+            // The name of the fund to which the financial instrument belongs. // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information.
+            string fund_name = 2;
+            // The global identifier of the most representative share class
+            string share_class_id = 3;
+            // Enumerations of financial identifiers
+            enum ShareClassIdentifierTypes {
+                // Source not specified by the user.
+                IDENTIFIER_UNSPECIFIED = 0;
+                // ISO 6166 code of ISIN when available
+                ISIN = 1;
+                // CUSIP (The Committee on Uniform Securities Identification Procedures number assigned by the CUSIP Service Bureau for U.S. and Canadian companies)
+                CUSIP = 2;
+                // SEDOL (Stock Exchange Daily Official List for the London Stock Exchange)
+                SEDOL = 3;
+                // WKN (Wertpapier Kenn-Nummer, the alphanumeric German identification number)
+                WKN = 4;
+                // Bloomberg Ticker (Bloomberg letters code that identify a company's securities)
+                BBG_TICKER = 5;
+                // BBGID (The Bloomberg Global ID)
+                BBGID = 6;
+                // Reuters RIC (Reuters instrument code)
+                RIC = 7;
+                // FIGI (Financial_Instrument Global Identifier)
+                FIGI = 8;
+                // LEI 0 Legal Entity Identifier
+                LEI = 9;
+                // PermID - Refinitiv Permanent Identifiers
+                PERM_ID = 10;
+            }
+            // Codification chosen to identify the share class
+            ShareClassIdentifierTypes share_class_id_type = 4;
+            // Extension that identifies the share class.
+            // Should conform to: https://openfunds.org/OFST020050 (Share Class Extension)
+            string share_class_extension = 5;
+            // OCR/TER for the year (% of NAV)
+            double annual_ter_or_ocr = 6;
+            // Average Total NAV of the sub-fund or the most representative share/unit class (amount in (sub-)fund base CCY)
+            google.type.Money average_total_nav_of_representative_share_class = 7;
+            // Comments on the expense ratio
+            repeated string comments = 8;
+        }
+        // 4. Provide the OCR/TER related to the year under review for all (sub-)funds 73
+        repeated ExpenseRatio fund_expense_rations = 13;
+        // 5. Has the TER of any sub-fund calculated for the year under review been subject to a material increase when compared with the previous year? 74
+        bool expense_ration_of_any_subfund_subject_to_material_increase = 14;
+        // Identifying information of a fund subject to a material increase
+        message MaterialIncreaseInFundExpenses {
+            // The CSSF of the fund / sub-fund
+            string cssf_code = 1;
+            // The name of the fund to which the financial instrument belongs. // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information.
+            string fund_name = 2;
+            enum CostIncreaseReason {
+                REASON_UNSPECIFIED = 0;
+                CHANGE_IN_COST_STRUCTURE_IN_PROSPECTUS = 1;
+                DECREASE_IN_NAV = 2;
+                NON_RECURRING_FEES = 3;
+                OTHER = 4;
+            }
+            // reason for material increase
+            repeated CostIncreaseReason cost_increase_reasons = 3;
+            // additional comments
+            string comments = 4;
+        }
+        // 5.1 If any sub-fund has been subject to a material increase, please list
+        repeated MaterialIncreaseInFundExpenses funds_subject_to_material_expense_increase = 15;
+        // 6. Are advisory fees supported by any sub-fund superior to the portfolio management fees supported by the same sub-fund ?
+        bool advisory_fees_supported_superior_to_portfolio_management_fees = 16;
+        // 6.1. If advisory fees supported are superior, provide an explanation at a fund level
+        repeated FundSpecificExplanation fund_specific_explanation_for_superior_advisory_fees = 17;
+        // 7. Has the portion of the performance fee / carried interest received during the year by the investment adviser for any sub-fund been superior to the portion received by the portfolio manager for the same sub-fund?
+        bool carried_interest_to_advisers_greater_than_to_portfolio_manager = 18;
+        // 7.1 If the portion of the performance fee / carried interest received during the year by the investment adviser for any sub-fund been superior to the portion received by the portfolio manager for the same sub-fund, explain per fund
+        repeated FundSpecificExplanation fund_specific_explanation_for_superior_advisory_carried_interest = 19;
+        // 8. Have the total transaction costs (acquisition and disposal costs) on assets and FDIs borne by any sub-fund during the year been above the materiality threshold?
+        bool total_transaction_costs_above_materiality_threshold_for_any_fund = 20;
+        // Transaction cost per fund
+        message FundSpecificTransactionCost {
+            // The CSSF of the fund / sub-fund
+            string cssf_code = 1;
+            // The name of the fund to which the financial instrument belongs. // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information.
+            string fund_name = 2;
+            // Actual ratio (% of transaction costs/average NAV) as decimal. e.g. 3% 0.003
+            double transaction_cost = 3;
+        }
+        // 8.1 if the total transaction costs (acquisition and disposal costs) on assets and FDIs borne by any sub-fund during the year been above the materiality threshold, provide the transaction costs for the relavant funds.
+        repeated FundSpecificTransactionCost fund_specific_transaction_costs = 21;
+        // 9. Does the prospectus of the Fund provide for the possibility for any sub-fund to pay a performance fee / carried interest?
+        bool prospectus_provides_for_performance_fee_or_carried_interest = 22;
+        // 9.1 If prospectus provides for th epossibility of performance fee / carried interest, has the performance fee / carried interest been calculated and booked in the accounts of the sub-fund(s) on an ongoing basis during the year in accordance with the methodology described in the prospectus?
+        bool performance_fee_or_carried_interest_prospectus_provisions_correctly_applied = 23;
+        // 9.1.1 If, for any fund, the prospectus provisions for carried interest or performance fees have not been correctly applied, please explain
+        repeated FundSpecificExplanation incorrect_applications_of_performance_fee_or_carried_interest = 24;
+        // 9.2. If the prospectus of the Fund provide for the possibility for any sub-fund to pay a performance fee / carried interest, have the parameters (e.g. performance fee rate, High-Water Mark, reference indicator, reference period, crystallization period) used during the year in the calculation of the performance fee / carried interest for all concerned sub-funds been on an ongoing basis in line with (i) those stated in the prospectus as well as (ii) accounting and market data?
+        bool performance_fee_calculation_parameters_in_line_with_prospectus_and_market = 25;
+        // 9.2.1 If performance fee calculation parameters were not in line with prospectus or market for any fund, please explain
+        repeated FundSpecificExplanation performance_fee_calculation_parameters_not_in_line_with_prospectus_and_market_by_fund = 26;
+        // Performance fee / carried intrest charged for a fund in a year
+        message FundSpecificPerformanceCharges {
+            // The CSSF of the fund / sub-fund
+            string cssf_code = 1;
+            // The name of the fund to which the financial instrument belongs. // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information.
+            string fund_name = 2;
+            // ISO code of base currency of (sub-)fund
+            string base_currency = 3;
+            // 9.3.1. Active at any time during the year
+            bool active = 4;
+            // 9.3.2. Possibility in the prospectus to pay a performance fee / carried interest ?
+            bool performance_fee_or_carried_interest_possible = 5;
+            // 9.3.3. Performance fee / carried interest charged for the year (amount in (sub-)fund base CCY)
+            double performance_fee_or_carried_interest_charged = 6;
+            // 9.3.4. Average Total NAV of (sub-)fund for the year (amount in (sub-)fund base CCY)
+            double average_total_nav_for_year = 7;
+        }
+        // 9.3. Provide the amount of performance fee / carried interest charged for the year for each individual concerned sub-fund expressed in the currency of the sub-fund.
+        repeated FundSpecificPerformanceCharges fund_specific_performance_charges = 27;
+        // 9.4. If the answer to Q9. is YES, does the performace fee / carried interest calculation method used during the year ensure that performance fees / carried interest are always proportionate to the actual investment performance and artificial increases from new subscriptions are not taken into account when calculating fund performance? If NO, explain.
+        YesNoExplain performance_charge_calculation_method_ensures_alignment_to_investment_performance = 28;
+        // 9.5. If the answer to Q9. is YES, did any (sub-)fund(s), for which a performance fee / carried interest has been calculated during the year, invest more than 50% of its NAV in non-financial assets or assets with reduced liquidity (e.g. private equity or real estate investment) as at year-end?
+        bool did_any_subfund_invest_more_than_fifty_percent_of_nav_in_reduced_liquidity_assets = 29;
+        // If invested in reduced liquidity assets (9.5), 9.5.1. If the answer to Q9.5. is YES, when is the carried interest / performance fee crystallized or paid. a. on the realised result on investments on a deal by deal basis
+        //b. on the realised result on investments at the closure of the sub-fund/fund
+        //c. on a regular frequency based on the unrealized result on investments with a possibility of claw backwhen the assets are sold and/or when the sub-fund is closed
+        //d. on a regular frequency based on the unrealized result on investments without any claw back
+        //e. Other
+        string  for_reduced_liquidity_funds_when_do_performance_charges_crystallize = 30;
+        // 10. Was there any receivable / outstanding payment (in the form of a principal, interest or other receivable) that was above materiality and that was not paid at year-end in accordance with the applicable contractual provisions (If YES, specify): a. material income past due for more than one year (i.e. interest on bonds, interest on loans, etc.)?
+        YesNoExplain material_income_past_due_interest = 31;
+        // 10. Was there any receivable / outstanding payment (in the form of a principal, interest or other receivable) that was above materiality and that was not paid at year-end in accordance with the applicable contractual provisions (If YES, specify): b. material principal payment past due at year-end (i.e. principal of bond or loan or deposit, other receivable etc.)?
+        YesNoExplain material_income_past_due_principal = 32;
+        // 10. Was there any receivable / outstanding payment (in the form of a principal, interest or other receivable) that was above materiality and that was not paid at year-end in accordance with the applicable contractual provisions (If YES, specify): b. other
+        YesNoExplain material_income_past_due_other = 33;
+        // 11. Has any sub-fund booked a receivable against a service provider which is above materiality at year-end?  If YES, explain.
+        YesNoExplain booked_receivable_against_service_provider = 34;
+        // 12. Did any sub-fund(s) conclude any EPM/SFT transaction during the year?
+        bool any_epm_sft_transactions_during_year = 35;
+        // 12.1. If any sub-fund(s) conclude any EPM/SFT transaction during the year, has a comprehensive assessment of the adequacy of the operational costs/fees that are deducted from the gross revenues arising from EPM/SFT transactions been in place for the Fund in order to justify the ratio of gross revenues to direct and indirect operational costs/fees arising per EPM/SFT? If NO, explain.
+        YesNoExplain epm_sft_comprehensive_assessment_of_adequacy_performed = 36;
+        // 12.2 If any sub-fund(s) conclude any EPM/SFT transaction during the year, are the EPM/SFT transactions concluded by any sub-fund covered by the best execution policy in place for the Fund? If NO, explain.
+        YesNoExplain epm_sft_concluded_by_best_execution = 37;
+    }
+    // Responses to questions relating to Expenses & Income
+    ExpensesAndIncome expenses_and_income = 20;
+    // Definition of questions relating to Relationship with Depositary
+    message DepositaryRelationship {
+        // Questions relevant for 7.1. UCITS /REGULATED AIFs WITH AUTHORISED AIFM
+        message DepositaryRelationshipUCITSandRegulatedAIFsWithAIFM {
+            // 1. Has a reconciliation process against the depositary's records been in place for the Fund /(sub-)fund(s) during the year concerning the assets that can be held in custody? If NO, explain
+            YesNoExplain reconciliation_process_against_depositary_records_in_place = 1;
+            // 1.2. If the answer to Q1. is YES, what has been the frequency of these reconciliations ?
+            Frequency frequency_of_reconciliations = 2;
+            // 1.3. If the answer to Q1. is YES, is the frequency of these reconciliations consistent with the frequency of the NAV calculation for all sub-funds of the Fund ?  If NO, explain.
+            YesNoExplain frequency_of_reconciliations_consistent_with_nav_frequency = 3;
+            // 1.4. If the answer to Q1. is YES, have these reconciliations been performed on an ongoing basis during the year at the frequency mentioned above? If NO, explain.
+            YesNoExplain reconciliations_performed_consistent_with_nav_frequency = 4;
+            // 1.5. If the answer to Q1. is YES, could all differences identified by these reconciliations during the year be explained, documented and resolved in a reasonable delay considering the NAV calculation frequency? If NO, explain.
+            YesNoExplain all_reconciliation_differences_resolved = 5;
+            // 2. Did the depositary confirm all the assets of the Fund / (sub-)fund(s) that can be held in custody at year-end, including assets held through respective agent(s) (collateral agent, specialized intermediary or by a prime broker)?
+            bool depositary_confirmed_all_assets_of_fund_that_can_be_held_in_custody = 6;
+            // 2.1. If the answer to Q2. is NO, mention the type of assets and explain (including impact on sub-funds)
+            FundSpecificExplanation assets_no_held_in_custody = 7;
+            // 3. Did the Fund / (sub-) funds invest in assets qualifying as "other assets" during the year?
+            bool fund_invested_in_other_assets_during_year = 8;
+            // 3.1. If the answer to Q3. is YES, have the 3 following asset registration processes been in place for the Fund concerning the other assets (If NO,explain)?
+            //a) an asset ownership registration process at each transaction for the assets acquired by the Fund, based on information or documents maintained by the IFM and, where available, on external evidence;
+            //b) a process ensuring that the depositary or third party is informed of any transaction on registered assets in a timely fashion; c) a process ensuring that all instructions and other relevant information related to the Fund's assets, including from relevant third parties (certificates or other documentary evidence), are sent to the depositary in order for the depositary to perform its own verification or reconciliation procedure : -every time there is a sale or acquisition of assets or a corporate action; -on a periodical basis and at least once a year.
+            YesNoExplain appropriate_asset_registration_process_in_place = 9;
+            // 3.1.2. If the answer to Q3.1. is YES, have periodical ownership verifications or reconciliations, based on reliable and independent sources, been performed for the other assets in the Fund / (sub-)fund records qualifying as “financial assets”?
+            YesNoExplain periodical_ownership_verifications = 10;
+            // 3.1.2.2. If the answer to Q3.1.2. is YES, what has been the frequency of these periodical ownership verifications or reconciliations?
+            Frequency frequency_of_periodical_ownership_verifications = 11;
+            // 3.1.2.3. If the answer to Q3.1.2. is YES, is the frequency of these periodical ownership verifications or reconciliations consistent with the frequency of the NAV calculation for all sub-funds of the Fund? If NO, explain.
+            YesNoExplain frequency_of_periodical_ownership_verifications_consistent_with_nav_frequency = 12;
+            // 3.1.3. If the answer to Q3.1. is YES, have periodical ownership verifications or reconciliations, based on reliable and independent sources, been performed for the other assets in the Fund / (sub-)fund records qualifying as “non-financial assets”? If no, explain.
+            YesNoExplain periodical_ownership_verifications_for_non_financial_assets = 13;
+            // 3.1.3.2. If the answer to Q3.1.3. is YES, what has been the frequency of these periodical ownership verifications or reconciliations?
+            Frequency frequency_of_periodical_ownership_verifications_for_non_financial_assets = 14;
+            // 3.1.3.3. If the answer to Q3.1.3. is YES, is the frequency of these periodical ownership verifications or reconciliations consistent with the frequency of the NAV calculation for all sub-funds of the Fund? If NO, explain.
+            YesNoExplain frequency_of_periodical_ownership_verifications_non_financial_consistent_with_nav_frequency = 15;
+            // 3.1.4. If the answer to Q3.1. is YES, could all differences identified by these periodical ownership verifications or reconciliations during the year be explained, documented and resolved in a reasonable delay considering the NAV calculation frequency? If NO, explain.
+            YesNoExplain all_differences_identified_by_ownership_verifications_explained = 16;
+            // 3.2. If the answer to Q3. is YES, is a process in place for the Fund in order to ensure the consistency of the Fund / (sub-)fund records with the depositary records for the other assets held by the Fund? If No, explain.
+            YesNoExplain process_in_place_to_ensure_fund_and_depositary_consistency_for_other_assets = 17;
+            // 3.2.2. If the answer to Q3.2. is YES, what has been the frequency of the consistency controls of the Fund / (sub-)fund records with the depositary records for the other assets qualified as financial assets?
+            Frequency frequency_of_consistency_controls_other_assets = 18;
+            // 3.2.3. If the answer to Q3.2. is YES, is the frequency of these consistency controls for the other assets qualified as financial assets consistent with the frequency of the NAV calculation for all sub-funds of the Fund? If NO, explain.
+            YesNoExplain frequency_of_consistency_controls_other_assets_consistent_with_nav_frequency = 19;
+            // 3.2.4. If the answer to Q3.2. is YES, what has been the frequency of the consistency controls of the Fund records with the depositary records for the other assets qualified as non-financial assets?
+            Frequency frequency_of_consistency_controls_other_non_financial_assets = 20;
+            // 3.2.5. If the answer to Q3.2. is YES, is the frequency of these consistency controls for the other assets qualified as non-financial assets consistent with the frequency of the NAV calculation for all sub-funds of the Fund? If No, explain
+            YesNoExplain frequency_of_consistency_controls_other_non_financial_assets_consistent_with_nav_frequency = 21;
+            // 3.2.6. If the answer to Q3.2. is YES, could all differences identified during the year through these consistency controls between the Fund / (sub-)fund records and the depositary records be explained, documented and resolved in a reasonable delay? If NO, explain.
+            YesNoExplain all_differences_identified_by_consistency_controls_explained = 22;
+            // 3.3. If the answer to Q3. is YES, did the depositary provide an inventory of assets, including all the other assets, held by the Fund / (sub-)funds at year-end?  If NO, mention the missing asset(s) and explain.
+            YesNoExplain depositary_provided_inventory_of_assets_held_by_fund = 23;
+            // 3.4. If the answer to Q3. is YES, has the Management of the Fund been notified during the year about any escalation from the depositary to the IFM/Fund of a situation of discrepancy detected in the context of the execution of its safekeeping duties for other assets (missing ownership verification documentation to be provided by the fund, discrepancies identified, etc.)? If YES, explain.
+            YesNoExplain management_notified_of_any_other_asset_discrepancies = 24;
+            // 4. Has the Management of the Fund been notified during the year of any escalation from the depositary to the IFM / Fund of a situation of discrepancy not corrected in due time in the context of the cash flow monitoring of the Fund?
+            bool management_notified_of_any_escalation_from_depositary_to_ifm_of_discrepancy_not_corrected_in_due_time = 25;
+            // 4.1. If the answer to Q4. is YES, has the escalation in the context of the cash flow monitoring been related to [reply to items listed hereunder] (if YES, explain): a. eligibility of third-party banks 92
+            YesNoExplain escalation_of_discrepancy_not_corrected_in_due_time_related_to_eligibility_of_third_party_banks = 26;
+            // 4.1. If the answer to Q4. is YES, has the escalation in the context of the cash flow monitoring been related to [reply to items listed hereunder] (if YES, explain): b. cash reconciliation process and results of cash reconciliation 93
+            YesNoExplain escalation_of_discrepancy_not_corrected_in_due_time_related_to_cash_reconciliation_process = 27;
+            // 4.1. If the answer to Q4. is YES, has the escalation in the context of the cash flow monitoring been related to [reply to items listed hereunder] (if YES, explain): c. inconsistent and significant cash flow monitoring 94
+            YesNoExplain escalation_of_discrepancy_not_corrected_in_due_time_related_to_cash_monitoring_process = 28;
+            // 5. Has the Management of the Fund been notified during the year of any escalation from the depositaryto the IFM/Fund regarding other oversight duties?
+            bool management_notified_of_any_escalation_from_depositary_regarding_other_oversight_duties = 29;
+            // 5.1. If the answer to Q5. is YES, has the escalation concerned the oversight on valuation of shares/units?
+            bool management_notified_of_any_escalation_from_depositary_to_ifm_related_to_valuation_oversight_duties = 30;
+            // 5.1.1. If the answer to Q5.1. is YES, was the escalation on the oversight on valuation of shares/units due to the following elements [reply to items listed hereunder] (if YES, explain)? a. Lack of evidence for assets valued in accordance with prospectus and valuation policies
+            YesNoExplain escalation_on_oversight_of_valuation_evidence_for_assets = 31;
+            // 5.1.1. If the answer to Q5.1. is YES, was the escalation on the oversight on valuation of shares/units due to the following elements [reply to items listed hereunder] (if YES, explain)? b. NAV calculation process inconsistent with legal and prospectus rules
+            YesNoExplain escalation_on_oversight_of_valuation_nav_calculation_process = 32;
+            // 5.1.1. If the answer to Q5.1. is YES, was the escalation on the oversight on valuation of shares/units due to the following elements [reply to items listed hereunder] (if YES, explain)? c. NAV calculation error not subject to the Circular CSSF 02/77 notification and remediation process
+            YesNoExplain escalation_on_oversight_of_valuation_nav_calculation_error = 33;
+            // 5.1.1. If the answer to Q5.1. is YES, was the escalation on the oversight on valuation of shares/units due to the following elements [reply to items listed hereunder] (if YES, explain)? d. Any other reason
+            YesNoExplain escalation_on_oversight_of_valuation_other_reason = 34;
+            // 5.2. If the answer to Q5. is YES, has the escalation concerned the oversight on subscriptions and redemptions?
+            bool management_notified_of_any_escalation_from_depositary_to_ifm_related_to_subscription_and_redemption_oversight_duties = 35;
+            // 5.2.1. If the answer to Q5.2. is YES, was the escalation on the oversight of subscriptions and redemptions due to the following elements (if YES, explain): a. unprocessed trades in accordance with legal and prospectus rules (cut off time for NAV/share application, investor equalization for illiquid funds)
+            YesNoExplain escalation_on_oversight_of_subscriptions_and_redemptions_unprocessed_trades = 36;
+            // 5.2.1. If the answer to Q5.2. is YES, was the escalation on the oversight of subscriptions and redemptions due to the following elements (if YES, explain): b. subscriptions / redemptions related cash reconciliation issues
+            YesNoExplain escalation_on_oversight_of_subscriptions_and_redemptions_cash_reconciliation_issues = 37;
+            // 5.2.1. If the answer to Q5.2. is YES, was the escalation on the oversight of subscriptions and redemptions due to the following elements (if YES, explain): c. outstanding reconciliation breaks on shares/units
+            YesNoExplain escalation_on_oversight_of_subscriptions_and_redemptions_breaks_on_shares_or_units = 38;
+            // 5.2.1. If the answer to Q5.2. is YES, was the escalation on the oversight of subscriptions and redemptions due to the following elements (if YES, explain): d. any other reason
+            YesNoExplain escalation_on_oversight_of_subscriptions_and_redemptions_other = 39;
+            // 5.3. If the answer to Q5. is YES, has the escalation concerned the oversight on investment restriction monitoring?
+            bool management_notified_of_any_escalation_from_depositary_to_ifm_related_to_investment_restriction_monitoring = 40;
+            // 5.3.1. If the answer to Q5.3. is YES, was the escalation on the oversight on investment restriction monitoring due to following elements (if YES, explain): a. active breaches of legal and prospectus rules identified that were not subject to the CSSF 02/77 notification and remediation process
+            YesNoExplain escalation_on_oversight_of_investment_restrictions_breaches_of_legal_and_prospectus_rules = 41;
+            // 5.3.1. If the answer to Q5.3. is YES, was the escalation on the oversight on investment restriction monitoring due to following elements (if YES, explain): b. Any other reason
+            YesNoExplain escalation_on_oversight_of_investment_restrictions_other = 42;
+            // 5.4. If the answer to Q5. is YES, has the escalation concerned the oversight on income calculation and distribution?
+            bool management_notified_of_any_escalation_from_depositary_to_ifm_related_to_income_calculation_and_distribution = 43;
+            // 5.4.1. If the answer to Q5.4. is YES, was the escalation on the oversight of the income calculation and distribution due to following elements (if YES, explain): a. income calculation for distribution purposes was not processed in accordance with Fund’s prospectus (including eligibility of the income category for distribution)
+            YesNoExplain escalation_on_oversight_of_income_calculation_and_distribution_not_processed_according_to_prospectus = 44;
+            // 5.4.1. If the answer to Q5.4. is YES, was the escalation on the oversight of the income calculation and distribution due to following elements (if YES, explain): b. income distribution processed pertaining to a period for which the opinion on the financial statements provided by the auditor was qualified
+            YesNoExplain escalation_on_oversight_of_income_calculation_and_distribution_qualified_audit_opinion = 45;
+            // 5.4.1. If the answer to Q5.4. is YES, was the escalation on the oversight of the income calculation and distribution due to following elements (if YES, explain): c. any other reason
+            YesNoExplain escalation_on_oversight_of_income_calculation_and_distribution_other = 46;
+            // 5.5. If the answer to Q5. is YES, has the escalation concerned any other irregularities? If Yes, explain.
+            YesNoExplain management_notified_of_any_escalation_from_depositary_to_ifm_any_other_irregularities = 47;
+            // 6. Has a reconciliation process against the depositary's records been in place for the Fund /(sub-)fund(s) during the year concerning the assets safekept at depositary? If NO, explain.
+        }
+        // Self assessment responses related to depositary relationships for 7.1. UCITS /REGULATED AIFs WITH AUTHORISED AIFM
+        DepositaryRelationshipUCITSandRegulatedAIFsWithAIFM ucits_and_regulated_aifs_with_authorised_aifm = 1;
+        // Questions relevant for 7.2. REGULATED AIFs REGISTERED AIFM/REGULATED NON-AIFs
+        message DepositaryRelationshipRegulatedAIFsRegisteredAIFMAndRegulatedNonAIFs {
+            // 6. Has a reconciliation process against the depositary's records been in place for the Fund /(sub-)fund(s) during the year concerning the assets safekept at depositary? If NO, explain.
+            YesNoExplain reconciliation_process_against_depositary_records_in_place = 1;
+            // 6.2. If the answer to Q6. is YES, what has been the frequency of these reconciliations?
+            Frequency frequency_of_reconciliations = 2;
+            // 6.3. If the answer to Q6. is YES, is the frequency of these reconciliations consistent with the frequency of the NAV calculation for all sub-funds of the Fund? If NO, explain.
+            YesNoExplain frequency_of_reconciliations_consistent_with_nav_frequency = 3;
+            // 6.4. If the answer to Q6. is YES, have these reconciliations for the assets safekept at depositary been performed on an ongoing basis during the year at the frequency mentioned above? If NO, explain.
+            YesNoExplain reconciliations_performed_on_ongoing_basis_consistent_with_nav_frequency = 4;
+            // 6.5. If the answer to Q6. is YES, could all identified differences by these reconciliation during the year be explained, documented and resolved in a reasonable delay? If NO, explain
+            YesNoExplain all_reconciliation_differences_resolved = 5;
+            // 7. Did the depositary confirm all the assets safekept at depositary as at year-end?
+            bool depositary_confirmed_all_assets_of_fund_that_can_be_held_in_custody = 6;
+            // 7.1. If the answer to Q7. is NO, mention the type of assets and explain (including impact on sub-funds)
+            FundSpecificExplanation assets_no_held_in_custody = 7;
+            // 8. Has a reconciliation process against the depositary's records been in place for the Fund /(sub-)fund(s) during the year concerning the assets that are held at a third party custodian on behalf of funds? If NO, explain.
+            YesNoExplain reconciliation_process_against_depositary_records_in_place_for_assets_held_with_third_party_custodian = 8;
+            // 8.2. If the answer to Q8. is YES, what has been the frequency of these reconciliations?
+            Frequency frequency_of_third_party_custodian_reconciliations = 9;
+            // 8.3. If the answer to Q8. is YES, is the frequency of these reconciliations consistent with the frequency of the NAV calculation for all sub-funds of the Fund ? If NO, explain.
+            YesNoExplain frequency_of_third_party_custodian_reconciliations_consistent_with_nav_frequency = 10;
+            // 8.4. If the answer to Q8. is YES, have these reconciliations for the assets that are held at a third party custodian on behalf of the Fund been performed on an ongoing basis during the year at the frequency mentioned above? If NO, explain.
+            YesNoExplain third_party_custodian_reconciliations_performed_on_ongoing_basis_consistent_with_nav_frequency = 11;
+            // 8.5. If the answer to Q8. is YES, could all identified differences by these reconciliations during the year be explained, documented and resolved in a reasonable delay? If NO, explain.
+            YesNoExplain all_identified_differences_in_third_party_custodian_reconciliations_resolved = 12;
+            // 9. Did the depositary confirm all assets that are held at a third party custodian on behalf of the Fund as at year-end?
+            bool depositary_confirmed_all_assets_held_at_third_party_custodian = 13;
+            // Details of assets not held with third party custodian
+            message AssetTypeAndDetails {
+                string type_of_asset = 1;
+                string explanation = 2;
+            }
+            // 9.1. If the answer to Q9. is NO, mention the type of assets and explain (including impact on sub-funds)
+            repeated AssetTypeAndDetails asset_types_not_held_with_third_party_custodian = 14;
+            // 10. Did the Fund invest in assets qualifying as "other assets registered in the AIFM name on behalf of the Fund or in the Fund name" ("other assets") during the year?
+            bool fund_invested_in_assets_qualifying_as_other_assets = 15;
+            // 10.1. If the answer to Q10. is YES, have the 3 following asset registration processes been in place for the Fund concerning the other assets. "a) an asset ownership registration process at each transaction for the assets acquired by the Fund, based on information or documents maintained by the IFM and, where available, on external evidence;
+            // b) a process ensuring that the depositary or the third party is informed of any transaction on registered assets in a timely fashion;
+            //c) a process ensuring that all instructions and other relevant information related to the Fund's assets, including from relevant third parties (certificates or other documentary evidence), are provided to the depositary in order for the depositary to perform its own verification or reconciliation procedure :
+            // -every time there is a sale or acquisition of assets or a corporate action;
+            // -on a periodical basis and at least once a year. If NO, explain.
+            YesNoExplain appropriate_other_asset_registration_process_in_place = 16;
+            // 10.1.2. If the answer to Q10.1. is YES, have periodical ownership verifications or reconciliations, based on reliable and independent sources, been performed for the other assets in the Fund / (sub-)fund records qualifying as “financial assets”? If NO, explain.
+            YesNoExplain periodical_ownership_verification_based_on_reliable_independent_sources_has_been_performed_for_other_assets = 17;
+            // 10.1.2.2. If the answer to Q10.1.2. is YES, what has been the frequency of these periodical ownership verifications or reconciliations?
+            Frequency frequency_of_periodical_ownership_verifications = 18;
+            // 10.1.2.3. If the answer to Q10.1.2. is YES, is the frequency of these periodical ownership verifications or reconciliations consistent with the frequency of the NAV calculation for all sub-funds of the Fund ?  If NO, explain.
+            YesNoExplain frequency_of_periodical_ownership_verifications_consistent_with_nav_frequency = 19;
+            // 10.1.3. If the answer to Q10.1. is YES, have periodical ownership verifications or reconciliations, based on reliable and independent sources, been performed for the other assets in the Fund / (sub-)fund records qualifying as “non-financial assets”?
+            YesNoExplain periodical_ownership_verification_based_on_reliable_independent_sources_has_been_performed_for_non_financial_other_assets = 20;
+            // 10.1.3.2. If the answer to Q10.1.3. is YES, what has been the frequency of these periodical ownership verifications or reconciliations?
+            Frequency frequency_of_periodical_ownership_verifications_for_non_financial_other_assets = 21;
+            // 10.1.3.3. If the answer to Q10.1.3. is YES, is the frequency of these periodical ownership verifications or reconciliations consistent with the frequency of the NAV calculation for all sub-funds of the Fund? If NO, explain
+            YesNoExplain frequency_of_periodical_ownership_verifications_for_non_financial_other_assets_consistent_with_nav_frequency = 22;
+            // 10.1.4. If the answer to Q10.1. is YES, could all differences identified by these periodical ownership verifications or reconciliations during the year be explained, documented and resolved in a reasonable delay considering the NAV calculation frequency?
+            YesNoExplain all_differences_identified_by_periodical_ownership_verifications_explained = 23;
+            // 10.2. If the answer to Q10. is YES, is a process in place for the Fund in order to ensure the consistency of the Fund / (sub-)funds records with the depositary records for the other assets held by the Fund? If NO, explain
+            YesNoExplain process_in_place_to_ensure_consistency_of_fund_and_depository_records = 24;
+            // 10.2.2. If the answer to Q10.2. is YES, what has been the frequency of the consistency controls of the Fund records with the depositary records for the other assets qualified as financial assets?
+            Frequency frequency_of_consistency_controls_for_other_financial_assets = 25;
+            // 10.2.3. If the answer to Q10.2. is YES, is the frequency of these consistency controls for the other assets qualified as financial assets consistent with the frequency of the NAV calculation for all sub-funds of the Fund ? If NO, explain
+            YesNoExplain frequency_of_consistency_controls_consistent_with_nav_frequency = 26;
+            // 10.2.4. If the answer to Q10.2. is YES, what has been the frequency of the consistency controls of the Fund records with the depositary records for the other assets qualified as non-financial assets?
+            Frequency frequency_of_consistency_controls_for_other_non_financial_assets = 27;
+            // 10.2.6. If the answer to Q10.2. is YES, could all differences identified during the year through these consistency controls between the Fund records and the depositary records be explained, documented and resolved in a reasonable delay ? If NO, explain
+            YesNoExplain all_differences_identified_consistency_controls_explained = 28;
+            // 10.3. If the answer to Q10. is YES, did the depositary confirm all other assets as at year-end?
+            YesNoExplain depository_confirmed_all_other_assets = 29;
+            // 10.4. If the answer to Q10. is YES, has the Management of the Fund been notified during the year about any escalation from the depositary to the IFM/Fund of a situation of discrepancy detected in the context of the execution of its safekeeping duties for other assets (missing ownership verification documentation to be provided by the fund, discrepancies identified, etc.)? If YES, explain.
+            YesNoExplain management_notified_about_any_escalation_from_depository_to_ifm_or_fund = 30;
+        }
+        // Self assessment responses related to depositary relationships for 7.2. REGULATED AIFs REGISTERED AIFM/REGULATED NON-AIFs
+        DepositaryRelationshipRegulatedAIFsRegisteredAIFMAndRegulatedNonAIFs registered_aifm_and_regulated_aifs = 2;
+    }
+    // Responses to questions relating to Relationship with Depositary
+    DepositaryRelationship depositary_relationship = 21;
+}
+
+// Batch set of RT000D034 responses
+message RT000D034_batch {
+    repeated RT000D034 response = 1;
+}

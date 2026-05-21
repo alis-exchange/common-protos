@@ -1,0 +1,812 @@
+syntax = "proto3";
+
+package standards.open.v1;
+
+import "google/type/money.proto";
+import "google/protobuf/descriptor.proto";
+import "google/protobuf/timestamp.proto";
+import "standards/open/v1/yesno.proto";
+import "standards/open/v1/fieldOptionsExtentions.proto";
+
+option go_package = "github.com/standards-exchange/protobuf-go/standards/open/v1";
+
+// The Investment Funds Distributor Due Diligence Questionnaire (ICI Distributor DDQ) Version 1
+message RT000MBG3 {
+  // Section 1. General Information
+  message GeneralInformation {
+    string legal_name = 1 [
+      (standards.open.v1.fdx_options).number = "1.1",
+      (standards.open.v1.fdx_options).question = "Financial institution / intermediary legal name"
+    ];
+    string registered_address = 2 [
+      (standards.open.v1.fdx_options).number = "1.2",
+      (standards.open.v1.fdx_options).question = "Registered address"
+    ];
+    string country_of_incorporation = 3 [
+      (standards.open.v1.fdx_options).number = "1.3",
+      (standards.open.v1.fdx_options).question = "Country of incorporation"
+    ];
+    YesNoNA regulated_entity = 4 [
+      (standards.open.v1.fdx_options).number = "1.4",
+      (standards.open.v1.fdx_options).question = "Country of incorporation",
+      (standards.open.v1.fdx_options).default = "1"
+    ];
+    string regulated_entity_registration = 5 [
+      (standards.open.v1.fdx_options).number = "1.4.a",
+      (standards.open.v1.fdx_options).question = "If yes, what is your registration number / regulatory license?",
+      (standards.open.v1.fdx_options).conditional = "GeneralInformation.RegulatedEntity?1:2"
+    ];
+    string licenses_and_regulator = 6 [
+      (standards.open.v1.fdx_options).number = "1.4.b",
+      (standards.open.v1.fdx_options).question = "If yes, what type of licenses do you hold? Please include the name of the regulator.",
+      (standards.open.v1.fdx_options).conditional = "GeneralInformation.RegulatedEntity?1:2"
+    ];
+    string regulatory_structure_aml_ctf = 7 [
+      (standards.open.v1.fdx_options).number = "1.4.c",
+      (standards.open.v1.fdx_options).question = "Does the firm’s regulatory structure cover anti–money laundering (AML) and counterterrorism financing (CTF)?",
+      (standards.open.v1.fdx_options).conditional = "GeneralInformation.RegulatedEntity?1:2"
+    ];
+    YesNoNA mifid_entity = 8 [
+      (standards.open.v1.fdx_options).number = "1.4.d",
+      (standards.open.v1.fdx_options).question = "Does the firm’s regulatory structure cover anti–money laundering (AML) and counterterrorism financing (CTF)?",
+      (standards.open.v1.fdx_options).default = "2",
+      (standards.open.v1.fdx_options).conditional = "GeneralInformation.RegulatedEntity?1:2"
+    ];
+    YesNoNA subsidiary_regulated_entity = 9 [
+      (standards.open.v1.fdx_options).number = "1.5",
+      (standards.open.v1.fdx_options).question = "Are you a wholly owned subsidiary of a regulated entity?",
+      (standards.open.v1.fdx_options).default = "1"
+    ];
+    string corproate_events = 10 [
+      (standards.open.v1.fdx_options).number = "1.6",
+      (standards.open.v1.fdx_options).question = "List corporate events (mergers or acquisitions) over the past three years that are relevant to the investment fund distribution business"
+    ];
+    YesNoNA ultimate_beneficial_owner = 11 [
+      (standards.open.v1.fdx_options).number = "1.7",
+      (standards.open.v1.fdx_options).question = "Ultimate beneficial owner (UBO). Do you have any shareholder directly or indirectly owning 25 percent or more of the entity’s shares or exercising power or control through other means? Select N/A for publically listed companies or if owned by a publically listed company",
+      (standards.open.v1.fdx_options).default = "2"
+    ];
+    message UltimateBeneficialOwnerShareholder {
+      // Main shareholder (UBO)
+      string main_shareholder = 1 [
+        (standards.open.v1.fdx_options).question = "Give the name of the shareholder"
+      ];
+      // Percentage controlled
+      double percentage_controlled = 2 [
+        (standards.open.v1.fdx_options).question = "Percentage controlled of the main shareholder"
+      ];
+    }
+    repeated UltimateBeneficialOwnerShareholder ultimate_beneficial_owners = 12 [
+      (standards.open.v1.fdx_options).number = "1.7.a",
+      (standards.open.v1.fdx_options).question = "If yes, please list any natural persons that directly or indirectly hold 25 percent or more of the shares / voting rights of your firm’s shares.",
+      (standards.open.v1.fdx_options).conditional = "GeneralInformation.UltimateBeneficialOwner?1:2"
+    ];
+    YesNoNA eu_eea_provided_uba = 13 [
+      (standards.open.v1.fdx_options).number = "1.8.a",
+      (standards.open.v1.fdx_options).question = "Is the firm an EU / EEA firms that provided UBO in question 7a above",
+      (standards.open.v1.fdx_options).default = "2"
+    ];
+    message ControllingPerson {
+      // Controlling person / Senior managing official
+      string controlling_person = 1 [
+        (standards.open.v1.fdx_options).question = "Give the name of the Controlling person / Senior managing official"
+      ];
+      // Percentage controlled
+      double percentage_controlled = 2 [
+        (standards.open.v1.fdx_options).question = "Percentage controlled or position"
+      ];
+    }
+    repeated ControllingPerson controlling_persons = 14 [
+      (standards.open.v1.fdx_options).number = "1.8.b",
+      (standards.open.v1.fdx_options).question = "Please identify the senior managing official (executive director with significant responsibility for managing the legal entity and who has the power to act as its legal representative).",
+      (standards.open.v1.fdx_options).conditional = "GeneralInformation.EuEeaProvidedUba?2:1"
+    ];
+    string management_structure = 15 [
+      (standards.open.v1.fdx_options).number = "1.9",
+      (standards.open.v1.fdx_options).question = "Management structure. Please provide the details of your current board of directors. You can satisfy this question by submitting a separate document or website link detailing your current board of directors."
+    ];
+  }
+  // Section 1. General Information
+  GeneralInformation general_information = 1 [
+    (standards.open.v1.fdx_options).number = "1",
+    (standards.open.v1.fdx_options).question = "Section 1: General Information",
+    (standards.open.v1.fdx_options).description = "Publicly listed companies should provide links from their website for the updated information required for this section."
+  ];
+  // Section 2. Business Model and Operations
+  message BusinessModelAndOperations {
+    string aum_range_currency_code = 1 [
+      (standards.open.v1.fdx_options).number = "2.1.a",
+      (standards.open.v1.fdx_options).question = "What is the level of assets that you currently distribute, manage, or make available to trade or introduce in investment funds as per the latest quarter or annual report available? Specify the reporting.",
+      (standards.open.v1.fdx_options).description = "The 3-letter currency code defined in ISO 4217. For example, EUR, USD, GBP"
+    ];
+    enum AumRange {
+      AUM_RANGE_UNSPECIFIED = 0;
+      LESS_THAN_50_MILLION = 1;
+      GREATER_THAN_50_MILLION_AND_LESS_THAN_500_MILLION = 2;
+      GREATER_THAN_500_MILLION_AND_LESS_THAN_5_BILLION = 3;
+      GREATER_THAN_5_BILLION_AND_LESS_THAN_10_BILLION = 4;
+      GREATER_THAN_10_BILLION = 5;
+    }
+    AumRange aum_range = 2 [
+      (standards.open.v1.fdx_options).number = "2.1.b",
+      (standards.open.v1.fdx_options).question = "What is the level of assets that you currently distribute, manage, or make available to trade or introduce in investment funds as per the latest quarter or annual report available? Select a range.",
+      (standards.open.v1.fdx_options).description = "The range should be denominated in the currency specified in 2.1.a"
+    ];
+    enum TradingMethod {
+      TRADING_METHOD_UNSPECIFIED = 0;
+      // Direct (at the transfer agent of the fund)
+      DIRECT = 1;
+      // NSCC / Fund SERV
+      NSCC_OR_FUND_SERV = 2;
+      // Clearing agent
+      CLEARING_AGENT = 3;
+      // Omnibus trading
+      OMNIBUS_TRADING = 4;
+      // Platform
+      PLATFORM = 5;
+      // Custodian
+      CUSTODIAN = 6;
+      // Other
+      OTHER = 7;
+    }
+    repeated TradingMethod trading_methods = 3 [
+      (standards.open.v1.fdx_options).number = "2.2.a",
+      (standards.open.v1.fdx_options).question = "Please confirm how you will trade with the fund.",
+      (standards.open.v1.fdx_options).description = "Select all that apply"
+    ];
+    string other_trading_methods_description = 4 [
+      (standards.open.v1.fdx_options).number = "2.2.b",
+      (standards.open.v1.fdx_options).question = "Please specify other trading methods.",
+      (standards.open.v1.fdx_options).description = "This field is required if OTHER is defined in the list of selected trading methods"
+    ];
+    bool business_context_retail_or_private_bank = 5 [
+      (standards.open.v1.fdx_options).number = "2.3.a",
+      (standards.open.v1.fdx_options).question = "Business context. Please select the type(s) of business or distribution activity that best describe(s) your business: Retail / Private bank"
+    ];
+    bool business_context_financial_advisor = 6 [
+      (standards.open.v1.fdx_options).number = "2.3.b",
+      (standards.open.v1.fdx_options).question = "Business context. Please select the type(s) of business or distribution activity that best describe(s) your business: Financial adviser"
+    ];
+    bool business_context_wealth_manager = 7 [
+      (standards.open.v1.fdx_options).number = "2.3.c",
+      (standards.open.v1.fdx_options).question = "Business context. Please select the type(s) of business or distribution activity that best describe(s) your business: Wealth manager"
+    ];
+    bool business_context_fund_platform = 8 [
+      (standards.open.v1.fdx_options).number = "2.3.d",
+      (standards.open.v1.fdx_options).question = "Business context. Please select the type(s) of business or distribution activity that best describe(s) your business: Fund platform"
+    ];
+    bool business_context_family_office = 9 [
+      (standards.open.v1.fdx_options).number = "2.3.e",
+      (standards.open.v1.fdx_options).question = "Business context. Please select the type(s) of business or distribution activity that best describe(s) your business: Family office"
+    ];
+    bool business_context_pension_scheme = 10 [
+      (standards.open.v1.fdx_options).number = "2.3.f",
+      (standards.open.v1.fdx_options).question = "Business context. Please select the type(s) of business or distribution activity that best describe(s) your business:  Pension scheme / Provider"
+    ];
+    bool business_context_multi_manager = 11 [
+      (standards.open.v1.fdx_options).number = "2.3.g",
+      (standards.open.v1.fdx_options).question = "Business context. Please select the type(s) of business or distribution activity that best describe(s) your business:  Multi manager / Fund of funds"
+    ];
+    bool business_context_insurance_wrap = 12 [
+      (standards.open.v1.fdx_options).number = "2.3.h",
+      (standards.open.v1.fdx_options).question = "Business context. Please select the type(s) of business or distribution activity that best describe(s) your business:  Insurance wrap"
+    ];
+    bool business_context_custodian = 13 [
+      (standards.open.v1.fdx_options).number = "2.3.i",
+      (standards.open.v1.fdx_options).question = "Business context. Please select the type(s) of business or distribution activity that best describe(s) your business:  Custodian"
+    ];
+    bool business_context_nominee = 14 [
+      (standards.open.v1.fdx_options).number = "2.3.j",
+      (standards.open.v1.fdx_options).question = "Business context. Please select the type(s) of business or distribution activity that best describe(s) your business:  Nominee"
+    ];
+    bool business_context_full_service_broker_dealer = 15 [
+      (standards.open.v1.fdx_options).number = "2.3.k",
+      (standards.open.v1.fdx_options).question = "Business context. Please select the type(s) of business or distribution activity that best describe(s) your business:  Full service broker-dealer"
+    ];
+    bool business_context_other = 16 [
+      (standards.open.v1.fdx_options).number = "2.3.l",
+      (standards.open.v1.fdx_options).question = "Business context. Please select the type(s) of business or distribution activity that best describe(s) your business:  Other"
+    ];
+    string business_context_other_describe = 17 [
+      (standards.open.v1.fdx_options).number = "2.3.l.describe",
+      (standards.open.v1.fdx_options).question = "If TRUE to 2.3.l 'Other', please describe",
+      (standards.open.v1.fdx_options).conditional = "BusinessModelAndOperations.BusinessContextOther?true:false"
+    ];
+    bool applicable_services_descretionary_portfolio_management = 18 [
+      (standards.open.v1.fdx_options).number = "2.4.a",
+      (standards.open.v1.fdx_options).question = "Please select the applicable types of services you provide to your clients:   Discretionary portfolio management"
+    ];
+    bool applicable_services_advisory = 19 [
+      (standards.open.v1.fdx_options).number = "2.4.b",
+      (standards.open.v1.fdx_options).question = "Please select the applicable types of services you provide to your clients: Advisory"
+    ];
+    bool applicable_services_advisory_as_per_mifid = 20 [
+      (standards.open.v1.fdx_options).number = "2.4.c",
+      (standards.open.v1.fdx_options).question = "Please select the applicable types of services you provide to your clients:  Advisory as per MiFID"
+    ];
+    bool applicable_services_advisory_as_per_mifid_dependent = 21 [
+      (standards.open.v1.fdx_options).number = "2.4.c.a",
+      (standards.open.v1.fdx_options).question = "Please select the applicable types of services you provide to your clients:  Advisory as per MiFID - Dependent",
+      (standards.open.v1.fdx_options).conditional = "BusinessModelAndOperations.ApplicableServicesAdvisoryAsOerMifid?true:false"
+    ];
+    bool applicable_services_advisory_as_per_mifid_independent = 22 [
+      (standards.open.v1.fdx_options).number = "2.4.c.ab",
+      (standards.open.v1.fdx_options).question = "Please select the applicable types of services you provide to your clients:  Advisory as per MiFID - Independent",
+      (standards.open.v1.fdx_options).conditional = "BusinessModelAndOperations.ApplicableServicesAdvisoryAsOerMifid?true:false"
+    ];
+    bool applicable_services_execution_only_or_brokerage = 23 [
+      (standards.open.v1.fdx_options).number = "2.4.d",
+      (standards.open.v1.fdx_options).question = "Please select the applicable types of services you provide to your clients:  Execution only / Brokerage (e.g., reception and transmission of orders)"
+    ];
+    bool applicable_services_execution_only_with_mifid_appropriate_assessment = 24 [
+      (standards.open.v1.fdx_options).number = "2.4.e",
+      (standards.open.v1.fdx_options).question = "Please select the applicable types of services you provide to your clients:  Execution only with MiFID appropriateness assessment"
+    ];
+    bool applicable_services_other = 25 [
+      (standards.open.v1.fdx_options).number = "2.4.f",
+      (standards.open.v1.fdx_options).question = "Please select the applicable types of services you provide to your clients:  Other"
+    ];
+    string applicable_services_other_describe = 26 [
+      (standards.open.v1.fdx_options).number = "2.4.f.describe",
+      (standards.open.v1.fdx_options).question = "If TRUE to 2.4.f 'Other', please describe",
+      (standards.open.v1.fdx_options).conditional = "BusinessModelAndOperations.ApplicableServicesOther?true:false"
+    ];
+    bool underlying_investors_retail = 27 [
+      (standards.open.v1.fdx_options).number = "2.5.a",
+      (standards.open.v1.fdx_options).question = "What type of underlying investors do you typically distribute investment funds to?: Retail / Nonprofessional clients"
+    ];
+    bool underlying_investors_professional = 28 [
+      (standards.open.v1.fdx_options).number = "2.5.b",
+      (standards.open.v1.fdx_options).question = "What type of underlying investors do you typically distribute investment funds to?:  Professional / Qualified / Institutional clients"
+    ];
+    bool underlying_investors_other = 29 [
+      (standards.open.v1.fdx_options).number = "2.5.c",
+      (standards.open.v1.fdx_options).question = "What type of underlying investors do you typically distribute investment funds to?: Other"
+    ];
+    string underlying_investors_other_describe = 30 [
+      (standards.open.v1.fdx_options).number = "2.5.c.describe",
+      (standards.open.v1.fdx_options).question = "If TRUE to 2.5.c 'Other', please describe",
+      (standards.open.v1.fdx_options).conditional = "BusinessModelAndOperations.UnderlyingInvestorsOther?true:false"
+    ];
+    YesNoNA restrict_business_by_jurisdiction_or_product = 31 [
+      (standards.open.v1.fdx_options).number = "2.6",
+      (standards.open.v1.fdx_options).question = "Can your firm restrict business by jurisdiction or product?"
+    ];
+    bool restrict_business_by_jurisdiction = 32 [
+      (standards.open.v1.fdx_options).number = "2.6.a.jurisdiction",
+      (standards.open.v1.fdx_options).question = "Can you restrict by jurisdiction?",
+      (standards.open.v1.fdx_options).conditional = "BusinessModelAndOperations.RestrictBusinessByJurisdictionOrProduct?1:2"
+    ];
+    bool restrict_business_by_product = 33 [
+      (standards.open.v1.fdx_options).number = "2.6.a.product",
+      (standards.open.v1.fdx_options).question = "Can you restrict by product?",
+      (standards.open.v1.fdx_options).conditional = "BusinessModelAndOperations.RestrictBusinessByJurisdictionOrProduct?1:2"
+    ];
+    bool restrict_business_by_other_parameter = 34 [
+      (standards.open.v1.fdx_options).number = "2.6.a.other",
+      (standards.open.v1.fdx_options).question = "Can you restrict by oanother paramter?",
+      (standards.open.v1.fdx_options).conditional = "BusinessModelAndOperations.RestrictBusinessByJurisdictionOrProduct?1:2"
+    ];
+    string restrict_business_by_other_parameter_describe = 35 [
+      (standards.open.v1.fdx_options).number = "2.6.c.other.describe",
+      (standards.open.v1.fdx_options).question = "If TRUE to 2.6.a.other, please describe",
+      (standards.open.v1.fdx_options).conditional = "BusinessModelAndOperations.RestrictBusinessByOtherParameter?true:false"
+    ];
+  }
+  BusinessModelAndOperations business_model_and_operations = 2 [
+    (standards.open.v1.fdx_options).number = "2",
+    (standards.open.v1.fdx_options).question = "Section 2: Business Model and Operations"
+  ];
+  // Section 3. Distribution, Suitability, and Marketing
+  message DistributionSuitabilityMarketing {
+    YesNoNA process_for_fund_review_and_approval = 1 [
+      (standards.open.v1.fdx_options).h1 = "Distribution",
+      (standards.open.v1.fdx_options).number = "3.1.",
+      (standards.open.v1.fdx_options).question = "Does your firm have an internal process for the review and approval of new fund products to be distributed?"
+    ];
+    YesNoNA distribute_outside_domiciled_country = 2 [
+      (standards.open.v1.fdx_options).h1 = "Distribution",
+      (standards.open.v1.fdx_options).number = "3.2.",
+      (standards.open.v1.fdx_options).question = "Do you distribute or make available investment funds in any jurisdiction other than your domicile country?"
+    ];
+    YesNoNA distribute_outside_domiciled_country_adhere_to_regulations = 3 [
+      (standards.open.v1.fdx_options).h1 = "Distribution",
+      (standards.open.v1.fdx_options).number = "3.2.a",
+      (standards.open.v1.fdx_options).question = "If yes, do you distribute or market investment funds in accordance with the applicable rules and regulations in the country where you are distributing / marketing?",
+      (standards.open.v1.fdx_options).conditional = "DistributionSuitabilityMarketing.DistributeOutsideDomiciledCountry?1:2"
+    ];
+    YesNoNA offer_investment_funds_in_countries_other_than_where_registered_for_public_distribution = 4 [
+      (standards.open.v1.fdx_options).h1 = "Distribution",
+      (standards.open.v1.fdx_options).number = "3.3.",
+      (standards.open.v1.fdx_options).question = "Does your firm offer investment funds in some countries other than those where the investment funds are registered for public distribution (e.g., private placement or reverse solicitation)?"
+    ];
+    YesNoNA sells_funds_in_jurisdictions_subject_to_limitation_on_investors = 5 [
+      (standards.open.v1.fdx_options).h1 = "Distribution",
+      (standards.open.v1.fdx_options).number = "3.4.",
+      (standards.open.v1.fdx_options).question = "Does your firm sell funds in any jurisdiction in a manner that is subject to limitation on the number of investors to be marketed to and/or investor count is required?"
+    ];
+    YesNoNA remuneration_policy_to_align_incentives_with_investors = 6 [
+      (standards.open.v1.fdx_options).h1 = "Distribution",
+      (standards.open.v1.fdx_options).number = "3.5.",
+      (standards.open.v1.fdx_options).question = "Do you have a remuneration policy reasonably designed to ensure members of staff responsible for the distribution of funds act in the best interest of investors, and in compliance with local regulatory requirements?"
+    ];
+    YesNoNA all_fees_comply_with_laws_and_regulations = 7 [
+      (standards.open.v1.fdx_options).h1 = "Distribution",
+      (standards.open.v1.fdx_options).number = "3.6.",
+      (standards.open.v1.fdx_options).question = "Can you confirm that all fees or nonmonetary benefits collected for your distribution / placement activities of investment funds comply with applicable law and regulations?"
+    ];
+    YesNoNA disclose_to_investors_inducements_as_required_by_law = 8 [
+      (standards.open.v1.fdx_options).h1 = "Distribution",
+      (standards.open.v1.fdx_options).number = "3.7.",
+      (standards.open.v1.fdx_options).question = "Where required by law, do you disclose to investors any inducements your firm receives from fund manufacturers and all fees and nonmonetary benefits collected for distribution / placement activities?"
+    ];
+    YesNoNA apply_a_suitability_test = 9 [
+      (standards.open.v1.fdx_options).h1 = "Suitability",
+      (standards.open.v1.fdx_options).number = "3.8.",
+      (standards.open.v1.fdx_options).question = "Do you reasonably apply a suitability test or other applicable standard of care to determine that investment funds offered to customers meet their needs, risk profile, and objectives?",
+      (standards.open.v1.fdx_options).description = "Yes, according to applicable law, No, N/A (for platform with sub-distributors)"
+    ];
+    YesNoNA controls_to_distribute_to_appropriate_investors = 10 [
+      (standards.open.v1.fdx_options).h1 = "Suitability",
+      (standards.open.v1.fdx_options).number = "3.9.",
+      (standards.open.v1.fdx_options).question = "Do you have controls in place to distribute investment funds to appropriate and eligible investors including, where applicable, those as defined in the MiFID II manufacturer’s target market communicated via the European MiFID Template (EMT)?",
+      (standards.open.v1.fdx_options).description = "For background about the European MiFID Template (EMT), please see FinDatEx at https://findataex.eu."
+    ];
+    YesNoNA controls_to_distribute_to_appropriate_investors_prevent_sales_to_negative_mifid_target_market = 11 [
+      (standards.open.v1.fdx_options).h1 = "Distribution",
+      (standards.open.v1.fdx_options).number = "3.10",
+      (standards.open.v1.fdx_options).question = "If yes to 3.9, do you distribute or market investment funds in accordance with the applicable rules and regulations in the country where you are distributing / marketing?",
+      (standards.open.v1.fdx_options).conditional = "DistributionSuitabilityMarketing.ControlsToDistributeToAppropriateInvestors?1:2"
+    ];
+    YesNoNA systems_and_controls_prevent_investment_funds_from_noneligible_investors = 12 [
+      (standards.open.v1.fdx_options).h1 = "Distribution",
+      (standards.open.v1.fdx_options).number = "3.11",
+      (standards.open.v1.fdx_options).question = "Do you have systems, controls, and procedures reasonably designed to prevent investment funds from being offered to noneligible investors?"
+    ];
+    YesNoNA provide_regular_reporting_to_regulator = 13 [
+      (standards.open.v1.fdx_options).h1 = "Distribution",
+      (standards.open.v1.fdx_options).number = "3.12",
+      (standards.open.v1.fdx_options).question = "Do you provide regular reporting or MiFID target market confirmations to the investment fund manufacturer / sponsor?"
+    ];
+    YesNoNA create_own_marketing_material = 14 [
+      (standards.open.v1.fdx_options).h1 = "Marketing",
+      (standards.open.v1.fdx_options).number = "3.13",
+      (standards.open.v1.fdx_options).question = "Do you create your own marketing material for the funds you distribute?",
+      (standards.open.v1.fdx_options).description = " Yes,  No (use marketing materials provided by the fund), N/A"
+    ];
+    YesNoNA create_own_marketing_material_procedures_for_compliant_materials = 15 [
+      (standards.open.v1.fdx_options).h1 = "Distribution",
+      (standards.open.v1.fdx_options).number = "3.13.a",
+      (standards.open.v1.fdx_options).question = "If yes to 3.13, do you maintain procedures reasonably designed to provide that your marketing materials are compliant with applicable laws and regulations where the materials are being distributed?",
+      (standards.open.v1.fdx_options).conditional = "DistributionSuitabilityMarketing.CreateOwnMarketingMaterial?1:2"
+    ];
+    enum FundDocumentDistribution {
+      FUND_DOCUMENT_DISTRIBUTION_UNSPECIFIED = 0;
+      YES = 1;
+      YES_PROVIDED_BY_SUB_DISTRIBUTOR  = 2;
+      NO = 3;
+    }
+    FundDocumentDistribution fund_documents_made_available = 16 [
+      (standards.open.v1.fdx_options).h1 = "Marketing",
+      (standards.open.v1.fdx_options).number = "3.14",
+      (standards.open.v1.fdx_options).question = "Are investment fund documents provided and made available to end investors / intermediaries as required by applicable law (e.g., KIIDs, prospectuses)?",
+      (standards.open.v1.fdx_options).description = " Yes,  No (use marketing materials provided by the fund), N/A"
+    ];
+    YesNoNA confirm_adherence_to_aifmd_directive = 17 [
+      (standards.open.v1.fdx_options).h1 = " Marketing",
+      (standards.open.v1.fdx_options).number = "3.15.",
+      (standards.open.v1.fdx_options).question = "If applicable, in relation to your marketing activities in the European Union for alternative investment funds (AIFs), please confirm that you have procedures to ensure that they will be marketed only in jurisdictions where the management company has obtained an AIFMD marketing passport and that all investors are “professional investors” / “retail investors” as applicable and as defined in the AIFMD (the 2011//61/EU Alternative Investment Fund Managers Directive)."
+    ];
+  }
+  DistributionSuitabilityMarketing distribution_suitability_marketing = 3 [
+    (standards.open.v1.fdx_options).number = "3",
+    (standards.open.v1.fdx_options).question = "Section 3. Distribution, Suitability, and Marketing",
+    (standards.open.v1.fdx_options).description = "Select N/A only if your firm is not directly distributing investment funds."
+  ];
+  // Section 4. Oversight of Sub-Distribution
+  message OversightOfSubDistribution {
+    YesNoNA use_or_intend_to_use_sub_distributors = 1 [
+      (standards.open.v1.fdx_options).number = "4.1.",
+      (standards.open.v1.fdx_options).question = "Do you currently use or intend to use sub-distributors for the distribution of funds?"
+    ];
+    bool sub_distributors_retail = 2 [
+      (standards.open.v1.fdx_options).number = "4.2.a",
+      (standards.open.v1.fdx_options).question = "What type of sub-distributors do you rely on? Retail / Private bank",
+      (standards.open.v1.fdx_options).conditional = "OversightOfSubDistribution.UseOrIntendToUseSubDistributors?1:2"
+    ];
+    bool sub_distributors_financial_adviser = 3 [
+      (standards.open.v1.fdx_options).number = "4.2.b",
+      (standards.open.v1.fdx_options).question = "What type of sub-distributors do you rely on? Financial adviser",
+      (standards.open.v1.fdx_options).conditional = "OversightOfSubDistribution.UseOrIntendToUseSubDistributors?1:2"
+    ];
+    bool sub_distributors_wealth_manager = 4 [
+      (standards.open.v1.fdx_options).number = "4.2.c",
+      (standards.open.v1.fdx_options).question = "What type of sub-distributors do you rely on? Wealth manager",
+      (standards.open.v1.fdx_options).conditional = "OversightOfSubDistribution.UseOrIntendToUseSubDistributors?1:2"
+    ];
+    bool sub_distributors_fund_platform = 5 [
+      (standards.open.v1.fdx_options).number = "4.2.d",
+      (standards.open.v1.fdx_options).question = "What type of sub-distributors do you rely on? Fund Platform",
+      (standards.open.v1.fdx_options).conditional = "OversightOfSubDistribution.UseOrIntendToUseSubDistributors?1:2"
+    ];
+    bool sub_distributors_family_office = 6 [
+      (standards.open.v1.fdx_options).number = "4.2.e",
+      (standards.open.v1.fdx_options).question = "What type of sub-distributors do you rely on? Family Office",
+      (standards.open.v1.fdx_options).conditional = "OversightOfSubDistribution.UseOrIntendToUseSubDistributors?1:2"
+    ];
+    bool sub_distributors_pension = 7 [
+      (standards.open.v1.fdx_options).number = "4.2.f",
+      (standards.open.v1.fdx_options).question = "What type of sub-distributors do you rely on? Pension scheme / provider",
+      (standards.open.v1.fdx_options).conditional = "OversightOfSubDistribution.UseOrIntendToUseSubDistributors?1:2"
+    ];
+    bool sub_distributors_multi_manager = 8 [
+      (standards.open.v1.fdx_options).number = "4.2.g",
+      (standards.open.v1.fdx_options).question = "What type of sub-distributors do you rely on? Multi manager / Fund of funds",
+      (standards.open.v1.fdx_options).conditional = "OversightOfSubDistribution.UseOrIntendToUseSubDistributors?1:2"
+    ];
+    bool sub_distributors_insurance_wrap = 9 [
+      (standards.open.v1.fdx_options).number = "4.2.h",
+      (standards.open.v1.fdx_options).question = "What type of sub-distributors do you rely on? Insurance wrap",
+      (standards.open.v1.fdx_options).conditional = "OversightOfSubDistribution.UseOrIntendToUseSubDistributors?1:2"
+    ];
+    bool sub_distributors_custodian = 10 [
+      (standards.open.v1.fdx_options).number = "4.2.i",
+      (standards.open.v1.fdx_options).question = "What type of sub-distributors do you rely on? Custodian / Nominee",
+      (standards.open.v1.fdx_options).conditional = "OversightOfSubDistribution.UseOrIntendToUseSubDistributors?1:2"
+    ];
+    bool sub_distributors_other = 11 [
+      (standards.open.v1.fdx_options).number = "4.2.j",
+      (standards.open.v1.fdx_options).question = "What type of sub-distributors do you rely on? Other",
+      (standards.open.v1.fdx_options).conditional = "OversightOfSubDistribution.UseOrIntendToUseSubDistributors?1:2"
+    ];
+    string sub_distributors_other_describe = 12 [
+      (standards.open.v1.fdx_options).number = "4.2.j.describe",
+      (standards.open.v1.fdx_options).question = "If Other, describe",
+      (standards.open.v1.fdx_options).conditional = "OversightOfSubDistribution.SubDistributorsOther?true:false"
+    ];
+    YesNoNA ensure_all_sub_distributors_regulated = 13 [
+      (standards.open.v1.fdx_options).number = "4.3.",
+      (standards.open.v1.fdx_options).question = "Do you ensure that all your sub-distributors are regulated for distribution of investment funds and are regulated for the purposes of anti–money laundering?",
+      (standards.open.v1.fdx_options).conditional = "OversightOfSubDistribution.UseOrIntendToUseSubDistributors?1:2"
+    ];
+    YesNoNA formal_contracts_with_sub_distributors = 14 [
+      (standards.open.v1.fdx_options).number = "4.4.",
+      (standards.open.v1.fdx_options).question = "Do you enter into formal contracts with sub-distributors stating the respective obligations and compliance requirements? For example, contractual requirements, periodic reporting obligations, and/or monitoring programs.",
+      (standards.open.v1.fdx_options).conditional = "OversightOfSubDistribution.UseOrIntendToUseSubDistributors?1:2"
+    ];
+    YesNoNA formal_contracts_with_sub_distributors_include_liability_clauses = 15 [
+      (standards.open.v1.fdx_options).number = "4.4.a",
+      (standards.open.v1.fdx_options).question = "If yes to 4.4, does the contract include liability clauses in case of material breach of contractual terms?",
+      (standards.open.v1.fdx_options).conditional = "OversightOfSubDistribution.FormalContractsWithSubDistributors?1:2"
+    ];
+    YesNoNA initial_due_diligence_on_sub_distributors = 16 [
+      (standards.open.v1.fdx_options).number = "4.5.",
+      (standards.open.v1.fdx_options).question = "Do you perform an initial due diligence review on the sub-distributors, including a risk assessment, before appointment?",
+      (standards.open.v1.fdx_options).conditional = "OversightOfSubDistribution.UseOrIntendToUseSubDistributors?1:2"
+    ];
+    string initial_due_diligence_on_sub_distributors_explain = 17 [
+      (standards.open.v1.fdx_options).number = "4.5.a.",
+      (standards.open.v1.fdx_options).question = "If no to 4.5, please explain:",
+      (standards.open.v1.fdx_options).conditional = "OversightOfSubDistribution.InitialDueDiligenceOnSubDistributors?2:1"
+    ];
+    YesNoNA ongoing_monitoring_of_sub_distributers = 18 [
+      (standards.open.v1.fdx_options).number = "4.6.",
+      (standards.open.v1.fdx_options).question = "Do you enter into formal contracts with sub-distributors stating the respective obligations and compliance requirements? For example, contractual requirements, periodic reporting obligations, and/or monitoring programs.",
+      (standards.open.v1.fdx_options).conditional = "OversightOfSubDistribution.UseOrIntendToUseSubDistributors?1:2"
+    ];
+    YesNoNA sub_distributors_required_to_certify_meet_requirements = 19 [
+      (standards.open.v1.fdx_options).number = "4.7.",
+      (standards.open.v1.fdx_options).question = "Do you require sub-distributors to certify that they meet the regulatory requirements that your firm is subject to for AML / KYC compliance?",
+      (standards.open.v1.fdx_options).conditional = "OversightOfSubDistribution.UseOrIntendToUseSubDistributors?1:2"
+    ];
+  }
+  // Section 4. Oversight of Sub-Distribution
+  OversightOfSubDistribution oversight_of_sub_distribution = 4 [
+    (standards.open.v1.fdx_options).number = "4",
+    (standards.open.v1.fdx_options).question = "Section 4. Oversight of Sub-Distribution",
+    (standards.open.v1.fdx_options).description = "This section is required when using a third-party sub-distribution network."
+  ];
+  // Section 5: Legal and Regulatory Oversight
+  message LegalAndRegulatoryOversight {
+    SanctionedResponses sanctioned_for_failure_to_comply_with_regulations = 1 [
+      (standards.open.v1.fdx_options).number = "5.1.a.",
+      (standards.open.v1.fdx_options).question = "Within the past five years and in relation to investment funds’ distribution activities: Has your firm been sanctioned for failure to comply with stipulated regulations or legislation in relation to the distribution activities of investment funds?"
+    ];
+    enum SanctionedResponses {
+      SANCTIONED_RESPONSES_UNSPECIFIED = 0;
+      YES = 1;
+      NO  = 2;
+      RELEVANT_INFORMATION_PUBLICLY_AVAILABLE = 3;
+    }
+    string sanctioned_for_failure_to_comply_with_regulations_details = 2 [
+      (standards.open.v1.fdx_options).number = "5.1.a.1",
+      (standards.open.v1.fdx_options).question = "If yes to 5.1.a.1, and the relevant information is publicly available, please provide website links or attach the full details, outlining corrective action taken to address deficiencies:",
+      (standards.open.v1.fdx_options).conditional = "LegalAndRegulatoryOversight.SanctionedForFailureToComplyWithRegulations?1:2"
+    ];
+    YesNoNA subject_to_fine_or_criminal_prosecution = 3 [
+      (standards.open.v1.fdx_options).number = "5.1.b.",
+      (standards.open.v1.fdx_options).question = "Has your firm been subjected to any fine, sanction, criminal prosecution, or regulatory investigation due to violations of financial crime laws / regulations that has resulted in an enforcement action or a significant adverse effect to the firm’s business dealings in investment funds?"
+    ];
+    string subject_to_fine_or_criminal_prosecution_explain = 4 [
+      (standards.open.v1.fdx_options).number = "5.1.b.1",
+      (standards.open.v1.fdx_options).question = "If yes to 5.1.b.1, and the relevant information is publicly available, please provide website links, or attach an explanation addressing the details and the impact of an adverse decision on your business, operations, policies, and/or procedures:",
+      (standards.open.v1.fdx_options).conditional = "LegalAndRegulatoryOversight.SubjectToFineOrCriminalProsecution?1:2"
+    ];
+    YesNoNA implemented_training_and_development_sales_teams = 5 [
+      (standards.open.v1.fdx_options).number = "5.2.",
+      (standards.open.v1.fdx_options).question = "Have you implemented ongoing training and development programs for your sales teams and other employees reasonably designed to comply with local laws and regulations?"
+    ];
+    YesNoNA independent_audit_function = 6 [
+      (standards.open.v1.fdx_options).number = "5.3.",
+      (standards.open.v1.fdx_options).question = "Do you have an internal independent audit function and/or an external auditor that assesses the firm’s sales activities and practices on a regular basis?"
+    ];
+    YesNoNA material_audit_findings = 7 [
+      (standards.open.v1.fdx_options).number = "5.4.",
+      (standards.open.v1.fdx_options).question = "Were any material audit findings by the external auditors in the past three years relevant to the distribution of investment funds?"
+    ];
+    YesNoNA material_audit_findings_resolved = 8 [
+      (standards.open.v1.fdx_options).number = "5.4.a",
+      (standards.open.v1.fdx_options).question = "If yes to 5.4.a, were all the audit findings resolved?",
+      (standards.open.v1.fdx_options).conditional = "LegalAndRegulatoryOversight.MaterialAuditFindingsResolved?1:2"
+    ];
+    YesNoNA data_protection_policies_and_procedures = 9 [
+      (standards.open.v1.fdx_options).number = "5.5.",
+      (standards.open.v1.fdx_options).question = "Do you have data protection policies and procedures, including record retention and deletion for investors’ records, in accordance with the applicable law?"
+    ];
+  }
+  // Section 5: Legal and Regulatory Oversight
+  LegalAndRegulatoryOversight legal_and_regulatory_oversight = 5 [
+    (standards.open.v1.fdx_options).number = "5",
+    (standards.open.v1.fdx_options).question = "Section 5: Legal and Regulatory Oversight"
+  ];
+  // Section 6: Risk Management and Controls
+  message RiskManagementAndControls {
+    YesNoNA internal_risk_management_function = 1 [
+      (standards.open.v1.fdx_options).number = "6.1.",
+      (standards.open.v1.fdx_options).question = "Do you have an internal risk management function?"
+    ];
+    YesNoNA internal_compliance_function = 2 [
+      (standards.open.v1.fdx_options).number = "6.2.",
+      (standards.open.v1.fdx_options).question = "Do you have an internal compliance function?"
+    ];
+    YesNoNA tested_controls_for_securing_client_data = 3 [
+      (standards.open.v1.fdx_options).number = "6.3.",
+      (standards.open.v1.fdx_options).question = "Do you have tested controls for securing client data?"
+    ];
+    YesNoNA business_continuity_plan = 4 [
+      (standards.open.v1.fdx_options).number = "6.4.",
+      (standards.open.v1.fdx_options).question = "Do you have a business continuity plan and disaster recovery plan that meets local regulatory requirements?"
+    ];
+    YesNoNA systems_and_it_infrastructure_adequate = 5 [
+      (standards.open.v1.fdx_options).number = "6.5.",
+      (standards.open.v1.fdx_options).question = "Are your systems and IT infrastructure adequate to safeguard the security, integrity, and confidentiality required for data protection?"
+    ];
+    YesNoNA oversight_on_outsourced_functions = 6 [
+      (standards.open.v1.fdx_options).number = "6.6.",
+      (standards.open.v1.fdx_options).question = "If you outsource any of your primary functions—such as internal audit, risk, compliance, or AML / CTF—to a third party, do you perform oversight and due diligence on those providers?"
+    ];
+    YesNoNA anti_corruption_compliance_program = 7 [
+      (standards.open.v1.fdx_options).number = "6.7.",
+      (standards.open.v1.fdx_options).question = "Does your firm have an anti-corruption compliance program, including anti-corruption policies and procedures, and does it provide appropriate training to firm employees?"
+    ];
+    YesNoNA tax_evasion_controls_in_place = 8 [
+      (standards.open.v1.fdx_options).number = "6.8.",
+      (standards.open.v1.fdx_options).question = "Do you maintain controls in place to prevent tax evasion?"
+    ];
+    YesNoNA controls_for_handling_customer_complaints = 9 [
+      (standards.open.v1.fdx_options).number = "6.9.",
+      (standards.open.v1.fdx_options).question = "Do you have internal procedures for handling customer complaints?"
+    ];
+    YesNoNA controls_for_handling_customer_complaints_escalation = 10 [
+      (standards.open.v1.fdx_options).number = "6.9.",
+      (standards.open.v1.fdx_options).question = "If yes to 6.9, do the procedures contain an escalation process to the product manufacturer / sponsor?",
+      (standards.open.v1.fdx_options).conditional = "RiskManagementAndControls.ControlsForHandlingCustomerComplaints?1:2"
+    ];
+    bool applicable_policies_in_place_code_of_ethics = 11 [
+      (standards.open.v1.fdx_options).number = "6.10.a",
+      (standards.open.v1.fdx_options).question = "Select all the applicable policies that you have in place: Code of ethics / conduct (including insider dealing and personal transactions)"
+    ];
+    bool applicable_policies_in_place_anti_bribery = 12 [
+      (standards.open.v1.fdx_options).number = "6.10.b",
+      (standards.open.v1.fdx_options).question = "Select all the applicable policies that you have in place: Anti-bribery and anti-corruption regulations"
+    ];
+    bool applicable_policies_in_place_gift_and_hospitality = 13 [
+      (standards.open.v1.fdx_options).number = "6.10.c",
+      (standards.open.v1.fdx_options).question = "Select all the applicable policies that you have in place: Gift and hospitality"
+    ];
+    bool applicable_policies_in_place_fraud_prevention_and_response = 14 [
+      (standards.open.v1.fdx_options).number = "6.10.d",
+      (standards.open.v1.fdx_options).question = "Select all the applicable policies that you have in place:  Fraud prevention and fraud response plan"
+    ];
+    bool applicable_policies_in_place_conflicts_of_interest = 15 [
+      (standards.open.v1.fdx_options).number = "6.10.e",
+      (standards.open.v1.fdx_options).question = "Select all the applicable policies that you have in place:   Conflicts of interest (including inducements)"
+    ];
+    bool applicable_policies_in_place_whistleblowing = 16 [
+      (standards.open.v1.fdx_options).number = "6.10.f",
+      (standards.open.v1.fdx_options).question = "Select all the applicable policies that you have in place: Whistleblowing"
+    ];
+    bool applicable_policies_in_place_data_protection = 17 [
+      (standards.open.v1.fdx_options).number = "6.10.g",
+      (standards.open.v1.fdx_options).question = "Select all the applicable policies that you have in place: Data protection and confidentiality"
+    ];
+    bool applicable_policies_in_place_tax_evasion = 18 [
+      (standards.open.v1.fdx_options).number = "6.10.h",
+      (standards.open.v1.fdx_options).question = "Select all the applicable policies that you have in place: Tax evasion"
+    ];
+    bool applicable_policies_in_place_fatca_and_crs = 19 [
+      (standards.open.v1.fdx_options).number = "6.10.i",
+      (standards.open.v1.fdx_options).question = "Select all the applicable policies that you have in place: FATCA law and Common Reporting Standards (CRS)"
+    ];
+    bool applicable_policies_in_place_aml = 20 [
+      (standards.open.v1.fdx_options).number = "6.10.j",
+      (standards.open.v1.fdx_options).question = "Select all the applicable policies that you have in place: Anti–money laundering and financial crime"
+    ];
+    bool applicable_policies_in_place_cybercrime = 21 [
+      (standards.open.v1.fdx_options).number = "6.10.k",
+      (standards.open.v1.fdx_options).question = "Select all the applicable policies that you have in place: Cybercrime"
+    ];
+    YesNoNA process_to_obtain_senior_management_approval_for_high_risk_peps = 22 [
+      (standards.open.v1.fdx_options).number = "6.11.",
+      (standards.open.v1.fdx_options).question = "Do you have a process to obtain senior management approval for high risk and PEP client dealings?"
+    ];
+    YesNoNA dealings_with_customers_on_sanctions_lists = 23 [
+      (standards.open.v1.fdx_options).number = "6.12.",
+      (standards.open.v1.fdx_options).question = "Does your firm have any dealings with customers who appear on a sanctions list?"
+    ];
+    YesNoNA dealings_with_customers_on_sanctions_lists_notify_funds = 24 [
+      (standards.open.v1.fdx_options).number = "6.12.a",
+      (standards.open.v1.fdx_options).question = "If yes to 6.12, will your firm notify the funds of such customers to the extent required by law?",
+      (standards.open.v1.fdx_options).conditional = "RiskManagementAndControls.DealingsWithCustomersOnSanctionsLists?1:2"
+    ];
+    YesNoNA apply_parent_company_standards_of_aml_and_ctf = 25 [
+      (standards.open.v1.fdx_options).number = "6.13.",
+      (standards.open.v1.fdx_options).question = "For branches and subsidiaries, do you apply the parent company standards of AML / CTF policies both within and outside the domicile of the ultimate parent company where applicable?"
+    ];
+    YesNoNA report_suspicious_transactions = 26 [
+      (standards.open.v1.fdx_options).number = "6.14.",
+      (standards.open.v1.fdx_options).question = "Will your firm report any suspicious transactions involving shares / units of the funds to the extent required by law?"
+    ];
+    YesNoNA aml_kyc_records_maintained = 27 [
+      (standards.open.v1.fdx_options).number = "6.15.",
+      (standards.open.v1.fdx_options).question = "Are all records relating to AML / KYC maintained in accordance with the applicable local law, and will be made available upon request to the extent permitted by law?"
+    ];
+  }
+  // Section 6: Risk Management and Controls
+  RiskManagementAndControls risk_management_and_controls = 6 [
+    (standards.open.v1.fdx_options).number = "6",
+    (standards.open.v1.fdx_options).question = "Section 6: Risk Management and Controls"
+  ];
+  // Section 7: Declarations and Execution
+  message DeclarationsAndExecution {
+    string name = 1 [
+      (standards.open.v1.fdx_options).question = "Name:"
+    ];
+    string title = 2 [
+      (standards.open.v1.fdx_options).question = "Title:"
+    ];
+    ElectronicSignature signature = 3 [
+      (standards.open.v1.fdx_options).question = "Signature:"
+    ];
+    string date = 4 [
+      (standards.open.v1.fdx_options).question = "Date:"
+    ];
+    string email = 5 [
+      (standards.open.v1.fdx_options).question = "Email address:"
+    ];
+    string telephone = 6 [
+      (standards.open.v1.fdx_options).question = "Telephone number:"
+    ];
+  }
+  // Section 7: Declarations and Execution
+  DeclarationsAndExecution declarations_and_execution = 7 [
+    (standards.open.v1.fdx_options).number = "6",
+    (standards.open.v1.fdx_options).question = "Section 6: Risk Management and Controls"
+  ];
+  // Definition of DDQ Review information
+  message ReviewerInformation {
+    // Definition of review information
+    message Review {
+      // Enumerations of the review status
+      enum ReviewStatus {
+        STATUS_UNSPECIFIED = 0;
+        // The review is in progress
+        UNDER_REVIEW = 1;
+        // Currently blocked awaiting additional information / clarification
+        AWAITING_CLARIFICATION_OR_ADDITIONAL_INFORMATION = 2;
+        // Review is complete
+        COMPLETE = 3;
+      }
+      // Review status of the section
+      ReviewStatus review_status = 1;
+      // Enumerations of the reviewers risk assessment of the section
+      enum RiskAssessment {
+        RISK_ASSESSMENT_UNSPECIFIED = 0;
+        // Assessed as low risk
+        LOW_RISK = 1;
+        // Assessed as medium risk
+        MEDIUM_RISK = 2;
+        // Assessed as high risk
+        HIGH_RISK = 3;
+      }
+      // The reviewer's risk assessment
+      RiskAssessment risk_assessment = 2;
+      // The weight to assign to the risk assessment (in decimal format)
+      float risk_weighting = 3;
+      // Comments and questions from the reviewer
+      string comments_and_questions = 4;
+      // Feedback from the provider from the reviewer
+      string provider_feedback = 5;
+      // Final comments from the reviewer
+      string final_comments = 6;
+    }
+    // Review of Section 1: General Information
+    Review general_information = 1 [
+      (standards.open.v1.fdx_options).number = "7.1",
+      (standards.open.v1.fdx_options).question = "Please review Section 1: General Information"
+    ];
+    // Review of Section 2: Business Model and Operations
+    Review legal_and_regulatory_review = 2 [
+      (standards.open.v1.fdx_options).number = "7.2",
+      (standards.open.v1.fdx_options).question = "Please review Section 2: Business Model and Operations"
+    ];
+    // Review of Section 3: Distribution, Suitability, and Marketing
+    Review distribution_suitability_marketing = 3 [
+      (standards.open.v1.fdx_options).number = "7.3",
+      (standards.open.v1.fdx_options).question = "Please review Section 3: Distribution, Suitability, and Marketing"
+    ];
+    // Review of Section 4. Oversight of Sub-Distribution
+    Review oversight_of_sub_distribution = 4 [
+      (standards.open.v1.fdx_options).number = "7.4",
+      (standards.open.v1.fdx_options).question = "Please review Section 4. Oversight of Sub-Distribution"
+    ];
+    // Review of Section 5: Legal and Regulatory Oversight
+    Review legal_and_regulatory_oversight = 5 [
+      (standards.open.v1.fdx_options).number = "7.5",
+      (standards.open.v1.fdx_options).question = "Please review Section 5: Legal and Regulatory Oversight"
+    ];
+    // Review of Section 6: Risk Management and Controls
+    Review risk_management_and_controls = 6 [
+      (standards.open.v1.fdx_options).number = "7.6",
+      (standards.open.v1.fdx_options).question = "Please review Section 6: Risk Management and Controls"
+    ];
+    // Summary review and conclusion
+    Review aggregate_conclusion = 7 [
+      (standards.open.v1.fdx_options).number = "7.7",
+      (standards.open.v1.fdx_options).question = "Please provide an aggregated assessment"
+    ];
+    // Reviewer signature
+    ElectronicSignature reviewer_signature = 8 [
+      (standards.open.v1.fdx_options).number = "7.8",
+      (standards.open.v1.fdx_options).question = "Please sign-off review and assessment:"
+    ];
+  }
+  // Information populated by the reviewer of the questionnaire
+  ReviewerInformation reviewer_information = 8  [
+    (standards.open.v1.fdx_options).number = "7",
+    (standards.open.v1.fdx_options).question = "Optional section completed by the recipient viewer of the questionnaire in keeping with a risk based approach"
+  ];
+
+  // Y / N requiring no further explanation
+  enum YesNoNA {
+    // No
+    YES_NO_NA_UNSPECIFIED = 0;
+    // Yes
+    Y = 1;
+    // No
+    N = 2;
+    // Not Applicable
+    NA = 3;
+  }
+
+  // Definition of an Electronic Signature type
+  // https://ec.europa.eu/digital-building-blocks/wikis/display/DIGITAL/What+is+eSignature
+  message ElectronicSignature {
+    // Full name of the signatory
+    string fullname = 1;
+    // image of signature as bytes
+    bytes signature = 2;
+    // The timestamp when the object was signed
+    google.protobuf.Timestamp signed_time = 3;
+  }
+}

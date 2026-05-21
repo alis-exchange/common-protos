@@ -1,0 +1,316 @@
+syntax = "proto3";
+
+package standards.open.fundholdings.v1;
+
+import "google/protobuf/wrappers.proto";
+import "google/type/date.proto";
+import "google/type/timeofday.proto";
+
+option go_package = "open.standards.exchange/protobuf/standards/open/fundholdings/v1";
+
+message APEX_INSTRUMENTS {
+  // The date that the file data pertains to
+  // Note: This is deduced from the valuation_date values of the file received by Apex during parsing
+  google.type.Date effective_date = 1;
+
+  repeated Record records = 2;
+
+  message Record {
+    // Code representing the asset manager.
+    string asset_manager_code = 1;
+
+    // Name of the asset manager.
+    string asset_manager_name = 2;
+
+    // The start date of the report period.
+    google.type.Date report_start_date = 3;
+
+    // The end date of the report period.
+    google.type.Date report_end_date = 4;
+
+    // The date when the asset valuation takes place.
+    google.type.Date valuation_date = 5;
+
+    // The time when the asset valuation takes place.
+    google.type.TimeOfDay valuation_time = 6;
+
+    // The date when the report was generated.
+    google.type.Date report_run_date = 7;
+
+    // The time when the report was generated.
+    google.type.TimeOfDay report_run_time = 8;
+
+    // Code representing the financial instrument.
+    string instrument_code = 9;
+
+    // Long descriptive name of the financial instrument.
+    string instrument_long_name = 10;
+
+    // Short name or abbreviation for the financial instrument.
+    string instrument_short_name = 11;
+
+    // Type of financial instrument (e.g., equity, bond, derivative).
+    string instrument_type = 12;
+
+    // Description of the financial instrument type.
+    string instrument_type_description = 13;
+
+    // The currency in which the instrument is traded.
+    string instrument_currency = 14;
+
+    // Method of quoting the instrument (e.g., price, yield).
+    string quotation_method = 15;
+
+    // Method used to determine the value of the instrument.
+    string valuation_method = 16;
+
+    // Sedol code of the financial instrument.
+    string sedol = 17;
+
+    // ISIN (International Securities Identification Number) code of the instrument.
+    string isin = 18;
+
+    // CUSIP (Committee on Uniform Securities Identification Procedures) code.
+    string cusip = 19;
+
+    // The date when the instrument was issued.
+    google.type.Date issue_date = 20;
+
+    // The price at which the instrument was issued.
+    google.protobuf.DoubleValue issue_price = 21;
+
+    // The multiplier for futures or options contracts.
+    google.protobuf.DoubleValue contract_multiplier = 22;
+
+    // Type of contract (e.g., future, option).
+    string contract_type = 23;
+
+    // Option type (e.g., call or put).
+    string option_type = 24;
+
+    // The exercise price of an option.
+    google.protobuf.DoubleValue exercise_price = 25;
+
+    // Strike price of a derivative or option.
+    google.protobuf.DoubleValue strike_price = 26;
+
+    // The underlying asset or instrument for the derivative.
+    string underlying_instrument = 27;
+
+    // Expiry date for futures contracts.
+    google.type.Date futures_expiry_date = 28;
+
+    // The counterparty to the transaction.
+    string counter_party = 29;
+
+    // The entity associated with the instrument.
+    string entity = 30;
+
+    // The frequency of coupon payments for bonds.
+    string coupon_frequency = 31;
+
+    // The delta value of the instrument.
+    google.protobuf.DoubleValue delta = 32;
+
+    // The interest rate applicable to the instrument.
+    google.protobuf.DoubleValue interest_rate = 33;
+
+    // Spread over a benchmark rate.
+    google.protobuf.DoubleValue spread = 34;
+
+    // Indicator if the yield is a discount yield.
+    bool is_discount_yield = 35;
+
+    // Type of coupon (e.g., fixed, floating).
+    string coupon_type = 36;
+
+    // Date of the first coupon payment.
+    google.type.Date first_coupon_date = 37;
+
+    // Date of the previous coupon payment.
+    google.type.Date prev_coupon_date = 38;
+
+    // Date of the next coupon payment.
+    google.type.Date next_coupon_date = 39;
+
+    // Date of the last coupon payment.
+    google.type.Date last_coupon_date = 40;
+
+    // The ex-dividend date of the instrument.
+    google.type.Date ex_date = 41;
+
+    // The maturity date of the instrument.
+    google.type.Date maturity_date = 42;
+
+    // Indicator if reset dates are applicable.
+    bool is_reset_dates = 43;
+
+    // The next reset date for instruments with resettable rates.
+    google.type.Date next_reset_date = 44;
+
+    // The modified duration of the instrument.
+    google.protobuf.DoubleValue modified_duration = 45;
+
+    // The duration of the instrument.
+    google.protobuf.DoubleValue duration = 46;
+
+    // Indicator of whether the asset is payable or receivable.
+    string payable_receivable_indicator = 47;
+
+    // Indicator if the instrument is linked to a swap.
+    string swap_link_indicator = 48;
+
+    // Day count factor used in interest rate calculations.
+    google.protobuf.DoubleValue day_count_factor = 49;
+
+    // Long-term credit rating of the instrument.
+    string instrument_long_term_rating = 50;
+
+    // Agency that provided the long-term credit rating.
+    string instrument_long_term_rating_agency = 51;
+
+    // Short-term credit rating of the instrument.
+    string instrument_short_term_rating = 52;
+
+    // Agency that provided the short-term credit rating.
+    string instrument_short_term_rating_agency = 53;
+
+    // Code identifying the issuer of the instrument.
+    string issuer_code = 54;
+
+    // Name of the issuer of the instrument.
+    string issuer_name = 55;
+
+    // Long-term credit rating of the issuer.
+    string issuer_long_term_rating = 56;
+
+    // Agency that provided the long-term credit rating for the issuer.
+    string issuer_long_term_rating_agency = 57;
+
+    // Short-term credit rating of the issuer.
+    string issuer_short_term_rating = 58;
+
+    // Agency that provided the short-term credit rating for the issuer.
+    string issuer_short_term_rating_agency = 59;
+
+    // Code of the market in which the instrument is traded.
+    string market_code = 60;
+
+    // Performance category of the instrument.
+    string performance_category = 61;
+
+    // Performance class of the instrument.
+    string performance_class = 62;
+
+    // Reference index used for performance comparison.
+    string reference_index_inst = 63;
+
+    // Country of origin of the instrument.
+    string country_of_origin = 64;
+
+    // South African Reserve Bank classification.
+    string sarb_classification = 65;
+
+    // Financial Services Board classification.
+    string fsb_classification = 66;
+
+    // Indicator if the instrument is inward listed.
+    bool is_inward_listed = 67;
+
+    // Code representing sector 1.
+    string sector1 = 68;
+
+    // Name of sector 1.
+    string sector1_name = 69;
+
+    // Code for sector 1.
+    string sector1_code = 70;
+
+    // Code representing sector 2.
+    string sector2 = 71;
+
+    // Name of sector 2.
+    string sector2_name = 72;
+
+    // Code for sector 2.
+    string sector2_code = 73;
+
+    // Code representing sector 3.
+    string sector3 = 74;
+
+    // Name of sector 3.
+    string sector3_name = 75;
+
+    // Code for sector 3.
+    string sector3_code = 76;
+
+    // Code representing sector 4.
+    string sector4 = 77;
+
+    // Name of sector 4.
+    string sector4_name = 78;
+
+    // Code for sector 4.
+    string sector4_code = 79;
+
+    // Code representing sector 5.
+    string sector5 = 80;
+
+    // Name of sector 5.
+    string sector5_name = 81;
+
+    // Code for sector 5.
+    string sector5_code = 82;
+
+    // Code representing sector 6.
+    string sector6 = 83;
+
+    // Name of sector 6.
+    string sector6_name = 84;
+
+    // Code for sector 6.
+    string sector6_code = 85;
+
+    // Code representing sector 7.
+    string sector7 = 86;
+
+    // Name of sector 7.
+    string sector7_name = 87;
+
+    // Code for sector 7.
+    string sector7_code = 88;
+
+    // Code representing sector 8.
+    string sector8 = 89;
+
+    // Name of sector 8.
+    string sector8_name = 90;
+
+    // Code for sector 8.
+    string sector8_code = 91;
+
+    // Code representing sector 9.
+    string sector9 = 92;
+
+    // Name of sector 9.
+    string sector9_name = 93;
+
+    // Code for sector 9.
+    string sector9_code = 94;
+
+    // Code representing sector 10.
+    string sector10 = 95;
+
+    // Name of sector 10.
+    string sector10_name = 96;
+
+    // Code for sector 10.
+    string sector10_code = 97;
+
+    // Number of shares in issue for the instrument.
+    google.protobuf.DoubleValue shares_in_issue = 98;
+
+    // Day count convention used in interest rate calculations.
+    string day_count_convention = 99;
+  }
+}

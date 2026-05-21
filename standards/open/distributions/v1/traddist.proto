@@ -1,0 +1,128 @@
+syntax = "proto3";
+package standards.open.distributions.v1;
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
+import "google/type/date.proto";
+
+option go_package = "open.standards.exchange/protobuf/standards/open/distributions/v1";
+
+// This format represents the TRADDIST file from JTC.
+message TRAD_Dist {
+  // A list of Trade_DIST records.
+  // Each record refers to a row in the original CSV file from Jtc.
+  repeated Record records = 1;
+  // A row in the Trade_DIST file
+  message Record {
+    // Source file date
+    google.type.Date source_file_date = 1;
+    // Account number as an integer
+    google.protobuf.Int64Value account_number_as_integer = 2;
+    // Memo number
+    string memo_number = 3;
+    // Security number full
+    string security_number_full = 4;
+    // Security description short
+    string security_description_short = 5;
+    // Effective date
+    google.type.Date effective_date = 6;
+    // Trade date
+    google.type.Date trade_date = 7;
+    // Transaction code
+    string tran_code = 8;
+    // Price
+    google.protobuf.DoubleValue price = 9;
+    // Shares par
+    google.protobuf.DoubleValue shares_par = 10;
+    // Principal
+    google.protobuf.DoubleValue principal = 11;
+    // Principal base
+    google.protobuf.DoubleValue principal_base = 12;
+    // Income
+    google.protobuf.DoubleValue income = 13;
+    // Income base
+    google.protobuf.DoubleValue income_base = 14;
+    // Cost value
+    google.protobuf.DoubleValue cost_value = 15;
+    // Cost base
+    google.protobuf.DoubleValue cost_base = 16;
+    // Settle base amount
+    google.protobuf.DoubleValue settle_base_amount = 17;
+    // Real gain/loss
+    google.protobuf.DoubleValue real_gain_loss = 18;
+    // Real gain/loss base
+    google.protobuf.DoubleValue real_gain_loss_base = 19;
+    // Actual settle date
+    google.type.Date actual_settle_date = 20;
+    // Contractual settle date
+    google.type.Date contractual_settle_date = 21;
+    // Trading currency
+    string trading_currency = 22;
+    // Settle currency
+    string settle_currency = 23;
+    // Generated transaction
+    string generated_transaction = 24;
+    // Entry date
+    google.type.Date entry_date = 25;
+    // Transaction description 1
+    string tran_description1 = 26;
+    // FX gain/loss on amortization
+    google.protobuf.DoubleValue fx_g_l_on_amort = 27;
+    // FX gain/loss on income
+    google.protobuf.DoubleValue fx_g_l_on_income = 28;
+    // FX gain/loss on principal
+    google.protobuf.DoubleValue fx_g_l_on_principal = 29;
+    // Account number
+    string account_number = 30;
+    // Accrued income
+    google.protobuf.DoubleValue accrued_income = 31;
+    // Amortized cost
+    google.protobuf.DoubleValue amortized_cost = 32;
+    // Amortized cost base
+    google.protobuf.DoubleValue amortized_cost_base = 33;
+    // Traded MV base
+    google.protobuf.DoubleValue traded_mv_base = 34;
+    // Traded MV and accrued income
+    google.protobuf.DoubleValue traded_mv_and_accrued_incm = 35;
+    // Traded MV and accrued income base
+    google.protobuf.DoubleValue traded_mv_and_accrued_incm_base = 36;
+    // Unrealized FX gain/loss on CCT
+    google.protobuf.DoubleValue unrealized_fx_gain_loss_on_cct = 37;
+    // Real FX gain/loss non-bifurcated
+    google.protobuf.DoubleValue real_fx_g_l_non_bifurcated = 38;
+    // Real FX gain/loss on amortization
+    google.protobuf.DoubleValue real_fx_g_l_on_amort = 39;
+    // Real FX gain/loss on currencies
+    google.protobuf.DoubleValue real_fx_g_l_on_currencies = 40;
+    // Real FX gain/loss on income
+    google.protobuf.DoubleValue real_fx_g_l_on_income = 41;
+    // Realized capital gain/loss
+    google.protobuf.DoubleValue realized_capital_gain_loss = 42;
+    // Realized exchange gain/loss on IC
+    google.protobuf.DoubleValue realized_exch_g_l_on_ic = 43;
+    // Realized gain/loss
+    google.protobuf.DoubleValue realized_gain_loss = 44;
+    // Realized gain/loss 02
+    google.protobuf.DoubleValue realized_gain_loss2 = 45;
+    // Realized gain/loss excluding amortization base
+    google.protobuf.DoubleValue realized_gain_loss_excluding_amortization_base = 46;
+    // Realized gain/loss excluding amortization local
+    google.protobuf.DoubleValue realized_gain_loss_excluding_amortization_local = 47;
+    // Receivable base
+    google.protobuf.DoubleValue receivable_base = 48;
+    // Receivable local
+    google.protobuf.DoubleValue receivable_local = 49;
+    // Related memo number
+    string related_memo_no = 50;
+    // Related memo number 2
+    string related_memo_no2 = 51;
+    // Total real FX gain/loss
+    google.protobuf.DoubleValue total_real_fx_g_l = 52;
+    // Total unrealized FX gain/loss
+    google.protobuf.DoubleValue total_unrealized_fx_gain_loss = 53;
+    // Transaction entry time (empty)
+    string transaction_entry_time_empty = 54;
+    // Transaction entry time
+    google.protobuf.Timestamp transaction_entry_time = 55;
+  }
+}

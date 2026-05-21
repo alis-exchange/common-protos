@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package standards.open.v1;
+
+import "google/type/date.proto";
+
+option go_package = "github.com/standards-exchange/protobuf-go/standards/open/v1";
+
+// CSSF report containing identifiers of registered UCITS
+message RT000YHJ5 {
+  // The records provided in the report
+  repeated Record records = 1;
+  // Definition of an individual record in the report
+  message Record {
+    // The identifier of the umbrella (i.e. the entity)
+    string mmmmmmmm = 1;
+    // The name of the entity
+    string entity_name = 2;
+    // The identifier of the sub-fund
+    // For compartments or standalone funds, this will be 0
+    string cccccccc = 3;
+    // The name of the sub-fund
+    string sub_fund_name = 4;
+  }
+}

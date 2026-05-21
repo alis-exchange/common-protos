@@ -1,0 +1,199 @@
+syntax = "proto3";
+
+package standards.open.v1;
+
+import "google/api/annotations.proto";
+import "google/api/client.proto";
+import "google/api/resource.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/field_mask.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
+import "google/type/month.proto";
+import "google/type/date.proto";
+import "standards/open/v1/rag.proto";
+
+option go_package = "github.com/standards-exchange/protobuf-go/standards/open/v1";
+
+// UCITS Fund Accounting KPI and MI Data Exchange Template
+message RT000LFR7 {
+  // Definition of a metric
+  message Metric {
+    // The date the metric was produced
+    google.type.Date production_date = 1;
+    // The start date of the reporting period of the metric (inclusive)
+    // For example, if the metric measures data for the month of December 2022, 2022-12-01
+    google.type.Date reporting_period_start = 2;
+    // The end date of the reporting period of the metric (inclusive)
+    // For example, if the metric measures data for the month of December 2022, 2022-12-01
+    google.type.Date reporting_period_end = 3;
+    // The relevant identifier of the umbrella
+    string umbrella_fund_identifier = 4;
+    // The name of the umbrella
+    // Should conform to: https://openfunds.org/OFST005010 (Umbrella)
+    // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information
+    string umbrella_fund = 5;
+    // The relevant identifier of the fund
+    string fund_identifier = 6;
+    // The name of the fund (typically the sub-fund fund or standalone fund) that holds the security
+    // Should conform to: https://openfunds.org/OFST010110 (Legal Fund Name Only)
+    // Refers to the Sub-Fund in the case of an umbrella structure
+    // or Fund in the case of a standalone structure
+    // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information
+    string fund = 7;
+    // Enumeration of metricIDs
+    enum MetricID {
+      // The enumeration of the metrics measured
+      METRIC_ID_UNSPECIFIED = 0;
+      // Number of NAVs calculated during the month
+      NAVS_CALCULATED = 1;
+      //  Count of the number of delays in the period caused by the provider
+      NAVS_PROVIDER_DELAYED = 2;
+      //  Count of the number of delays in the period not caused by the provider
+      NAVS_NON_PROVIDER_DELAYED = 3;
+      //  Percentage of total NAVs delivered within the agreed timescale during the reporting month.
+      //  NAV_TIMELINESS should equal  1- (NAVS_PROVIDER_DELAYED + NAVS_NON_PROVIDER_DELAYED) / NAVS_CALCULATED
+      //  in a period
+      NAV_TIMELINESS = 4;
+      //  Percentage of total NAVs delivered within the agreed timescale during the reporting month,
+      //  excluding non-provider caused delays.
+      //  NAVS_TIMELINESS_PROVIDER should equal 1 - (NAVS_PROVIDER_DELAYED / NAVS_CALCULATED)
+      NAV_TIMELINESS_PROVIDER = 5;
+      // Percentage of valuations produced during the reporting month where no error(s) has been identified.
+      NAV_ACCURACY = 6;
+      // Percentage of valuations produced during the reporting month where no error(s) has been identified.
+      // This percentage is not impacted by errors where the root cause was identified as not the delegate.
+      NAV_ACCURACY_PROVIDER = 7;
+      // The count of material nav errors where the delegate was responsible
+      NAV_ERRORS_MATERIAL_PROVIDER = 8;
+      // The count of material nav errors where the delegate was not responsible
+      NAV_ERRORS_MATERIAL_NON_PROVIDER = 9;
+      // The count of material nav errors where the delegate was responsible
+      NAV_ERRORS_NON_MATERIAL_PROVIDER = 10;
+      // The count of material nav errors where the delegate was not responsible
+      NAV_ERRORS_NON_MATERIAL_NON_PROVIDER = 11;
+      // The number of securities for which there has not been a price movement for an agreed number of consecutive business days.
+      STALE_SECURITIES = 12;
+      // Total number of
+      // Number of cash reconciliations reported between 31 to 60 days
+      CASH_RECONCILIATIONS_31_TO_60_DAYS = 13;
+      // Number of cash reconciliations reported greater than or equal to 61 days
+      CASH_RECONCILIATIONS_GREATER_THAN_60_DAYS = 14;
+      // Number of stock reconciliations reported between 31 to 60 days
+      STOCK_RECONCILIATIONS_31_TO_60_DAYS = 15;
+      // Number of stock reconciliations reported greater than or equal to 61 days
+      STOCK_RECONCILIATIONS_GREATER_THAN_60_DAYS = 16;
+      // The count of system issues that occurred during the period
+      COUNT_SYSTEM_ISSUES = 17;
+      // The number of late financial reports
+      NUMBER_LATE_FINANCIAL_REPORTS = 18;
+      // The net asset value at the end of the period in reporting currency
+      NET_ASSET_VALUE_REPORTING_CURRENCY = 19;
+      // The net asset value at the end of the period in subject currency
+      NET_ASSET_VALUE_SUBJECT_CURRENCY = 20;
+      // A security is considered difficult to price when (a) the security is fair-valued, (b) there is a single broker price, (d) stale or unchanged price, (d) it is suspended or delisted, (e) distressed fixed income, (f) defaulted fixed income as of the reporting date
+      DIFFICULT_TO_PRICE_SECURITIES = 21;
+      // Number of securities where trading has been stopped as of the reporting date
+      SUSPENDED_OR_DELISTED_SECURITIES = 22;
+      // Number of fixed income securities where the company or government entity is experiencing financial or operational distress, but has not defaulted as of the reporting date
+      DISTRESSED_FIXED_INCOME_SECURITIES = 23;
+      // Number of fixed income securities where the company or government entity has defaulted as of the reporting date
+      DEFAULTED_FIXED_INCOME_SECURITIES = 24;
+      // The number of securities held across portfolios
+      SECURITIES_HELD = 25;
+      // The annualized TER for the reporting period
+      ANNUALIZED_TER = 26;
+      // The annualized TER, year-to-date, as of the end of the reporting period
+      ANNUALIZED_YTD_TER = 27;
+      // The self-assessment rating (typically on a scale of 1 - below expectations to 9 - well above expectations)
+      PROVIDER_SELF_ASSESSMENT = 28;
+      // The service assessment rating (typically on a scale of 1 - below expectations to 9 - well above expectations)
+      CUSTOMER_SERVICE_ASSESSMENT = 29;
+      // The number of nav delays caused by pricing
+      NAV_DELAYS_PRICING = 30;
+      // The total number of nav delays
+      NAV_DELAYS_TOTAL = 31;
+      // The total number of nav delays caused by trade inputs
+      NAV_DELAYS_TRADE_INPUT = 32;
+      // The total number of nav delays caused by FX
+      NAV_DELAYS_FX = 33;
+      // The total number of nav delays caused by cash income
+      NAV_DELAYS_CASH_INCOME = 34;
+      // The total number of nav delays caused by corporate actions
+      NAV_DELAYS_CORPORATE_ACTIONS = 35;
+      // The total number of nav delays caused by valuation validation
+      NAV_DELAYS_VALUATION_VALIDATION = 36;
+      // The total number of nav delays caused by quality control
+      NAV_DELAYS_QUALITY_CONTROL = 37;
+      // The total number of nav delays caused by system issues
+      NAV_DELAYS_SYSTEM = 38;
+      // The total number of nav delays caused by client or third party
+      NAV_DELAYS_CLIENT_OR_THIRD_PARTY = 39;
+      // The total number of nav delays caused by other causes
+      NAV_DELAYS_OTHER = 40;
+      // The number of funds impacted by provider errors errors
+      FUNDS_IMPACTED_BY_PROVIDER_ERRORS = 41;
+      // The number of funds impacted by provider errors errors
+      FUNDS_IMPACTED_BY_PROVIDER_NON_PROVIDER_ERRORS = 42;
+      // The number of valuations impacted by provider errors
+      VALUATIONS_IMPACTED_PROVIDER_ERRORS = 43;
+      // The number of valuations impacted by non-provider errors
+      VALUATIONS_IMPACTED_NON_PROVIDER_ERRORS = 44;
+      // The number of valuations impacted in the current reporting period by provider errors
+      VALUATIONS_IMPACTED_CURRENT_REPORTING_PERIOD_PROVIDER_ERRORS = 45;
+      // The number of valuations impacted in the current reporting period by non-provider errors
+      VALUATIONS_IMPACTED_CURRENT_REPORTING_PERIOD_NON_PROVIDER_ERRORS = 46;
+      // The number of materially impacted valuations
+      MATERIALLY_IMPACTED_VALUATIONS_PROVIDER_ERROR = 47;
+    }
+    // The identifier of what the metric measures
+    MetricID metric_id = 8;
+    // The type of value used to measure the metric
+    enum ValueType {
+      METRIC_TYPE_UNSPECIFIED = 0;
+      NUMBER = 1;
+      PERCENTAGE = 2;
+      CURRENCY = 3;
+    }
+    // Enumeration for how to interpret the metric value
+    ValueType value_type = 9;
+    // If the metric type is "CURRENCY" then a 3-letter currency code defined in ISO 4217 must be provided.
+    // The country code is required to comply with the 3-letter ISO 3166-1 alpha-3 standard.
+    // The ISO 3166-1 alpha-3 is a set of 3-letter country codes to represent countries and dependent areas.
+    // Make sure the provided country code is in uppercase.
+    // Example: 'USA' for the United States, 'GBR' for Great Britain, 'DEU' for Germany, etc.
+    string currency_code = 10;
+    // The value of the metric
+    double metric = 11;
+    // Options for how to evaluate the metric
+    enum EvaluationType {
+      EVALUATION_TYPE_UNSPECIFIED = 0;
+      // A higher result is more favorable
+      MAXIMISE = 1;
+      // A lower result is more favorable
+      MINIMISE = 2;
+    }
+    // How to evaluate the metric (i.e. is a higher or lower value more favorable)
+    EvaluationType evaluation_type = 12;
+    // The "RED/AMBER/GREEN" designation if applicable
+    RedAmberGreen rag = 13;
+    // The amber cutoff (i.e. the value above which the metric is no longer classified as "RED") if applicable
+    double amber_cutoff = 14;
+    // The green cutoff (i.e. the value above which the metric is no longer classified as "AMBER")  if applicable
+    double green_cutoff = 15;
+    // Optional. The name of the provider
+    string provider = 20;
+    // Optional. The metric ID used by the provider
+    string provider_metric_id = 21;
+    // Optional. The KPI name used by the provider
+    string provider_metric_name = 22;
+    // Optional. General comments related to the metric
+    string general_commentary = 81;
+    // Optional. Comments on the root cause of any issue
+    string root_cause_commentary = 82;
+    // Optional. Comments on the actions taken to remediate the root cause
+    string remediations_commentary = 83;
+  }
+  // KPIs & other key quantitative metrics
+  repeated Metric metrics = 20;
+}

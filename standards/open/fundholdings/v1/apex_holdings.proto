@@ -1,0 +1,156 @@
+syntax = "proto3";
+package standards.open.fundholdings.v1;
+
+import "google/protobuf/wrappers.proto";
+import "google/type/date.proto";
+import "google/type/timeofday.proto";
+
+option go_package = "open.standards.exchange/protobuf/standards/open/fundholdings/v1";
+
+message APEX_HOLDINGS {
+  // The date that the file data pertains to
+  // Note: This is deduced from the valuation_date values of the file received by Apex during parsing
+  google.type.Date effective_date = 1;
+
+  repeated Record records = 2;
+
+  message Record {
+    // Code representing the asset manager.
+    string asset_manager_code = 1;
+
+    // Name of the asset manager.
+    string asset_manager_name = 2;
+
+    // The start date of the reporting period.
+    google.type.Date report_start_date = 3;
+
+    // The end date of the reporting period.
+    google.type.Date report_end_date = 4;
+
+    // The date the valuation is effective.
+    google.type.Date valuation_date = 5;
+
+    // The time the valuation is effective.
+    google.type.TimeOfDay valuation_time = 6;
+
+    // The date the report was generated.
+    google.type.Date report_run_date = 7;
+
+    // The time the report was generated.
+    google.type.TimeOfDay report_run_time = 8;
+
+    // The code representing the portfolio.
+    string portfolio_id_code = 9;
+
+    // The name of the portfolio.
+    string portfolio_name = 10;
+
+    // The base currency of the portfolio.
+    string portfolio_base_currency = 11;
+
+    // The reporting currency of the portfolio.
+    string portfolio_reporting_currency = 12;
+
+    // The total book value of the portfolio.
+    google.protobuf.DoubleValue total_book_value = 13;
+
+    // The total market value of the portfolio.
+    google.protobuf.DoubleValue total_market_value = 14;
+
+    // The appreciation or depreciation of futures in the portfolio.
+    google.protobuf.DoubleValue appreciation_depreciation_futures = 15;
+
+    // Code representing the instrument.
+    string instrument_code = 16;
+
+    // Long descriptive name of the instrument.
+    string instrument_long_name = 17;
+
+    // Short code used to identify the instrument.
+    string instrument_short_code = 18;
+
+    // The nominal value of holdings in the instrument.
+    google.protobuf.DoubleValue holding_nominal = 19;
+
+    // Accrued expense for the asset.
+    google.protobuf.DoubleValue asset_accrued_expense = 20;
+
+    // Accrued income for the asset.
+    google.protobuf.DoubleValue asset_accrued_income = 21;
+
+    // Average cost of the asset.
+    google.protobuf.DoubleValue asset_average_cost = 22;
+
+    // Book value of the asset.
+    google.protobuf.DoubleValue asset_book_value = 23;
+
+    // Effective exposure of the asset.
+    google.protobuf.DoubleValue asset_effective_exposure = 24;
+
+    // Market price of the asset.
+    google.protobuf.DoubleValue asset_market_price = 25;
+
+    // Market value of the asset.
+    google.protobuf.DoubleValue asset_market_value = 26;
+
+    // Clean market price (excluding accrued interest) of the asset.
+    google.protobuf.DoubleValue asset_market_price_clean = 27;
+
+    // All-in market price (including accrued interest) of the asset.
+    google.protobuf.DoubleValue asset_market_price_all_in = 28;
+
+    // Clean market value (excluding accrued interest) of the asset.
+    google.protobuf.DoubleValue asset_market_value_clean = 29;
+
+    // Unrealized profit or loss for the asset.
+    google.protobuf.DoubleValue asset_unrealised_profit_loss = 30;
+
+    // Income from unsettled bought or sold assets.
+    google.protobuf.DoubleValue asset_unsettled_bought_sold_income = 31;
+
+    // Accrued expenses in base currency.
+    google.protobuf.DoubleValue base_accrued_expenses = 32;
+
+    // Accrued income in base currency.
+    google.protobuf.DoubleValue base_accrued_income = 33;
+
+    // Average cost in base currency.
+    google.protobuf.DoubleValue base_average_cost = 34;
+
+    // Book value in base currency.
+    google.protobuf.DoubleValue base_book_value = 35;
+
+    // Effective exposure in base currency.
+    google.protobuf.DoubleValue base_effective_exposure = 36;
+
+    // Cum-dividend market price in base currency.
+    google.protobuf.DoubleValue base_market_price_cum = 37;
+
+    // Market value in base currency.
+    google.protobuf.DoubleValue base_market_value = 38;
+
+    // Clean market price in base currency.
+    google.protobuf.DoubleValue base_market_price_clean = 39;
+
+    // All-in market price in base currency.
+    google.protobuf.DoubleValue base_market_price_all_in = 40;
+
+    // Clean market value in base currency.
+    google.protobuf.DoubleValue base_market_value_clean = 41;
+
+    // Yield of the asset in base currency.
+    google.protobuf.DoubleValue base_market_yield = 42;
+
+    // Unrealized profit or loss in base currency.
+    google.protobuf.DoubleValue base_unrealised_profit_loss = 43;
+
+    // Unsettled income from bought or sold assets in base currency.
+    google.protobuf.DoubleValue base_unsettled_bought_sold_income = 44;
+
+    // Indicator of whether the asset is payable or receivable.
+    string payable_receivable_indicator = 45;
+
+    // Type of instrument (e.g., equity, bond, derivative).
+    string instrument_type = 46;
+  }
+}

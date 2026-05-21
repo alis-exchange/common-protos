@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package standards.open.v1;
+
+option go_package = "github.com/standards-exchange/protobuf-go/standards/open/v1";
+
+// Represents a Red / Amber / Green enumerator.
+enum RedAmberGreen {
+  // The unspecifed designation.
+  RAG_UNSPECIFIED = 0;
+  // Red
+  RED = 1;
+  // Amber
+  AMBER = 2;
+  // Amber
+  GREEN = 3;
+}

@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+package standards.open.v1;
+
+import "google/type/date.proto";
+
+option go_package = "github.com/standards-exchange/protobuf-go/standards/open/v1";
+
+// CSSF report containing identifiers of registered AIFMs
+message RT000K4S9 {
+  // The records provided in the report
+  repeated Record records = 1;
+  // Definition of an individual record in the report
+  message Record {
+    // Metadata
+    string a = 1;
+    // The CSSF's indenfifier for the AIFM
+    string nnnnnnnn = 2;
+    // The name of the Aifm
+    string aifm_name = 3;
+    // The status of the Aifm
+    string status = 4;
+    // Classification information related to the AIFM
+    string f = 5;
+    // Classification information related to the AIFM
+    string mmmmmmmm = 6;
+    // The name of the AIF
+    string aif_name = 7;
+    // The identifier of the sub-fund
+    // For compartments or standalone funds, this will be 0
+    string cccccccc = 8;
+    // The name of the sub-fund
+    string sub_fund_name = 9;
+    // The starting management date of the AIF
+    google.type.Date starting_management_date_of_the_aif = 10;
+    // The ending management date of the AIF
+    google.type.Date ending_management_date_of_the_aif = 11;
+    // The REGISTRATION_DATE_OR_INCEPTION_DATE_OF_THE_SUBFUND_OR_AIF the AIF
+    google.type.Date registration_date_or_inception_date_of_the_subfund_or_aif = 12;
+    // The CLOSING_DATE_OF_THE_SUBFUND_OR_AIF the AIF
+    google.type.Date closing_date_or_inception_date_of_the_subfund_or_aif = 13;
+  }
+}

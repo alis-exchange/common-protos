@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package standards.open.v1;
+
+option go_package = "github.com/standards-exchange/protobuf-go/standards/open/v1";
+
+// Standard frequency responses
+enum Frequency {
+  FREQUENCY_UNSPECIFIED = 0;
+  DAILY = 1;
+  WEEKLY = 2;
+  MONTHLY = 3;
+  QUARTERLY = 4;
+  BI_ANNUALLY = 5;
+  ANNUALLY = 6;
+  AD_HOC = 7;
+}

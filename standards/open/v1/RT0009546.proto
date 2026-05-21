@@ -1,0 +1,61 @@
+syntax = "proto3";
+
+package standards.open.v1;
+
+import "google/type/date.proto";
+
+option go_package = "github.com/standards-exchange/protobuf-go/standards/open/v1";
+
+// A proto defined object representing the data parsed from the basic Morningstar holdings template
+message RT0009546 {
+  // A list of holdings
+  repeated Holding holdings = 1;
+  // Defining a single record / row within excel. First holding appears on row 13
+  message Holding {
+    // The month end date on which the portfolio data was extracted. Must be the last day of the month (Column A)
+    google.type.Date portfolio_date = 1 ;
+    // Unique portfolio identifier. Can be an internal code unique to each fund (Column B)
+    string portfolio_id = 2 ;
+    // Fund name (Column C)
+    string fund = 3 ;
+    // Unique security identifier. Can use any of the following identifiers: ISIN, CUSIP, Sedol, Exchange ticker, Bloomberg ticker, Custom identifier (Column D)
+    string security_id = 4 ;
+    // Security description (Column E)
+    string security_description = 5 ;
+    // Shares for equity holdings, par value for fixed-income holdings or number of contracts for derivative holdings (Column F)
+    double shares_par_value = 6 ;
+    // Base market value (Column G)
+    double base_market_value = 7 ;
+    // Coupon rate for fixed income instrument (expressed as a percentage) (Column H)
+    double coupon_rate = 8;
+    // Maturity/expiration date (Column I)
+    google.type.Date maturity_date = 9;
+    // Currency in which all the portfolio holding's market values are reported (ISO 4217 currency code) (Column J)
+    string portfolio_base_currency = 10 ;
+    // Market value expressed in the local currency of the holding (Column K)
+    double local_market_value = 11;
+    // The currency in which the holding was purchased (ISO 4217 currency code) (Column L)
+    string local_currency = 12;
+    // The original value of cost of an asset (Column M)
+    double cost_basis = 13;
+    // The security's domicile (ISO 3166 country code) (Column N)
+    string region_code = 14;
+    // Total Net Asset, i.e. fund aum (Column O)
+    double tna = 15;
+    // Money not invested in a fund (Column P)
+    double cash = 16;
+    // The weight of each position/security held in the portfolio expressed in percentage e.g. 0.56 = 56% (Column Q)
+    // Very useful for validation
+    double percentage = 17;
+    // Coupon or interest accrued but not paid to bondholders (Column R)
+    double accrued_interest = 18;
+    // Financial classification for each security according to the their attributes (Column S)
+    string security_type = 19;
+    // Local asset type code for South Africa (Column T)
+    string local_asset_type = 20;
+    // Credit quality (India) (Column U)
+    string credit_quality = 21;
+    // Market Identifier Code (MIC): exchange code of which exchange the holdings traded. (ISO 10383) (Column V)
+    string market_id_code = 22;
+  }
+}
