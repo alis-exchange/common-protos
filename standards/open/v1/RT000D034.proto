@@ -12,7 +12,7 @@ import "google/protobuf/field_mask.proto";
 import "google/protobuf/timestamp.proto";
 import "google/type/date.proto";
 
-option go_package = "github.com/standards-exchange/protobuf-go/standards/open/v1";
+option go_package = "go.alis.build/common/standards/open/v1";
 
 // The CSSF self-assessment questionnaire to be submitted annually by Undertakings for Collective Investment as per Circular CSSF 21/790. See https://www.cssf.lu/en/Document/circular-cssf-21-790/
 message RT000D034 {

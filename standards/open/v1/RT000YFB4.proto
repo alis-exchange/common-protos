@@ -4,7 +4,7 @@ package standards.open.v1;
 
 import "google/type/date.proto";
 
-option go_package = "github.com/standards-exchange/protobuf-go/standards/open/v1";
+option go_package = "go.alis.build/common/standards/open/v1";
 
 // CSSF report containing Identifiers of Luxembourg-based UCITS, compartments or share classes
 message RT000YFB4 {

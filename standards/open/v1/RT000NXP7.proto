@@ -17,7 +17,7 @@ import "standards/open/v1/RT000JTL0.proto";
 import "standards/open/v1/RT0007VM1.proto";
 import "google/protobuf/wrappers.proto";
 
-option go_package = "github.com/standards-exchange/protobuf-go/standards/open/v1";
+option go_package = "go.alis.build/common/standards/open/v1";
 
 // The CSSF SFDR Periodic Disclosure is a  data collection exercise is to collect, in a digital format,
 // information contained in precontractual disclosure documents/templates.

@@ -8,7 +8,7 @@ import "google/protobuf/timestamp.proto";
 import "standards/open/v1/yesno.proto";
 import "standards/open/v1/fieldOptionsExtentions.proto";
 
-option go_package = "github.com/standards-exchange/protobuf-go/standards/open/v1";
+option go_package = "go.alis.build/common/standards/open/v1";
 
 // The Investment Funds Distributor Due Diligence Questionnaire (ICI Distributor DDQ) Version 1
 message RT000MBG3 {

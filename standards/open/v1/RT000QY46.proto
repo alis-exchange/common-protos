@@ -12,7 +12,7 @@ import "google/protobuf/field_mask.proto";
 import "google/protobuf/timestamp.proto";
 import "google/type/date.proto";
 
-option go_package = "github.com/standards-exchange/protobuf-go/standards/open/v1";
+option go_package = "go.alis.build/common/standards/open/v1";
 
 // Due Diligence Questionnaire (DDQ) on a Fund Accounting provider to assess their ongoing suitability.
 message RT000QY46 {

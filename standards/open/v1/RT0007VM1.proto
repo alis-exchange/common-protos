@@ -14,7 +14,7 @@ import "google/type/date.proto";
 import "standards/open/v1/yesno.proto";
 import "standards/open/v1/fieldOptionsExtentions.proto";
 
-option go_package = "github.com/standards-exchange/protobuf-go/standards/open/v1";
+option go_package = "go.alis.build/common/standards/open/v1";
 
 // The CSSF SFDR PreContractual Disclosure is a  data collection exercise is to collect, in a digital format,
 // information contained in precontractual disclosure documents/templates.

@@ -11,7 +11,7 @@ import "google/protobuf/field_mask.proto";
 import "google/protobuf/timestamp.proto";
 import "google/type/date.proto";
 
-option go_package = "github.com/standards-exchange/protobuf-go/standards/open/v1";
+option go_package = "go.alis.build/common/standards/open/v1";
 
 // Wolfsberg Group Correspondent Banking Due Diligence Questionnaire (CBDDQ) V1.3.
 // The questionnaire is required to be answered on a Legal Entity (LE) level. The Financial Institution should answer

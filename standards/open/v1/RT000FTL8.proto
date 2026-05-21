@@ -13,7 +13,7 @@ import "google/type/month.proto";
 import "google/type/date.proto";
 import "standards/open/v1/rag.proto";
 
-option go_package = "github.com/standards-exchange/protobuf-go/standards/open/v1";
+option go_package = "go.alis.build/common/standards/open/v1";
 
 
 // Fund Accounting Monthly KPI & MI Report for governance oversight and reporting for UCITS funds

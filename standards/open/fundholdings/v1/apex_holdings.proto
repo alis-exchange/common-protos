@@ -5,7 +5,7 @@ import "google/protobuf/wrappers.proto";
 import "google/type/date.proto";
 import "google/type/timeofday.proto";
 
-option go_package = "open.standards.exchange/protobuf/standards/open/fundholdings/v1";
+option go_package = "go.alis.build/common/standards/open/fundholdings/v1";
 
 message APEX_HOLDINGS {
   // The date that the file data pertains to

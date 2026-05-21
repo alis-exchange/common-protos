@@ -5,7 +5,7 @@ package standards.open.v1;
 import "google/type/date.proto";
 import "google/protobuf/wrappers.proto";
 
-option go_package = "github.com/standards-exchange/protobuf-go/standards/open/v1";
+option go_package = "go.alis.build/common/standards/open/v1";
 
 // A proto defined object representing the data parsed from a Alexander Forbes
 // Regulation 28 Survey Template

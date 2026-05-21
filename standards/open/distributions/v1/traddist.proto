@@ -5,7 +5,7 @@ import "google/protobuf/timestamp.proto";
 import "google/protobuf/wrappers.proto";
 import "google/type/date.proto";
 
-option go_package = "open.standards.exchange/protobuf/standards/open/distributions/v1";
+option go_package = "go.alis.build/common/standards/open/distributions/v1";
 
 // This format represents the TRADDIST file from JTC.
 message TRAD_Dist {
