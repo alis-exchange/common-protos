@@ -1,0 +1,159 @@
+syntax = "proto3";
+
+package alis.agui.history.v1;
+
+import "alis/iam/v1/iam.proto";
+import "google/iam/v1/iam_policy.proto";
+import "google/iam/v1/policy.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/field_mask.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "go.alis.build/agui/history";
+
+// Manages persisted AG-UI conversation thread metadata, including thread
+// listing, per-user state (unread tracking, pinning), and IAM policy access.
+//
+// Events (messages, tool calls) are NOT stored here; ADK sessions are the
+// source of truth for conversation history. This service stores only the
+// thread-level metadata that ADK sessions do not provide: display names,
+// agent identity, run counts, and per-user read/pin state.
+service ThreadService {
+  // Gets the IAM policy for a resource implemented in this service.
+  rpc GetIamPolicy(google.iam.v1.GetIamPolicyRequest) returns (google.iam.v1.Policy) {}
+  // Sets the IAM policy for a resource implemented in this service.
+  rpc SetIamPolicy(google.iam.v1.SetIamPolicyRequest) returns (google.iam.v1.Policy) {}
+  // Adds principals or updates the roles existing principals have on an IAM Policy protected resource.
+  rpc AddIamBindings(alis.iam.v1.AddIamBindingsRequest) returns (google.iam.v1.Policy) {}
+  // Removes principals or some of the roles they have on an IAM Policy protected resource.
+  rpc RemoveIamBindings(alis.iam.v1.RemoveIamBindingsRequest) returns (google.iam.v1.Policy) {}
+
+  // Lists all threads visible to the caller.
+  rpc ListThreads(ListThreadsRequest) returns (ListThreadsResponse) {}
+  // Gets a thread by its resource name.
+  rpc GetThread(GetThreadRequest) returns (Thread) {}
+  // Deletes a thread.
+  rpc DeleteThread(DeleteThreadRequest) returns (google.protobuf.Empty) {}
+  // Gets per-user state for a thread.
+  rpc GetUserThreadState(GetUserThreadStateRequest) returns (UserThreadState) {}
+  // Updates per-user state for a thread.
+  rpc UpdateUserThreadState(UpdateUserThreadStateRequest) returns (UserThreadState) {}
+}
+
+// A Thread resource representing an AG-UI conversation thread.
+// Thread metadata is created automatically by the AG-UI launcher on the first
+// /run_sse request for a given threadId.
+message Thread {
+  // The resource name of the thread.
+  // Format: threads/{thread_id}
+  string name = 1;
+  // Generated display name from the first user message in the thread.
+  string display_name = 2;
+  // The agent identifier, e.g. "finance-agent-v1".
+  string agent_id = 3;
+  // The agent display name, e.g. "Finance Agent".
+  string agent_display_name = 4;
+  // Monotonic counter incremented on each /run_sse completion for this thread.
+  // Used with UserThreadState.read_run_count for unread detection.
+  int64 run_count = 5;
+  // When this thread last had activity (updated each /run_sse).
+  google.protobuf.Timestamp last_activity_time = 6;
+
+  // When this thread was created.
+  google.protobuf.Timestamp create_time = 98;
+}
+
+// Per-user state for a thread. Tracks read position and pinning.
+message UserThreadState {
+  // The resource name of the user-thread-state row.
+  // Format: threads/{thread_id}/userStates/{user_id}
+  string name = 1;
+  // The parent thread resource name.
+  // Format: threads/{thread_id}
+  string thread = 2;
+  // The user resource name this state belongs to.
+  // Format: users/{user_id}
+  string user = 3;
+  // Highest run_count acknowledged by this user.
+  int64 read_run_count = 4;
+  // When this user last read the thread.
+  google.protobuf.Timestamp last_read_time = 5;
+  // True when this user has pinned the thread.
+  bool pinned = 6;
+  // When this user pinned the thread. Unset when pinned is false.
+  google.protobuf.Timestamp pinned_time = 7;
+
+  // When this user-thread state was last updated.
+  google.protobuf.Timestamp update_time = 98;
+}
+
+// Caller-scoped thread projection returned by list/get APIs.
+// Merges the shared Thread resource with the caller's UserThreadState.
+message ThreadView {
+  // The shared thread resource.
+  Thread thread = 1;
+  // Highest run_count acknowledged by the caller.
+  int64 read_run_count = 2;
+  // True when thread.run_count is greater than read_run_count.
+  bool has_unread = 3;
+  // True when the caller has pinned this thread.
+  bool pinned = 4;
+  // When the caller pinned this thread.
+  google.protobuf.Timestamp pinned_time = 5;
+}
+
+// Request to list threads.
+message ListThreadsRequest {
+  // Reserved for future use.
+  reserved 1;
+
+  // The maximum number of threads to return.
+  int32 page_size = 2;
+  // A page token to retrieve the next page of results.
+  string page_token = 3;
+  // Optional filtering by the agent_id that produced the thread.
+  string agent_id = 4;
+  // A read mask to specify which fields to return.
+  google.protobuf.FieldMask read_mask = 5;
+}
+
+// Response for ListThreads.
+message ListThreadsResponse {
+  // The list of caller-scoped thread views.
+  repeated ThreadView threads = 1;
+  // A token to retrieve the next page of results.
+  string next_page_token = 2;
+}
+
+// Request to get a thread.
+message GetThreadRequest {
+  // The resource name of the thread to retrieve.
+  // Format: threads/{thread_id}
+  string name = 1;
+  // A read mask to specify which fields to return.
+  google.protobuf.FieldMask read_mask = 3;
+}
+
+// Request to delete a thread.
+message DeleteThreadRequest {
+  // The resource name of the thread to delete.
+  // Format: threads/{thread_id}
+  string name = 1;
+}
+
+// Request to get per-user thread state.
+message GetUserThreadStateRequest {
+  // The resource name of the user-thread state to retrieve.
+  // Format: threads/{thread_id}/userStates/{user_id}
+  string name = 1;
+  // A read mask to specify which fields to return.
+  google.protobuf.FieldMask read_mask = 3;
+}
+
+// Request to update per-user thread state.
+message UpdateUserThreadStateRequest {
+  // The user-thread-state resource to update.
+  UserThreadState user_thread_state = 1;
+  // A field mask controlling which fields are updated.
+  google.protobuf.FieldMask update_mask = 2;
+}
