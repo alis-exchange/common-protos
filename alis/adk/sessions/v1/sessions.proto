@@ -478,6 +478,9 @@ message FileData {
 
   // Required. URI.
   string file_uri = 2;
+
+  // Optional: the dispaly name of the files
+  string display_name = 3;
 }
 
 // VideoMetadata describes the input video content.
