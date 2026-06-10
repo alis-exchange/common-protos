@@ -478,6 +478,9 @@ message FileData {
 
   // Required. URI.
   string file_uri = 2;
+
+  // Optional. The display name of the file.
+  string display_name = 3;
 }
 
 // VideoMetadata describes the input video content.
@@ -1053,7 +1056,7 @@ message LogprobsResultTopCandidates {
 message LogprobsResult {
   // Length = total number of decoding steps. The chosen candidates may or may
   // not be in top_candidates.
-  repeated LogprobsResultCandidate     chosen_candidates = 1;
+  repeated LogprobsResultCandidate chosen_candidates = 1;
   // Length = total number of decoding steps.
-  repeated LogprobsResultTopCandidates top_candidates    = 2;
+  repeated LogprobsResultTopCandidates top_candidates = 2;
 }
