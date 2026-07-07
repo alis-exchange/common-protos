@@ -90,6 +90,11 @@ message Cron {
   // Opaque user-defined key/value metadata for launcher run callbacks.
   // Not interpreted by SchedulerService scheduling logic; stored and returned on CRUD.
   google.protobuf.Struct metadata = 15;
+  // When this Cron was last failed.
+  google.protobuf.Timestamp last_failure_time = 16;
+  // Optional message describing the last failure.
+  // This will only be set for jobs that fail to run.
+  optional string last_failure_message = 17;
 
   // When this Cron was created.
   google.protobuf.Timestamp create_time = 98;
