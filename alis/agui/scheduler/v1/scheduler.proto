@@ -81,7 +81,8 @@ message Cron {
   // When this Cron was last executed.
   google.protobuf.Timestamp last_run_time = 11;
   // When this Cron was archived.
-  // For TYPE_AT jobs this is typically set automatically after successful execution.
+  // For TYPE_AT jobs this is set automatically after successful execution or a
+  // terminal failed execution.
   google.protobuf.Timestamp archive_time = 12;
   // Optional agent identifier to run when this Cron fires.
   // When empty, the launcher default app_name is used.
