@@ -1,0 +1,564 @@
+syntax = "proto3";
+
+package alis.evals.v1;
+
+import "google/longrunning/operations.proto";
+import "google/protobuf/duration.proto";
+import "google/protobuf/timestamp.proto";
+import "google/rpc/status.proto";
+
+option go_package = "go.alis.build/evals";
+
+// Executes post-deploy tests and evaluations. Each RPC starts a long-running
+// operation that runs bundled cases for one kind of test. One operation may
+// produce multiple Run resources (one per completed suite). When the operation
+// completes, the response returns the resource names of all resulting Runs
+// (`runs/{run_id}`). Each full Run payload is published for persistence and
+// event consumers (for example BigQuery or Pub/Sub).
+service TestService {
+  // Runs integration-scope cases: one or a few service boundaries, in-process
+  // or sibling gRPC calls, typically fast and suitable for post-deploy smoke.
+  //
+  // Returns a long-running operation. Poll GetOperation or wait on the operation
+  // name until done. The operation completes successfully when execution finishes,
+  // even if individual cases fail; inspect each Run status in the published
+  // payload to determine pass or fail.
+  rpc RunIntegrationTest(RunIntegrationTestRequest) returns (google.longrunning.Operation) {
+    option (google.longrunning.operation_info) = {
+      response_type: "RunIntegrationTestResponse"
+      metadata_type: "RunIntegrationTestMetadata"
+    };
+  }
+
+  // Runs a load test: generates traffic at the requested intensity against
+  // each selected load case, records per-case performance in
+  // LoadTestResults.cases, and evaluates configured Service Level Objectives
+  // (SLOs). An SLO is a pass/fail bound on a metric such as latency, error
+  // rate, or throughput; every evaluated check appears in the case's checks
+  // with its observed value, limit, and status.
+  //
+  // Returns a long-running operation. Poll GetOperation or wait on the operation
+  // name until done. The operation completes successfully when execution finishes,
+  // even if thresholds are breached; inspect each Run status in the published
+  // payload to determine pass or fail.
+  rpc RunLoadTest(RunLoadTestRequest) returns (google.longrunning.Operation) {
+    option (google.longrunning.operation_info) = {
+      response_type: "RunLoadTestResponse"
+      metadata_type: "RunLoadTestMetadata"
+    };
+  }
+
+  // Runs behavioral agent evaluation cases. Each case reports a flat list of
+  // metrics (deterministic checks, LLM-as-judge scores, rubric dimensions, and
+  // ADK prebuilt metrics) with per-metric status, score, and threshold.
+  //
+  // Returns a long-running operation. Poll GetOperation or wait on the operation
+  // name until done. The operation completes successfully when execution finishes,
+  // even if individual cases fail; inspect each Run status in the published
+  // payload to determine pass or fail.
+  rpc RunAgentEval(RunAgentEvalRequest) returns (google.longrunning.Operation) {
+    option (google.longrunning.operation_info) = {
+      response_type: "RunAgentEvalResponse"
+      metadata_type: "RunAgentEvalMetadata"
+    };
+  }
+}
+
+// Represents the outcome of a completed suite within a test or evaluation job.
+// This is the common persistence and event payload for all run kinds.
+// Every branch lists each executed case with its rolled-up status and all
+// evaluated checks, passed and failed alike. Multiple Runs may share the same
+// parent operation.
+message Run {
+  // We reserve 1 incase we need to add parent in the future.
+  reserved 1;
+
+  // The resource name of the run.
+  //
+  // Format: `runs/{run_id}`
+  //
+  // `{run_id}` is independent of the long-running operation identifier.
+  string name = 2;
+
+  // The batch ID of the run.
+  // This is populated when batch id is provided in the request.
+  optional string batch_id = 3;
+
+  // The type of run. Set explicitly so consumers can filter without inspecting
+  // the data branch.
+  Type type = 4;
+
+  // Identifies which kind of test or evaluation produced a Run.
+  enum Type {
+    // Default value. This value is unused.
+    TYPE_UNSPECIFIED = 0;
+
+    // An integration test run (RunIntegrationTest).
+    INTEGRATION_TEST = 1;
+
+    // A load test run (RunLoadTest).
+    LOAD_TEST = 2;
+
+    // An agent evaluation run (RunAgentEval).
+    AGENT_EVAL = 3;
+  }
+
+  // The rolled-up outcome for the run.
+  //
+  // Precedence: FAILED if any case or check failed, errored, or scored
+  // below threshold; else PASSED when at least one case ran successfully.
+  Status status = 5;
+
+  // Branch-specific result detail. Exactly one branch is set; it corresponds to
+  // kind.
+  oneof data {
+    IntegrationTestResults integration_test = 6;
+    LoadTestResults load_test = 7;
+    AgentEvalResults agent_eval = 8;
+  }
+
+  // Execution wall-clock start. Distinct from resource lifecycle timestamps.
+  google.protobuf.Timestamp start_time = 21;
+
+  // Execution wall-clock end.
+  google.protobuf.Timestamp end_time = 22;
+
+  // The parent long-running operation for this run.
+  //
+  // Format: `operations/{operation_id}`
+  string operation = 23;
+
+  // Optional. Populated when the run could not complete. Root-cause summary
+  // for triage.
+  google.rpc.Status error = 24;
+
+  // The time when this run resource was materialized.
+  google.protobuf.Timestamp create_time = 25;
+
+  // The project ID of the environment where the run was executed.
+  // Example: marvel-sm-dev-123, marvel-sm-prod-456
+  string google_project_id = 26;
+}
+
+// Result detail for an integration test run.
+message IntegrationTestResults {
+  // Every case executed in this run, in execution order. Each entry
+  // includes its rolled-up status and all checks evaluated for that case.
+  repeated Case cases = 1;
+
+  // The result of one integration case.
+  message Case {
+    // The case id.
+    // Example: example-v1.example-case-1
+    string id = 1;
+
+    // The rolled-up status for the case.
+    Status status = 2;
+
+    // All checks evaluated for this case, in execution order.
+    repeated Check checks = 3;
+
+    // Wall-clock duration for this case.
+    google.protobuf.Duration duration = 4;
+
+    // One deterministic check within a case. Checks are rule-based
+    // pass/fail validations (for example response shape, status code, or
+    // field equality).
+    message Check {
+      // A stable identifier for the check (for example a metric or assertion id).
+      string id = 1;
+
+      // The outcome of the check.
+      Status status = 2;
+
+      // Human-readable detail: validation failures, expected versus actual,
+      // or error text. Empty when the check passed with no extra context.
+      string message = 3;
+    }
+  }
+}
+
+// Result detail for a load test run. The runner generates sustained traffic
+// against each selected load case, records per-case performance in the case's
+// summary, and evaluates the configured Service Level Objectives (SLOs). An
+// SLO defines an acceptable bound on a metric; every evaluated check is listed
+// with its observed value, limit, and outcome, passed and failed alike.
+message LoadTestResults {
+  // Every load case executed in this run, in execution order. Each entry
+  // includes its rolled-up status, the performance summary for its load
+  // window, and all SLO checks evaluated against that summary.
+  repeated Case cases = 1;
+
+  // The result of one load case.
+  message Case {
+    // The case id.
+    // Example: files-v2-load.list-files
+    string id = 1;
+
+    // The rolled-up status for the case. FAILED when any SLO check failed or
+    // load generation could not complete.
+    Status status = 2;
+
+    // Performance metrics observed during this case's load window. Always
+    // populated for executed cases.
+    Summary summary = 3;
+
+    // All SLO checks evaluated for this case, in declaration order.
+    repeated SloCheck checks = 4;
+  }
+
+  // Aggregate performance metrics for one load case.
+  message Summary {
+    // The load intensity mode used for this run.
+    RunLoadTestRequest.Mode mode = 1;
+
+    // The request rate the generator was configured to sustain, in queries
+    // (requests) per second. Resolved from the mode preset and any suite-level
+    // overrides; recorded so observed throughput can be interpreted and runs
+    // compared over time.
+    double target_qps = 2;
+
+    // The number of concurrent workers used to generate load.
+    int32 concurrency = 3;
+
+    // Total wall-clock duration of the case's load window, excluding warmup.
+    google.protobuf.Duration duration = 4;
+
+    // Total requests sent during the load window.
+    int64 request_count = 5;
+
+    // Total request errors observed during the load window (transport
+    // failures, non-OK statuses, timeouts). Distinct from SLO checks, which
+    // are threshold comparisons evaluated after metrics are aggregated.
+    int64 error_count = 6;
+
+    // Observed steady-state throughput in queries (requests) per second.
+    double actual_qps = 7;
+
+    // Request latency distribution for the load window.
+    LatencyPercentiles latency = 8;
+
+    // Request errors grouped by canonical gRPC status code name (for example
+    // `UNAVAILABLE` or `DEADLINE_EXCEEDED`). Values sum to error_count.
+    map<string, int64> errors_by_code = 9;
+  }
+
+  // Request latency distribution for a load case, in milliseconds.
+  //
+  // Percentile fields give the latency at or below which that fraction of
+  // requests completed. For example, p95_ms is the latency experienced by
+  // the fastest 95% of requests; the remaining 5% were slower. Percentiles
+  // surface tail latency that a mean would hide and are the usual basis for
+  // SLO checks.
+  message LatencyPercentiles {
+    // Median latency. Half of requests completed at or below this value.
+    double p50_ms = 1;
+
+    // 95th percentile latency. 95% of requests completed at or below this
+    // value; the slowest 5% exceeded it.
+    double p95_ms = 2;
+
+    // 99th percentile latency. 99% of requests completed at or below this
+    // value; the slowest 1% exceeded it.
+    double p99_ms = 3;
+
+    // The fastest observed request latency.
+    double min_ms = 4;
+
+    // The arithmetic mean of observed request latencies.
+    double mean_ms = 5;
+
+    // The slowest observed request latency.
+    double max_ms = 6;
+  }
+
+  // One Service Level Objective (SLO) check outcome.
+  //
+  // An SLO expresses an acceptable bound on a load-test metric (for example
+  // "p99 latency must stay below 500 ms" or "error rate must stay below 1%").
+  // Every configured check is recorded with the measured value, the configured
+  // limit, and whether the bound held, so consumers can see headroom on passed
+  // checks as well as breaches.
+  message SloCheck {
+    // A stable identifier for the SLO check or metric (for example
+    // `latency.p99_ms` or `error_rate`).
+    string id = 1;
+
+    // The outcome of the check. FAILED when the observed value crossed the
+    // limit or the metric could not be measured.
+    Status status = 2;
+
+    // Human-readable detail (for example expected versus observed values or
+    // measurement errors). Empty when the check passed with no extra context.
+    string message = 3;
+
+    // The metric value measured during the run (for example 612.4 when unit
+    // is `ms`).
+    double observed = 4;
+
+    // The configured SLO bound (for example 500.0 when unit is `ms`).
+    double limit = 5;
+
+    // The unit shared by observed and limit (for example `ms`, `rps`, or `%`).
+    string unit = 6;
+  }
+}
+
+// Result detail for an agent evaluation run. Every executed case is listed
+// with its rolled-up status and a flat list of metrics. JudgeInfo summarizes
+// the scoring model used across the run when LLM-as-judge metrics are present.
+message AgentEvalResults {
+  // Every case executed in this run, in execution order.
+  repeated Case cases = 1;
+
+  // Judge model provenance and call statistics for this run.
+  JudgeInfo judge = 2;
+
+  // Provenance and statistics for the LLM-as-judge used in this run.
+  //
+  // The judge is a separate model invoked to score metrics that cannot be
+  // checked deterministically (for example tone, reasoning quality, or policy
+  // adherence).
+  message JudgeInfo {
+    // The judge model identifier (for example `gemini-2.5-pro`).
+    string model = 1;
+
+    // The pinned model version, when available.
+    string model_version = 2;
+
+    // Total judge API calls made during this run (one or more per metric).
+    int64 judge_call_count = 3;
+
+    // Judge infrastructure failures (timeout, API error). Distinct from
+    // metric failures, where the judge ran successfully but assigned a score
+    // below threshold.
+    int64 judge_error_count = 4;
+  }
+
+  // The result of one agent evaluation case.
+  message Case {
+    // The case id (ADK evalId).
+    string id = 1;
+
+    // The rolled-up status for the case.
+    Status status = 2;
+
+    // Wall-clock duration for this case.
+    google.protobuf.Duration duration = 3;
+
+    // ADK session identifier for triage and replay.
+    string session_id = 4;
+
+    // All metrics evaluated for this case, in execution order. Includes
+    // deterministic checks, LLM-as-judge scores, and ADK prebuilt metrics.
+    repeated Metric metrics = 5;
+
+    // One evaluated metric within a case.
+    message Metric {
+      // A stable identifier for the metric (ADK metricName).
+      string id = 1;
+
+      // The outcome of the metric.
+      Status status = 2;
+
+      // The observed score, when applicable. Omitted for binary metrics.
+      optional double score = 3;
+
+      // The minimum score required for this metric to pass, when applicable.
+      double threshold = 4;
+
+      // Human-readable detail: validation failures, score below threshold,
+      // or not-evaluated reason. Empty when the metric passed with no extra
+      // context.
+      string message = 5;
+
+      // Per-rubric breakdown when the metric defines multiple rubric dimensions.
+      repeated RubricScore rubric = 6;
+
+      // The result for one rubric dimension within a metric.
+      message RubricScore {
+        // The identifier of the rubric dimension.
+        string id = 1;
+
+        // The outcome assigned to this rubric dimension.
+        Status status = 2;
+
+        // The observed score for this rubric dimension, when applicable.
+        optional double score = 3;
+      }
+    }
+  }
+}
+
+// The request message for RunIntegrationTest.
+message RunIntegrationTestRequest {
+  // The batch ID to associate with the run.
+  optional string batch_id = 1;
+
+  // The case ids to execute.
+  //
+  // If empty, all cases registered for integration runs are executed.
+  // If non-empty, only registered cases whose id matches an entry are
+  // executed.
+  //
+  // A qualified id `suite.case` selects one case. A suite id `suite`
+  // selects all cases in that suite; shared setup and teardown for the suite
+  // run once per suite.
+  repeated string case_ids = 2;
+}
+
+// Metadata for a RunIntegrationTest long-running operation while it is in
+// progress.
+message RunIntegrationTestMetadata {
+  // The number of cases selected for this operation after filter resolution.
+  int32 case_count = 1;
+
+  // The number of cases finished so far (passed, failed, or errored).
+  // This value increases monotonically during the run.
+  int32 completed_case_count = 2;
+
+  // The number of suites selected for this operation.
+  int32 suite_count = 3;
+
+  // The number of suites finished so far. This value increases monotonically
+  // during the run.
+  int32 completed_suite_count = 4;
+}
+
+// The response message for RunIntegrationTest, stored in the completed
+// Operation.
+message RunIntegrationTestResponse {
+  // The resource names of all runs produced by this operation.
+  //
+  // Each entry has the format `runs/{run_id}`. Single-suite jobs return a
+  // list of length one.
+  repeated string runs = 1;
+}
+
+// The request message for RunLoadTest.
+message RunLoadTestRequest {
+  // The load intensity preset. Controls concurrency, request rate, and
+  // duration according to server-side configuration; suites may override the
+  // preset's parameters at registration. The resolved values are recorded in
+  // each case's Summary.
+  Mode mode = 1;
+
+  // The load case ids to execute.
+  //
+  // If empty, all cases registered for load tests are executed.
+  // If non-empty, only registered cases whose id matches an entry are
+  // executed.
+  //
+  // A qualified id `suite.case` selects one case. A suite id `suite`
+  // selects all cases in that suite; shared setup and teardown for the suite
+  // run once per suite.
+  repeated string case_ids = 2;
+
+  // The batch ID to associate with the runs produced by this operation.
+  optional string batch_id = 3;
+
+  // Load intensity presets, ordered as an ascending scale from minimal to
+  // ludicrous. Higher modes apply more concurrent load; the exact parameters
+  // are environment-specific.
+  enum Mode {
+    // Default value. The server rejects this value if sent by clients.
+    MODE_UNSPECIFIED = 0;
+
+    // Minimal load for smoke or baseline measurement.
+    MINIMAL = 1;
+
+    // Conservative load with headroom for shared infrastructure.
+    CONSERVATIVE = 2;
+
+    // Moderate load suitable for routine capacity checks.
+    MODERATE = 3;
+
+    // Strong load short of ludicrous; useful for capacity ceiling probes.
+    HIGH = 4;
+
+    // Highest load the target environment is expected to sustain without
+    // degrading shared infrastructure.
+    LUDICROUS = 5;
+  }
+}
+
+// Metadata for a RunLoadTest long-running operation while it is in progress.
+message RunLoadTestMetadata {
+  // The number of load cases selected for this operation after filter
+  // resolution. Each case runs one load window against its target.
+  int32 case_count = 1;
+
+  // The number of cases whose load window has finished so far. This value
+  // increases monotonically during the run.
+  int32 completed_case_count = 2;
+
+  // The number of suites selected for this operation.
+  int32 suite_count = 3;
+
+  // The number of suites finished so far. This value increases monotonically
+  // during the run.
+  int32 completed_suite_count = 4;
+}
+
+// The response message for RunLoadTest, stored in the completed Operation.
+message RunLoadTestResponse {
+  // The resource names of all runs produced by this operation.
+  //
+  // Each entry has the format `runs/{run_id}`.
+  repeated string runs = 1;
+}
+
+// The request message for RunAgentEval.
+message RunAgentEvalRequest {
+  // The case ids to execute.
+  //
+  // If empty, all cases registered for agent evaluation are executed.
+  // If non-empty, only registered cases whose id matches an entry are
+  // executed.
+  //
+  // A qualified id `suite.case` selects one case. A suite id `suite`
+  // selects all cases in that suite; shared setup and teardown for the suite
+  // run once per suite.
+  repeated string case_ids = 1;
+}
+
+// Metadata for a RunAgentEval long-running operation while it is in progress.
+message RunAgentEvalMetadata {
+  // The number of cases selected for this operation after filter resolution.
+  int32 case_count = 1;
+
+  // The number of cases finished so far (passed, failed, or errored).
+  // This value increases monotonically during the run.
+  int32 completed_case_count = 2;
+
+  // The number of suites selected for this operation.
+  int32 suite_count = 3;
+
+  // The number of suites finished so far. This value increases monotonically
+  // during the run.
+  int32 completed_suite_count = 4;
+}
+
+// The response message for RunAgentEval, stored in the completed Operation.
+message RunAgentEvalResponse {
+  // The resource names of all runs produced by this operation.
+  //
+  // Each entry has the format `runs/{run_id}`.
+  repeated string runs = 1;
+}
+
+// Outcome status for runs, cases, checks, metrics, and rubric dimensions.
+enum Status {
+  // Default value. Must not appear on completed results.
+  STATUS_UNSPECIFIED = 0;
+
+  // All applicable checks passed and execution completed.
+  PASSED = 1;
+
+  // Execution completed but at least one check failed or scored below threshold.
+  FAILED = 2;
+
+  // The item was skipped, non-gating, monitoring-only, or preconditions were
+  // not met. Does not imply pass or fail.
+  NOT_EVALUATED = 3;
+}
