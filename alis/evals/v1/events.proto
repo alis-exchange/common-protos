@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package alis.evals.v1;
+
+import "alis/evals/v1/evaluation.proto";
+
+option go_package = "go.alis.build/evals";
+
+// Event published when a completed test or evaluation run is ready for
+// persistence and downstream consumers (for example BigQuery or Pub/Sub).
+message RunPublishedEvent {
+  // The completed run, including per-case status and check results for the
+  // suite that finished.
+  alis.evals.v1.Run run = 1;
+}
