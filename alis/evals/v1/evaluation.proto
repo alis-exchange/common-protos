@@ -385,6 +385,9 @@ message AgentEvalResults {
 
         // The observed score for this rubric dimension, when applicable.
         optional double score = 3;
+
+        // The rationale for the score, when applicable.
+        optional string rationale = 4;
       }
     }
   }
@@ -561,4 +564,12 @@ enum Status {
   // The item was skipped, non-gating, monitoring-only, or preconditions were
   // not met. Does not imply pass or fail.
   NOT_EVALUATED = 3;
+}
+
+// Event published when a completed test or evaluation run is ready for
+// persistence and downstream consumers (for example BigQuery or Pub/Sub).
+message RunPublishedEvent {
+  // The completed run, including per-case status and check results for the
+  // suite that finished.
+  Run run = 1;
 }
