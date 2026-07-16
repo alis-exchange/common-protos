@@ -62,6 +62,20 @@ service TestService {
       metadata_type: "RunAgentEvalMetadata"
     };
   }
+
+  // Observes server-side infrastructure metrics without generating load.
+  // Fetches Cloud Monitoring snapshots for declared infrastructure targets, such as Cloud Run and Spanner
+  // over a configurable lookback window (for example peak-hour observation via an external scheduler).
+  //
+  // Returns a long-running operation. Poll GetOperation or wait on the operation
+  // name until done. The operation completes successfully when execution finishes;
+  // inspect each Run status and snapshot fetch_status in the published payload.
+  rpc RunInfraObservation(RunInfraObservationRequest) returns (google.longrunning.Operation) {
+    option (google.longrunning.operation_info) = {
+      response_type: "RunInfraObservationResponse"
+      metadata_type: "RunInfraObservationMetadata"
+    };
+  }
 }
 
 // Represents the outcome of a completed suite within a test or evaluation job.
@@ -101,6 +115,9 @@ message Run {
 
     // An agent evaluation run (RunAgentEval).
     AGENT_EVAL = 3;
+
+    // An infrastructure observation run (RunInfraObservation).
+    INFRA_OBSERVATION = 4;
   }
 
   // The rolled-up outcome for the run.
@@ -112,9 +129,17 @@ message Run {
   // Branch-specific result detail. Exactly one branch is set; it corresponds to
   // kind.
   oneof data {
+    // Integration test case results (RunIntegrationTest).
     IntegrationTestResults integration_test = 6;
+
+    // Load test case results (RunLoadTest).
     LoadTestResults load_test = 7;
+
+    // Agent evaluation case results (RunAgentEval).
     AgentEvalResults agent_eval = 8;
+
+    // Infrastructure observation case results (RunInfraObservation).
+    InfraObservationResults infra_observation = 9;
   }
 
   // Execution wall-clock start. Distinct from resource lifecycle timestamps.
@@ -130,7 +155,7 @@ message Run {
 
   // Optional. Populated when the run could not complete. Root-cause summary
   // for triage.
-  google.rpc.Status error = 24;
+  optional google.rpc.Status error = 24;
 
   // The time when this run resource was materialized.
   google.protobuf.Timestamp create_time = 25;
@@ -178,6 +203,38 @@ message IntegrationTestResults {
   }
 }
 
+// Request latency distribution, in milliseconds.
+//
+// Percentile fields give the latency at or below which that fraction of
+// requests completed. For example, p95_ms is the latency experienced by
+// the fastest 95% of requests; the remaining 5% were slower. Percentiles
+// surface tail latency that a mean would hide and are the usual basis for
+// SLO checks.
+//
+// Package-level so load summaries, Cloud Run metrics, and Spanner metrics
+// share an identical BQ column shape.
+message LatencyPercentiles {
+  // Median latency. Half of requests completed at or below this value.
+  double p50_ms = 1;
+
+  // 95th percentile latency. 95% of requests completed at or below this
+  // value; the slowest 5% exceeded it.
+  double p95_ms = 2;
+
+  // 99th percentile latency. 99% of requests completed at or below this
+  // value; the slowest 1% exceeded it.
+  double p99_ms = 3;
+
+  // The fastest observed request latency.
+  double min_ms = 4;
+
+  // The arithmetic mean of observed request latencies.
+  double mean_ms = 5;
+
+  // The slowest observed request latency.
+  double max_ms = 6;
+}
+
 // Result detail for a load test run. The runner generates sustained traffic
 // against each selected load case, records per-case performance in the case's
 // summary, and evaluates the configured Service Level Objectives (SLOs). An
@@ -210,6 +267,18 @@ message LoadTestResults {
     // model name, RPC method, or dataset slice). Empty when the case declares
     // no tags.
     map<string, string> tags = 5;
+
+    // Server-side Cloud Run metrics for declared targets over this case's
+    // observation window. Empty when the suite declares no Cloud Run targets.
+    repeated CloudRunTargetSnapshot cloud_run = 6;
+
+    // Server-side Spanner metrics for declared targets over this case's
+    // observation window. Empty when the suite declares no Spanner targets.
+    repeated SpannerTargetSnapshot spanner = 7;
+
+    // Infrastructure SLO check outcomes. Diagnostics-only in v1: always empty
+    // on the wire until infra SLO evaluators ship.
+    repeated InfraSloCheck infra_checks = 8;
   }
 
   // Aggregate performance metrics for one load case.
@@ -261,7 +330,7 @@ message LoadTestResults {
 
     // Streaming RPC metrics when the case exercised client or server streaming.
     // Omitted for unary-only cases.
-    StreamSummary stream = 13;
+    optional StreamSummary stream = 13;
 
     // Resolved QPS stage configuration. Empty when the profile used a
     // constant target_qps for the entire window.
@@ -300,35 +369,6 @@ message LoadTestResults {
 
     // End-to-end stream call duration distribution in milliseconds.
     LatencyPercentiles total_duration = 5;
-  }
-
-  // Request latency distribution for a load case, in milliseconds.
-  //
-  // Percentile fields give the latency at or below which that fraction of
-  // requests completed. For example, p95_ms is the latency experienced by
-  // the fastest 95% of requests; the remaining 5% were slower. Percentiles
-  // surface tail latency that a mean would hide and are the usual basis for
-  // SLO checks.
-  message LatencyPercentiles {
-    // Median latency. Half of requests completed at or below this value.
-    double p50_ms = 1;
-
-    // 95th percentile latency. 95% of requests completed at or below this
-    // value; the slowest 5% exceeded it.
-    double p95_ms = 2;
-
-    // 99th percentile latency. 99% of requests completed at or below this
-    // value; the slowest 1% exceeded it.
-    double p99_ms = 3;
-
-    // The fastest observed request latency.
-    double min_ms = 4;
-
-    // The arithmetic mean of observed request latencies.
-    double mean_ms = 5;
-
-    // The slowest observed request latency.
-    double max_ms = 6;
   }
 
   // One Service Level Objective (SLO) check outcome.
@@ -370,8 +410,9 @@ message AgentEvalResults {
   // Every case executed in this run, in execution order.
   repeated Case cases = 1;
 
-  // Judge model provenance and call statistics for this run.
-  JudgeInfo judge = 2;
+  // Judge model provenance and call statistics for this run. Unset when the
+  // run used no LLM-as-judge metrics.
+  optional JudgeInfo judge = 2;
 
   // Provenance and statistics for the LLM-as-judge used in this run.
   //
@@ -383,7 +424,7 @@ message AgentEvalResults {
     string model = 1;
 
     // The pinned model version, when available.
-    string model_version = 2;
+    optional string model_version = 2;
 
     // Total judge API calls made during this run (one or more per metric).
     int64 judge_call_count = 3;
@@ -424,7 +465,7 @@ message AgentEvalResults {
       optional double score = 3;
 
       // The minimum score required for this metric to pass, when applicable.
-      double threshold = 4;
+      optional double threshold = 4;
 
       // Human-readable detail: validation failures, score below threshold,
       // or not-evaluated reason. Empty when the metric passed with no extra
@@ -449,6 +490,288 @@ message AgentEvalResults {
         optional string rationale = 4;
       }
     }
+  }
+}
+
+// Role of an infrastructure target within a load or observation case.
+//
+// ENTRY marks the service under direct test (for example the Cloud Run service
+// receiving generated load). DEPENDENCY marks downstream services or data stores
+// observed for correlation (for example internal Cloud Run hops or Spanner).
+enum InfraTargetRole {
+  // Default value. Must not appear on completed results.
+  INFRA_TARGET_ROLE_UNSPECIFIED = 0;
+
+  // The primary service receiving traffic or acting as the case entrypoint.
+  INFRA_TARGET_ROLE_ENTRY = 1;
+
+  // A downstream service or datastore observed alongside the entry target.
+  INFRA_TARGET_ROLE_DEPENDENCY = 2;
+}
+
+// Outcome of fetching infrastructure metrics for one target from Cloud
+// Monitoring.
+//
+// Partial per-metric failure may still yield OK when at least one metric
+// succeeded; details are recorded in fetch_message on the snapshot.
+enum InfraFetchStatus {
+  // Default value. Must not appear on completed results.
+  INFRA_FETCH_STATUS_UNSPECIFIED = 0;
+
+  // At least one metric was fetched successfully for this target.
+  INFRA_FETCH_STATUS_OK = 1;
+
+  // The Monitoring API was unreachable or returned no usable data.
+  INFRA_FETCH_STATUS_UNAVAILABLE = 2;
+
+  // The fetch exceeded its per-target timeout.
+  INFRA_FETCH_STATUS_TIMEOUT = 3;
+
+  // The caller lacked permission to read metrics for this target.
+  INFRA_FETCH_STATUS_PERMISSION_DENIED = 4;
+}
+
+// Infrastructure resource kind referenced by infra SLO checks and snapshots.
+enum InfraKind {
+  // Default value. Must not appear on completed results.
+  INFRA_KIND_UNSPECIFIED = 0;
+
+  // A Google Cloud Run service revision scope.
+  INFRA_KIND_CLOUD_RUN = 1;
+
+  // A Cloud Spanner instance and database scope.
+  INFRA_KIND_SPANNER = 2;
+}
+
+// Declared Cloud Run target for infrastructure observation.
+//
+// Identifies the Monitoring resource filters used when fetching server-side
+// Cloud Run metrics. Referenced from CloudRunTargetSnapshot.target.
+message CloudRunTargetRef {
+  // Google Cloud project ID hosting the Cloud Run service.
+  string project_id = 1;
+
+  // Cloud Run region (for example `europe-west1`).
+  string region = 2;
+
+  // Cloud Run service name (for example `search-v1`).
+  string service_name = 3;
+
+  // Optional revision filter. Empty aggregates all revisions.
+  optional string revision = 4;
+}
+
+// Declared Spanner target for infrastructure observation.
+//
+// Identifies the Monitoring resource filters used when fetching server-side
+// Spanner metrics. Referenced from SpannerTargetSnapshot.target.
+message SpannerTargetRef {
+  // Google Cloud project ID hosting the Spanner instance.
+  string project_id = 1;
+
+  // Spanner instance ID (for example `prod-spanner`).
+  string instance_id = 2;
+
+  // Spanner instance location (for example `europe-west1`).
+  string location = 3;
+
+  // Required database within the instance (for example `orders`).
+  string database = 4;
+}
+
+// Observed Cloud Run server-side metrics for one target and window.
+message CloudRunMetrics {
+  // Server-side request count. Zero when the service saw no traffic.
+  int64 request_count = 1;
+
+  // Server-side request latency distribution (run.googleapis.com/request_latencies).
+  // Unset when this metric type could not be fetched.
+  optional LatencyPercentiles latency = 2;
+
+  // Fraction of server-side responses with 5xx status (0.0–1.0). Unset when
+  // this metric type could not be fetched.
+  optional double error_5xx_rate = 3;
+
+  // Peak concurrent instance count during the window. Unset when this metric
+  // type could not be fetched.
+  optional double max_instance_count = 4;
+
+  // Container CPU utilization 99th percentile during the window (0.0–1.0).
+  // Unset when this metric type could not be fetched.
+  optional double cpu_utilization_p99 = 5;
+
+  // Container memory utilization 99th percentile during the window (0.0–1.0).
+  // Unset when this metric type could not be fetched.
+  optional double memory_utilization_p99 = 6;
+
+  // Container startup latency 99th percentile in milliseconds, when available.
+  optional double startup_latency_p99 = 7;
+}
+
+// Observed Spanner server-side metrics for one target and window.
+message SpannerMetrics {
+  // Query count for the database during the window. Zero when no queries ran.
+  int64 query_count = 1;
+
+  // Query count where status was not OK during the window.
+  int64 query_error_count = 2;
+
+  // API request latency distribution (spanner.googleapis.com/api/request_latencies).
+  // Unset when this metric type could not be fetched.
+  optional LatencyPercentiles api_latency = 3;
+
+  // Query execution latency distribution
+  // (spanner.googleapis.com/query_stat/total/query_latencies). Unset when this
+  // metric type could not be fetched.
+  optional LatencyPercentiles query_latency = 4;
+
+  // Instance CPU utilization maximum during the window (0.0–1.0). Instance-
+  // scoped; not attributable to a single database when multiple databases share
+  // the instance. Unset when this metric type could not be fetched.
+  optional double cpu_utilization_max = 5;
+}
+
+// Cloud Run infrastructure snapshot for one declared target.
+//
+// Always emitted for every target declared on the suite, even when
+// request_count is zero or the fetch partially failed. Pairs configuration
+// (id, role, target) with observed metrics over window_start..window_end.
+message CloudRunTargetSnapshot {
+  // Stable target identifier from suite configuration (for example `search-v1`).
+  string id = 1;
+
+  // Role of this target within the case (ENTRY or DEPENDENCY).
+  InfraTargetRole role = 2;
+
+  // Declared Cloud Run resource coordinates used for the Monitoring query.
+  CloudRunTargetRef target = 3;
+
+  // Inclusive start of the observation window (UTC).
+  google.protobuf.Timestamp window_start = 4;
+
+  // Exclusive end of the observation window (UTC).
+  google.protobuf.Timestamp window_end = 5;
+
+  // Outcome of the Monitoring fetch for this target.
+  InfraFetchStatus fetch_status = 6;
+
+  // Human-readable detail when fetch_status is not OK or when individual
+  // metrics failed partially. Unset on full success.
+  optional string fetch_message = 7;
+
+  // Observed server-side metrics for this target and window. Populated on
+  // best-effort basis when fetch_status is OK; fields may be unset when a
+  // specific metric type failed.
+  CloudRunMetrics metrics = 8;
+}
+
+// Spanner infrastructure snapshot for one declared target.
+//
+// Always emitted for every target declared on the suite, even when
+// query_count is zero or the fetch partially failed. Pairs configuration
+// (id, role, target) with observed metrics over window_start..window_end.
+message SpannerTargetSnapshot {
+  // Stable target identifier from suite configuration (for example `orders-db`).
+  string id = 1;
+
+  // Always INFRA_TARGET_ROLE_DEPENDENCY on the wire for Spanner targets.
+  InfraTargetRole role = 2;
+
+  // Declared Spanner resource coordinates used for the Monitoring query.
+  SpannerTargetRef target = 3;
+
+  // Inclusive start of the observation window (UTC).
+  google.protobuf.Timestamp window_start = 4;
+
+  // Exclusive end of the observation window (UTC).
+  google.protobuf.Timestamp window_end = 5;
+
+  // Outcome of the Monitoring fetch for this target.
+  InfraFetchStatus fetch_status = 6;
+
+  // Human-readable detail when fetch_status is not OK or when individual
+  // metrics failed partially. Unset on full success.
+  optional string fetch_message = 7;
+
+  // Observed server-side metrics for this target and window. Populated on
+  // best-effort basis when fetch_status is OK; fields may be unset when a
+  // specific metric type failed.
+  SpannerMetrics metrics = 8;
+}
+
+// One infrastructure SLO check outcome.
+//
+// Mirrors SloCheck on the client side: snapshots carry observed values;
+// infra_checks carry pass/fail against configured limits. Diagnostics-only in
+// v1: infra_checks is always empty on the wire until infra SLO evaluators ship.
+message InfraSloCheck {
+  // Resource kind this check evaluated (CLOUD_RUN or SPANNER).
+  InfraKind kind = 1;
+
+  // Matches CloudRunTargetSnapshot.id or SpannerTargetSnapshot.id.
+  string target_id = 2;
+
+  // Stable metric key (for example `latency.p99_ms` or `query_error_rate`).
+  string check_id = 3;
+
+  // The outcome of the check. FAILED when the observed value crossed the
+  // limit or the metric could not be measured.
+  Status status = 4;
+
+  // Human-readable detail. Unset when the check passed with no extra context.
+  optional string message = 5;
+
+  // The metric value measured during the observation window (for example 612.4
+  // when unit is `ms`).
+  double observed = 6;
+
+  // The configured SLO bound (for example 500.0 when unit is `ms`).
+  double limit = 7;
+
+  // Unit shared by observed and limit (for example `ms`, `%`, `count`).
+  string unit = 8;
+}
+
+// Result detail for a standalone infrastructure observation run.
+//
+// Produced by RunInfraObservation without load generation. Each case fetches
+// Cloud Monitoring snapshots over a resolved lookback window for declared
+// Cloud Run and Spanner targets.
+message InfraObservationResults {
+  // Every infra observation case executed in this run, in execution order.
+  repeated Case cases = 1;
+
+  // The result of one infrastructure observation case.
+  message Case {
+    // The case id.
+    // Example: peak-hours.observe-search
+    string id = 1;
+
+    // The rolled-up status for the case. Diagnostics-only in v1: PASSED when
+    // observation completes; FAILED only on runner or setup errors, not on
+    // infra threshold breach until infra SLO evaluators ship.
+    Status status = 2;
+
+    // Resolved lookback duration for this case.
+    google.protobuf.Duration lookback = 3;
+
+    // Inclusive start of the settled observation window (UTC).
+    google.protobuf.Timestamp window_start = 4;
+
+    // Exclusive end of the settled observation window (UTC).
+    google.protobuf.Timestamp window_end = 5;
+
+    // Server-side Cloud Run metrics for declared targets over this case's
+    // observation window. Empty when the suite declares no Cloud Run targets.
+    repeated CloudRunTargetSnapshot cloud_run = 6;
+
+    // Server-side Spanner metrics for declared targets over this case's
+    // observation window. Empty when the suite declares no Spanner targets.
+    repeated SpannerTargetSnapshot spanner = 7;
+
+    // Infrastructure SLO check outcomes. Diagnostics-only in v1: always empty
+    // on the wire until infra SLO evaluators ship.
+    repeated InfraSloCheck infra_checks = 8;
   }
 }
 
@@ -603,6 +926,54 @@ message RunAgentEvalMetadata {
 
 // The response message for RunAgentEval, stored in the completed Operation.
 message RunAgentEvalResponse {
+  // The resource names of all runs produced by this operation.
+  //
+  // Each entry has the format `runs/{run_id}`.
+  repeated string runs = 1;
+}
+
+// The request message for RunInfraObservation.
+message RunInfraObservationRequest {
+  // The infra observation case ids to execute.
+  //
+  // If empty, all cases registered for infra observation are executed.
+  // If non-empty, only registered cases whose id matches an entry are
+  // executed.
+  //
+  // A qualified id `suite.case` selects one case. A suite id `suite`
+  // selects all cases in that suite; shared setup and teardown for the suite
+  // run once per suite.
+  repeated string case_ids = 1;
+
+  // The batch ID to associate with the runs produced by this operation.
+  optional string batch_id = 2;
+
+  // Highest-precedence lookback override when set. When unset, the server
+  // resolves lookback from per-case and suite defaults.
+  optional google.protobuf.Duration lookback = 3;
+}
+
+// Metadata for a RunInfraObservation long-running operation while it is in
+// progress.
+message RunInfraObservationMetadata {
+  // The number of infra observation cases selected after filter resolution.
+  int32 case_count = 1;
+
+  // The number of cases finished so far. This value increases monotonically
+  // during the run.
+  int32 completed_case_count = 2;
+
+  // The number of suites selected for this operation.
+  int32 suite_count = 3;
+
+  // The number of suites finished so far. This value increases monotonically
+  // during the run.
+  int32 completed_suite_count = 4;
+}
+
+// The response message for RunInfraObservation, stored in the completed
+// Operation.
+message RunInfraObservationResponse {
   // The resource names of all runs produced by this operation.
   //
   // Each entry has the format `runs/{run_id}`.
