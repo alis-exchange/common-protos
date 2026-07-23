@@ -1,0 +1,153 @@
+syntax = "proto3";
+
+package alis.build.v1;
+
+service Repos {
+  rpc ListRepos(ListReposRequest) returns (ListReposResponse) {}
+  rpc CreateBranch(CreateBranchRequest) returns (Empty) {}
+  rpc ListBranches(ListBranchesRequest) returns (ListBranchesResponse) {}
+  rpc DeleteBranch(DeleteBranchRequest) returns (Empty) {}
+  rpc CreateCommit(CreateCommitRequest) returns (Empty) {}
+  rpc ListCommits(ListCommitsRequest) returns (ListCommitsResponse) {}
+  rpc ListFiles(ListFilesRequest) returns (ListFilesResponse) {}
+  rpc ViewFile(ViewFileRequest) returns (ViewFileResponse) {}
+}
+
+message Empty {}
+
+message ListReposRequest {}
+
+message ListReposResponse {
+  repeated Repo repos = 1;
+}
+
+message CreateBranchRequest {
+  // E.g. "proto"
+  string repo = 1;
+  // E.g. "feature-x"
+  string branch = 2;
+  // The reference to create the branch from, e.g. HEAD or a commit hash.
+  string ref = 3;
+}
+
+message Repo {
+  // E.g. "proto"
+  string name = 1;
+}
+
+message ListBranchesRequest {
+  // E.g. "proto"
+  string repo = 1;
+  // The number of branches to return.
+  int32 limit = 2;
+  // Which page to return (1-indexed).
+  int32 page = 3;
+}
+
+message ListBranchesResponse {
+  repeated Branch branches = 1;
+}
+
+message Branch {
+  // E.g. "feature-x"
+  string name = 1;
+}
+
+message DeleteBranchRequest {
+  // E.g. "proto"
+  string repo = 1;
+  // E.g. "feature-x"
+  string branch = 2;
+}
+
+message CreateCommitRequest {
+  // E.g. "proto"
+  string repo = 1;
+  // E.g. "feature-x"
+  string branch = 2;
+  // E.g. "feat: add a new feature"
+  string message = 3;
+  repeated Operation operations = 4;
+  message Operation {
+    // Path of the file relative to the repo root.
+    string path = 1;
+    // Type of operation to perform.
+    Type type = 2;
+    enum Type {
+      UNSPECIFIED = 0;
+      CREATE = 1;
+      UPDATE = 2;
+      DELETE = 3;
+    }
+    // Content to create/update.
+    string content = 3;
+    // The current sha of the file (not the commit). Only used for UPDATE and DELETE
+    string current_file_sha = 4;
+  }
+}
+
+message ListCommitsRequest {
+  // E.g. "proto"
+  string repo = 1;
+  // The commit or branch to start from, e.g. "master" or a commit hash.
+  string start_ref = 2;
+  // The repo path to list commits for.
+  string path = 3;
+  // The number of commits to return.
+  int32 limit = 4;
+  // Which page to return (1-indexed).
+  int32 page = 5;
+}
+
+message ListCommitsResponse {
+  repeated Commit commits = 1;
+}
+
+message Commit {
+  string sha = 1;
+  string committer_email = 2;
+  string created_at = 3;
+  string message = 4;
+  repeated Change changes = 5;
+  message Change {
+    // E.g. "folder/file.proto"
+    string path = 1;
+    // E.g. added/modified/deleted
+    string status = 2;
+  }
+}
+
+message ListFilesRequest {
+  // E.g. "proto"
+  string repo = 1;
+  // The branch or commit to list files for, e.g. HEAD or a commit hash.
+  string ref = 2;
+  // The repo path to list files for.
+  string path = 3;
+}
+
+message ListFilesResponse {
+  repeated File files = 1;
+  message File {
+    // E.g. "folder/file.proto"
+    string path = 1;
+    // The sha of the file (not the commit).
+    string sha = 2;
+  }
+}
+
+message ViewFileRequest {
+  // E.g. "proto"
+  string repo = 1;
+  // The branch or commit at which to view the file for, e.g. HEAD or a commit hash.
+  string ref = 2;
+  // E.g. "folder/file.proto"
+  string path = 3;
+}
+
+message ViewFileResponse {
+  // The actual file content.
+  string content = 1;
+  // The sha of the file (not the commit).
+  string sha = 2;
+}
