@@ -291,9 +291,11 @@ message LoadTestResults {
     // Infrastructure SLO check outcomes. Diagnostics-only in v1: always empty
     // on the wire until infra SLO evaluators ship.
     repeated InfraSloCheck infra_checks = 8;
-  }
 
-  // Aggregate performance metrics for one load case.
+    // Developer and framework validation outcomes for this case in declaration
+    // order. Integration cases continue using checks instead.
+    repeated Validation validations = 9;
+  }
   message Summary {
     // The load intensity mode used for this run.
     RunLoadTestRequest.Mode mode = 1;
@@ -464,6 +466,10 @@ message AgentEvalResults {
     // All metrics evaluated for this case, in execution order. Includes
     // deterministic checks, LLM-as-judge scores, and ADK prebuilt metrics.
     repeated Metric metrics = 5;
+
+    // Developer and framework validation outcomes for this case in declaration
+    // order. Integration cases continue using checks instead.
+    repeated Validation validations = 6;
 
     // One evaluated metric within a case.
     message Metric {
@@ -784,6 +790,10 @@ message InfraObservationResults {
     // Infrastructure SLO check outcomes. Diagnostics-only in v1: always empty
     // on the wire until infra SLO evaluators ship.
     repeated InfraSloCheck infra_checks = 8;
+
+    // Developer and framework validation outcomes for this case in declaration
+    // order. Integration cases continue using checks instead.
+    repeated Validation validations = 9;
   }
 }
 
@@ -990,6 +1000,18 @@ message RunInfraObservationResponse {
   //
   // Each entry has the format `runs/{run_id}`.
   repeated string runs = 1;
+}
+
+// General validation outcome for specialized eval case branches.
+message Validation {
+  // Stable validation identifier (for example a rule id or `_evals.case`).
+  string id = 1;
+
+  // Validation outcome.
+  Status status = 2;
+
+  // Human-readable detail when status is not PASSED. Empty on pass.
+  string message = 3;
 }
 
 // Outcome status for runs, cases, checks, metrics, and rubric dimensions.
