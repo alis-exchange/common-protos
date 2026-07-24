@@ -15,7 +15,10 @@ service Repos {
 
 message Empty {}
 
-message ListReposRequest {}
+message ListReposRequest {
+  // E.g. "alistest"
+  string landing_zone_id = 1;
+}
 
 message ListReposResponse {
   repeated Repo repos = 1;
