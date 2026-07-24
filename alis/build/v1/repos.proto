@@ -22,7 +22,8 @@ message ListReposResponse {
 }
 
 message CreateBranchRequest {
-  // E.g. "proto"
+  // Format: {landing_zone_id}/{repo}
+  // E.g. "alistest/proto"
   string repo = 1;
   // E.g. "feature-x"
   string branch = 2;
@@ -31,12 +32,14 @@ message CreateBranchRequest {
 }
 
 message Repo {
-  // E.g. "proto"
+  // Format: {landing_zone_id}/{repo}
+  // E.g. "alistest/proto"
   string name = 1;
 }
 
 message ListBranchesRequest {
-  // E.g. "proto"
+  // Format: {landing_zone_id}/{repo}
+  // E.g. "alistest/proto"
   string repo = 1;
   // The number of branches to return.
   int32 limit = 2;
@@ -54,14 +57,16 @@ message Branch {
 }
 
 message DeleteBranchRequest {
-  // E.g. "proto"
+  // Format: {landing_zone_id}/{repo}
+  // E.g. "alistest/proto"
   string repo = 1;
   // E.g. "feature-x"
   string branch = 2;
 }
 
 message CreateCommitRequest {
-  // E.g. "proto"
+  // Format: {landing_zone_id}/{repo}
+  // E.g. "alistest/proto"
   string repo = 1;
   // E.g. "feature-x"
   string branch = 2;
@@ -87,7 +92,8 @@ message CreateCommitRequest {
 }
 
 message ListCommitsRequest {
-  // E.g. "proto"
+  // Format: {landing_zone_id}/{repo}
+  // E.g. "alistest/proto"
   string repo = 1;
   // The commit or branch to start from, e.g. "master" or a commit hash.
   string start_ref = 2;
@@ -118,7 +124,8 @@ message Commit {
 }
 
 message ListFilesRequest {
-  // E.g. "proto"
+  // Format: {landing_zone_id}/{repo}
+  // E.g. "alistest/proto"
   string repo = 1;
   // The branch or commit to list files for, e.g. HEAD or a commit hash.
   string ref = 2;
@@ -137,7 +144,8 @@ message ListFilesResponse {
 }
 
 message ViewFileRequest {
-  // E.g. "proto"
+  // Format: {landing_zone_id}/{repo}
+  // E.g. "alistest/proto"
   string repo = 1;
   // The branch or commit at which to view the file for, e.g. HEAD or a commit hash.
   string ref = 2;
