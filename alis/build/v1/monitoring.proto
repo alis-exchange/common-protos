@@ -21,6 +21,11 @@ message SearchLogsRequest {
   string end_time = 3;
   // The severity of logs to search for. If empty, no severity filtering is done.
   Severity severity = 4;
+  // Maximum number of entries to return. If 0, the server picks a default.
+  int32 page_size = 5;
+  // The next_page_token from a previous response, to get the next page.
+  // All other fields must match that previous request.
+  string page_token = 6;
   enum Severity {
     // No assigned severity level.
     DEFAULT = 0;
@@ -43,5 +48,82 @@ message SearchLogsRequest {
   }
 }
 
-message SearchLogsResponse {}
+message SearchLogsResponse {
+  // The matching log entries, ordered oldest to newest.
+  repeated LogEntry entries = 1;
+  // Pass as page_token to get the next page. Empty if this is the last page.
+  string next_page_token = 2;
+
+  message LogEntry {
+    // Time the event described by the entry occurred, RFC3339.
+    // E.g. "2022-01-01T00:00:00Z"
+    string timestamp = 1;
+    // Severity of the entry. Empty means DEFAULT.
+    SearchLogsRequest.Severity severity = 2;
+    // The log this entry belongs to.
+    // E.g. "projects/my-project/logs/run.googleapis.com%2Fstderr"
+    string log_name = 3;
+    // The message. Either the plain text payload, or the JSON payload
+    // serialised as a JSON object string.
+    // E.g. "{\"message\":\"request failed\",\"code\":13}"
+    string payload = 4;
+    // The monitored resource that produced the entry.
+    Resource resource = 5;
+    // Labels attached to the entry by the writer.
+    map<string, string> labels = 6;
+    // Trace this entry belongs to, used to group entries of one request.
+    // E.g. "projects/my-project/traces/06796866738c859f2f19b7cfb3214824"
+    string trace = 7;
+    // Span within the trace that produced this entry.
+    // E.g. "000000000000004a"
+    string span_id = 8;
+    // Unique id of the entry within its log_name, used for de-duplication.
+    string insert_id = 9;
+    // Set when the entry describes an HTTP request.
+    HttpRequest http_request = 10;
+    // Source location that produced the entry, when the writer supplied it.
+    SourceLocation source_location = 11;
+
+    message Resource {
+      // Resource type.
+      // E.g. "cloud_run_revision", "gce_instance", "k8s_container"
+      string type = 1;
+      // Identifying labels for the resource.
+      // E.g. {"project_id": "my-project", "service_name": "my-service"}
+      map<string, string> labels = 2;
+    }
+
+    message HttpRequest {
+      // E.g. "GET", "POST"
+      string method = 1;
+      // Full request URL.
+      // E.g. "https://my-service.run.app/v1/books"
+      string url = 2;
+      // HTTP status returned. 0 if the response was never sent.
+      int32 status = 3;
+      // Time taken to serve the request.
+      // E.g. "1.230s"
+      string latency = 4;
+      // IP of the client that issued the request.
+      string remote_ip = 5;
+      // User agent sent by the client.
+      string user_agent = 6;
+      // Size of the request body in bytes.
+      int64 request_size = 7;
+      // Size of the response body in bytes.
+      int64 response_size = 8;
+    }
+
+    message SourceLocation {
+      // Source file name.
+      // E.g. "main.go"
+      string file = 1;
+      // Line within the file.
+      int64 line = 2;
+      // Enclosing function.
+      // E.g. "main.(*Server).ListBooks"
+      string function = 3;
+    }
+  }
+}
 
