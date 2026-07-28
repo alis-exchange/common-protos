@@ -1,0 +1,47 @@
+syntax = "proto3";
+
+import "alis/open/options/v1/options.proto";
+
+option (alis.open.options.v1.file).json_schema.generate = true;
+
+package alis.build.v1;
+
+service Monitoring {
+  rpc SearchLogs(SearchLogsRequest) returns (SearchLogsResponse) {}
+}
+
+message SearchLogsRequest {
+  // The google cloud project id.
+  string project_id = 1;
+  // The start time of the query in RFC3339 format.
+  // E.g. "2022-01-01T00:00:00Z"
+  string start_time = 2;
+  // The end time of the query in RFC3339 format.
+  // E.g. "2022-01-02T00:00:00Z"
+  string end_time = 3;
+  // The severity of logs to search for. If empty, no severity filtering is done.
+  Severity severity = 4;
+  enum Severity {
+    // No assigned severity level.
+    DEFAULT = 0;
+    // Information useful for debugging or tracing.
+    DEBUG	= 100;
+    // Routine, expected status or performance information.
+    INFO = 200;
+    // Normal, but significant operational events (e.g., startups/shutdowns).
+    NOTICE = 300;
+    // Warning events that might escalate into problems.
+    WARNING = 400;
+    // Errorevents likely to cause problems or localized failures.
+    ERROR = 500;
+    // Severeproblems, outages, or vulnerabilities.
+    CRITICAL = 600;
+    // Immediatehuman action and intervention is required.
+    ALERT	= 700;
+    // Extremecritical event; one or more systems are entirely unusable.
+    EMERGENCY	= 800;
+  }
+}
+
+message SearchLogsResponse {}
+
