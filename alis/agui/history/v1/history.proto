@@ -38,6 +38,8 @@ service ThreadService {
   rpc GetUserThreadState(GetUserThreadStateRequest) returns (UserThreadState) {}
   // Updates per-user state for a thread.
   rpc UpdateUserThreadState(UpdateUserThreadStateRequest) returns (UserThreadState) {}
+  // Updates mutable thread metadata.
+  rpc UpdateThread(UpdateThreadRequest) returns (Thread) {}
 }
 
 // A Thread resource representing an AG-UI conversation thread.
@@ -47,7 +49,8 @@ message Thread {
   // The resource name of the thread.
   // Format: threads/{thread_id}
   string name = 1;
-  // Generated display name from the first user message in the thread.
+  // The display name of the thread. Generated at creation from the first user
+  // message, and may be changed afterwards via UpdateThread.
   string display_name = 2;
   // The agent identifier, e.g. "finance-agent-v1".
   string agent_id = 3;
@@ -139,6 +142,17 @@ message DeleteThreadRequest {
   // The resource name of the thread to delete.
   // Format: threads/{thread_id}
   string name = 1;
+}
+
+// Request to update a thread.
+message UpdateThreadRequest {
+  // The thread resource to update.
+  // The resource name is required.
+  // Format: threads/{thread_id}
+  Thread thread = 1;
+  // A field mask controlling which fields are updated.
+  // Only "display_name" is supported. Defaults to "display_name" when unset.
+  google.protobuf.FieldMask update_mask = 2;
 }
 
 // Request to get per-user thread state.
