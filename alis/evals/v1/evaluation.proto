@@ -4,6 +4,7 @@ package alis.evals.v1;
 
 import "google/longrunning/operations.proto";
 import "google/protobuf/duration.proto";
+import "google/protobuf/struct.proto";
 import "google/protobuf/timestamp.proto";
 import "google/rpc/status.proto";
 
@@ -927,6 +928,16 @@ message RunAgentEvalRequest {
   // selects all cases in that suite; shared setup and teardown for the suite
   // run once per suite.
   repeated string case_ids = 1;
+  // Initial ADK session state applied to every case in this run.
+  //
+  // Mirrors ADK SessionInput.state: a JSON object of arbitrary values
+  // (strings, numbers, bools, lists, nested objects). Agents interpret
+  // keys according to their own session-state contracts.
+  //
+  // Unset or empty means no run-level state is supplied. When set, these
+  // entries are merged into each case's session input before inference.
+  // A key already set on the case wins over the same key here.
+  google.protobuf.Struct session_state = 2;
 }
 
 // Metadata for a RunAgentEval long-running operation while it is in progress.
