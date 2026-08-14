@@ -40,11 +40,15 @@ message MessageOptions {
 
   // JsonSchema holds the message-level JSON Schema generation options.
   message JsonSchema {
-    // If true, a JSON schema is generated for this message; if false, none
-    // is — unless the message is referenced by a generating message (as a
-    // field dependency or nested message), in which case generation is forced
-    // so that `$ref` pointers resolve.
-    bool generate = 1;
+    // Explicitly enables or disables schema generation for this message,
+    // overriding the file-level default. When unset, the file-level default
+    // applies — so setting other options here (such as `oneof`) does not
+    // change whether the message generates. An explicit false is still
+    // overridden when the message is referenced by a generating message (as a
+    // field dependency or nested message): generation is forced so that
+    // `$ref` pointers resolve. `optional` is required for that distinction —
+    // without presence, an explicit false is indistinguishable from unset.
+    optional bool generate = 1;
 
     // Declares oneof groups over this message's fields for schema purposes.
     //
@@ -56,6 +60,11 @@ message MessageOptions {
     // ordinary singular fields treated as a virtual oneof (the same pattern
     // as `buf.validate.message.oneof`). Repeated and map fields are not
     // permitted as members.
+    //
+    // A group may deliberately cover only a subset of a proto `oneof`'s
+    // members: the schema then narrows the contract (like enum_int narrows a
+    // proto enum), and with `required: true` a value that sets an uncovered
+    // variant fails schema validation even though it is a legal proto value.
     repeated Oneof oneof = 2;
 
     // Oneof declares a mutually-exclusive group of fields on the enclosing
