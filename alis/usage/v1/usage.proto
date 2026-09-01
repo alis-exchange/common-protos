@@ -1,0 +1,115 @@
+syntax = "proto3";
+
+package alis.usage.v1;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "go.alis.build/common/alis/usage/v1";
+
+// A product-level API usage snapshot, derived from the Cloud Run request logs
+// of all the product's deployments. Every Alis service is a gRPC service, so
+// each request URL path carries "<package>.<Service>/<Method>" — the same
+// identifiers locked at the Define stage — which makes these aggregates
+// directly consistent with the product's protobuf contracts.
+//
+// Snapshots are analytical aggregates over what may be tens of thousands of
+// requests; the underlying log records are not retained here. This is an
+// adoption/usage lens for builders, not a replacement for observability
+// (Cloud Trace, Cloud Logging, error reporting).
+//
+// Each product publishes one snapshot per schedule tick (hourly) to the
+// Pub/Sub topic named after this message's fully qualified name,
+// "alis.usage.v1.ProductUsage", in the product's Google Cloud project. Any
+// consumer with access to the product project may subscribe.
+message ProductUsage {
+  // The product these usage statistics relate to.
+  // Format: organisations/{organisation}/products/{product}
+  string product = 1;
+
+  // The Google Cloud project id of the product project publishing this
+  // snapshot, e.g. "myorg-ab-prod-a1b2c3". Consumers should verify this
+  // against the product's registered project before trusting the payload.
+  string product_project_id = 2;
+
+  // The time at which this snapshot was computed.
+  google.protobuf.Timestamp snapshot_time = 3;
+
+  // Aggregates for each rolling window, computed relative to snapshot_time.
+  repeated Window windows = 4;
+
+  // Request counts per UTC day per deployment project over the last 30 days,
+  // intended for trend/sparkline rendering.
+  repeated DailyCount daily_trend = 5;
+
+  // The rolling windows a snapshot reports on.
+  enum WindowKind {
+    WINDOW_KIND_UNSPECIFIED = 0;
+    // The 24 hours up to snapshot_time.
+    WINDOW_KIND_ROLLING_24H = 1;
+    // The 7 days up to snapshot_time.
+    WINDOW_KIND_ROLLING_7D = 2;
+    // The 30 days up to snapshot_time.
+    WINDOW_KIND_ROLLING_30D = 3;
+  }
+
+  // Aggregates over one rolling window.
+  message Window {
+    WindowKind kind = 1;
+    google.protobuf.Timestamp start_time = 2;
+    google.protobuf.Timestamp end_time = 3;
+    // One entry per deployment (environment) Google Cloud project that
+    // received traffic in the window.
+    repeated DeploymentUsage deployments = 4;
+  }
+
+  // Aggregates for one deployment project within a window.
+  message DeploymentUsage {
+    // The Google Cloud project id of the deployment (environment) project,
+    // as recorded on the Cloud Run revision's monitored resource.
+    string google_project_id = 1;
+    // Totals across all methods in this deployment for the window.
+    MethodStats totals = 2;
+    // Per-method aggregates, ordered by request_count descending.
+    repeated MethodUsage methods = 3;
+  }
+
+  // Aggregates for one gRPC method.
+  message MethodUsage {
+    // The protobuf package, e.g. "myorg.ab.orders.v1".
+    string package = 1;
+    // The unqualified service name, e.g. "OrdersService".
+    string service = 2;
+    // The method name, e.g. "GetOrder".
+    string method = 3;
+    // The Cloud Run service that served the requests, e.g. "orders-v1".
+    string cloud_run_service = 4;
+    MethodStats stats = 5;
+  }
+
+  // Request statistics derived from Cloud Run request logs.
+  message MethodStats {
+    int64 request_count = 1;
+    // Requests with an HTTP status other than 200. gRPC errors surface as
+    // non-200 statuses on the Cloud Run request log entry.
+    int64 error_count = 2;
+    // error_count / request_count, in [0, 1].
+    double error_rate = 3;
+    // Request latency percentiles in seconds.
+    double latency_p50 = 4;
+    double latency_p95 = 5;
+    double latency_p99 = 6;
+    // Approximate number of distinct callers, estimated from the request's
+    // (remote IP, user agent) pair. Request logs carry no caller identity, so
+    // treat this as an indication rather than an exact audience count.
+    int64 distinct_callers = 7;
+  }
+
+  // Request counts for one UTC day in one deployment project.
+  message DailyCount {
+    // The UTC day in RFC 3339 date-only form, e.g. "2026-08-31".
+    string date = 1;
+    string google_project_id = 2;
+    int64 request_count = 3;
+    int64 error_count = 4;
+  }
+}
