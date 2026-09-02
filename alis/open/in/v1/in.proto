@@ -6,7 +6,7 @@ import "alis/open/cx/v1/cx.proto";
 import "alis/open/px/v1/px.proto";
 import "google/protobuf/timestamp.proto";
 
-option go_package = "open.alis.services/protobuf/alis/open/in/v1";
+option go_package = "open.alis.services/protobuf/alis/open/in/v1;inpb";
 
 // Instrument defines a financial instrument
 // as a resource in the IN domain.
