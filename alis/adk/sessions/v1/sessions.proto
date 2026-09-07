@@ -9,7 +9,7 @@ import "google/protobuf/struct.proto";
 import "google/protobuf/timestamp.proto";
 import "google/type/date.proto";
 
-option go_package = "go.alis.build/adk/sessions";
+option go_package = "go.alis.build/common/alis/adk/sessions;sessions";
 
 // SessionService manages agent sessions and session events.
 service SessionService {
@@ -197,6 +197,26 @@ message SessionEvent {
 
   // Optional. The logprobs result of the response.
   LogprobsResult logprobs_result = 23;
+
+  // Optional. When set, restricts which agent contexts include this event in
+  // LLM prompt history: an event is visible only when its isolation scope
+  // equals the agent's isolation scope (exact match; empty sees only empty).
+  optional string isolation_scope = 24;
+
+  // Optional. Routing information for workflow execution.
+  repeated string routes = 25;
+
+  // Optional. When set, signals that the workflow node emitting this event is
+  // asking for human input and is about to pause. At most one event per node
+  // activation may carry this field.
+  RequestInput requested_input = 26;
+
+  // Optional. Generic data output from a workflow node, as a JSON value.
+  google.protobuf.Value output = 27;
+
+  // Optional. Workflow-node metadata for events emitted inside a workflow.
+  // Absent for non-workflow events.
+  NodeInfo node_info = 28;
 
   // Required. Timestamp when the event was created on the client side.
   google.protobuf.Timestamp timestamp = 98;
@@ -389,6 +409,85 @@ message EventActions {
 
   // Optional. If set, the event transfers control to the specified agent.
   string transfer_agent = 8;
+
+  // Optional. When set, marks this event as a context-compaction summary
+  // standing in for a contiguous range of earlier events. Written by the
+  // framework; prompt assembly drops the covered events and shows the
+  // compacted content in their place.
+  EventCompaction compaction = 9;
+}
+
+// EventCompaction records that a contiguous range of session events has been
+// replaced by a single piece of compacted content, typically a
+// model-generated summary. The covered events are left untouched in the
+// session; prompt assembly skips them and inserts compacted_content instead.
+message EventCompaction {
+  // Required. Timestamp of the earliest covered event (inclusive).
+  google.protobuf.Timestamp start_timestamp = 1;
+
+  // Required. Timestamp of the latest covered event (inclusive). Never before
+  // start_timestamp.
+  google.protobuf.Timestamp end_timestamp = 2;
+
+  // Required. The content that replaces the covered events in the prompt.
+  Content compacted_content = 3;
+
+  // Optional. Events inside the range that this summary does NOT stand in
+  // for. Everything else in the range is covered. Keyed on invocation and
+  // timestamp rather than event ID because event IDs do not survive every
+  // storage backend. Timestamps must be stored at full precision: a
+  // reference that stops matching its event is read as no hole at all.
+  repeated EventRef excluded_events = 4;
+}
+
+// EventRef identifies a stored event by fields that survive a storage round
+// trip. The pair is not guaranteed unique: two events of one invocation can
+// share a timestamp, and a reference then names both.
+message EventRef {
+  // Required. The invocation ID of the referenced event.
+  string invocation_id = 1;
+
+  // Required. The timestamp of the referenced event.
+  google.protobuf.Timestamp timestamp = 2;
+}
+
+// RequestInput describes a single human-in-the-loop prompt emitted by a
+// workflow node. It travels on SessionEvent.requested_input from the node,
+// through the scheduler, out to the UI surface; the matching response is
+// routed back by interrupt_id.
+message RequestInput {
+  // Required. Correlates this request with the response that resumes it.
+  string interrupt_id = 1;
+
+  // Optional. Human-readable description of what is being asked. Surfaced in
+  // UI as the prompt text.
+  string message = 2;
+
+  // Optional. JSON schema the user's response payload must conform to,
+  // encoded as its JSON object form.
+  google.protobuf.Struct response_schema = 3;
+
+  // Optional. Context the UI may render alongside the prompt (e.g. the
+  // document to approve). Carried through opaquely as a JSON value.
+  google.protobuf.Value payload = 4;
+}
+
+// NodeInfo carries the per-event metadata identifying which node in a
+// workflow activation emitted it. Absent for non-workflow events.
+message NodeInfo {
+  // Optional. Composite path of the emitting node within its workflow
+  // activation. Empty for top-level static nodes;
+  // "<parent_path>/<child_name>@<run_id>" for dynamic children.
+  string path = 1;
+
+  // Optional. Marks that this event's content IS the node's output: when set
+  // and output is unset, readers derive the node output from the event's
+  // model text.
+  bool message_as_output = 2;
+
+  // Optional. Node paths this event's output counts for: the emitter plus any
+  // delegating ancestors, so one event stands in for a whole delegation chain.
+  repeated string output_for = 3;
 }
 
 // Content represents the base structured datatype containing multi-part content
@@ -469,6 +568,10 @@ message Blob {
 
   // Required. Raw bytes.
   bytes data = 2;
+
+  // Optional. Display name of the blob. Used to provide a label or filename
+  // to distinguish blobs.
+  optional string display_name = 3;
 }
 
 // FileData represents URI-based data.
