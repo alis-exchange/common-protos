@@ -19,8 +19,9 @@ message RT000F0J4 {
     DatasetInformation dataset_information = 1;
     // Definition of information related to the dataset and dataset producer
     message DatasetInformation {
+        // Version of the FinDatEx EET template that the dataset follows.
         enum EETVersion {
-            // Source not specified by the user.
+            // Version not specified.
             EET_VERSION_UNSPECIFIED = 0;
             // Version 1 of the FinDatEx EET template
             VERSION_1 = 1;
@@ -71,47 +72,58 @@ message RT000F0J4 {
             LEI = 1;
         }
         // LEI codification should be provided if available.
-        ManufacturerCodeType manufacturer_code_type = 2; // 10010_Manufacturer_Code_Type
+        // 10010_Manufacturer_Code_Type
+        ManufacturerCodeType manufacturer_code_type = 2;
         // Identification code of the Manufacturer
         // Conditional to field 10010 is set to LEI
-        string manufacturer_code = 3; // 10020_Manufacturer_Code
+        // 10020_Manufacturer_Code
+        string manufacturer_code = 3;
         // Contact entry point for distributors for content question
-        string manufacturer_email = 4;  // 10030_Manufacturer_Email
+        // 10030_Manufacturer_Email
+        string manufacturer_email = 4;
         // Date to which the general data refer
-        google.type.Date general_reference_date = 5; // 10040_General_Reference_Date
+        // 10040_General_Reference_Date
+        google.type.Date general_reference_date = 5;
         // Has the Manufacturer signed the Principle for Responsible Investment?
         // Consider PRB or equivalent organisation for the banking strategy. Do we need to consider to consider the group or the asset manager itself ? This data point has been modified to consider the UNEP- FI Principles for Responsible Banking.
-        bool manufacturer_pri_or_prb_signatory = 6; // 11000_Manufacturer_PRI_Or_PRB_Signatory
+        // 11000_Manufacturer_PRI_Or_PRB_Signatory
+        bool manufacturer_pri_or_prb_signatory = 6;
         // Notation of the Manufacturer by the PRI on the "governance and strategy" pillar
         // After one year of application all Manufacturer should receive a notation. We propose to focus on "governance and strategy" notation because there is no consolidated PRI notation
-        string manufacturer_pri_notation = 7; // 11010_Manufacturer_PRI_Notation
-        // Notation of the Manufacturer by the PRI on the "governance and strategy" pillar
-        bool manufacturer_pri_compliant = 8; // 11020_Manufacturer_PRI_Or_PRB_Compliant
+        // 11010_Manufacturer_PRI_Notation
+        string manufacturer_pri_notation = 7;
+        // Whether the Manufacturer complies with the PRI (Principles for Responsible Investment) or PRB (Principles for Responsible Banking).
+        // 11020_Manufacturer_PRI_Or_PRB_Compliant
+        bool manufacturer_pri_compliant = 8;
         // The Manufacturer is  not a PRI/PRB signatory but considers it follows PRI/PRB rules.
-        bool manufacturer_pri_like = 9; // 11030_Manufacturer_PRI_Or_PRB_Like
+        // 11030_Manufacturer_PRI_Or_PRB_Like
+        bool manufacturer_pri_like = 9;
         // Enumeration of Manufacturer Commitments
         enum Commitments {
             // Commitments not specified.
             COMMITMENTS_UNSPECIFIED = 0;
-            // TCFD
+            // Task Force on Climate-related Financial Disclosures (TCFD).
             A_TCFD = 1;
-            // NZAMI or NZAOA
+            // Net Zero Asset Managers initiative (NZAMI) or Net-Zero Asset Owner Alliance (NZAOA).
             B_NZAMI_NZAOA = 2;
-            // SBT for FI
+            // Science Based Targets for Financial Institutions (SBT for FI).
             C_SBT_FOR_FI = 3;
             // Stewardship Code
             D_STEWARDSHIP_CODE = 4;
-            // UNGC
+            // United Nations Global Compact (UNGC).
             E_UNGC = 5;
             // Participation to the « Non-Disclosure Campaign » from CDP
             F_CDP = 6;
         }
         // Other Commitments by Manufacturers
-        Commitments other_commitments = 10; // 11040_Manufacturer_Other_Commitments
+        // 11040_Manufacturer_Other_Commitments
+        Commitments other_commitments = 10;
         // Disclosure of the applicable Stewardship Code
-        Commitments stewardship_code_signatory = 11; // 12000_Manufacturer_Stewarship_Code_Signatory
+        // 12000_Manufacturer_Stewarship_Code_Signatory
+        Commitments stewardship_code_signatory = 11;
         // Internet address where the client can find all relevant informations regarding stewardship and engagement of the manufacturer.
-        string manufacturer_website_information_stewardship_and_engagement = 12; // 13000_Manufacturer_Website_Information_Stewardship_And_Engagement
+        // 13000_Manufacturer_Website_Information_Stewardship_And_Engagement
+        string manufacturer_website_information_stewardship_and_engagement = 12;
     }
     // Product level disclosure data.
     message ProductData {
@@ -132,7 +144,7 @@ message RT000F0J4 {
                 string share_class_id = 2;
                 // Enumerations of financial identifiers
                 enum ShareClassIdentifierTypes {
-                    // Source not specified by the user.
+                    // Identifier type not specified.
                     IDENTIFIER_UNSPECIFIED = 0;
                     // ISO 6166 code of ISIN when available
                     ISIN = 1;
@@ -167,10 +179,16 @@ message RT000F0J4 {
         message ESGScreeningCriteria {
             // Enumeration of Fund categories in reference of the article of SFDR european regulation applying to the product.
             enum SFDRProductType {
+                // The product does not follow SFDR guidelines.
+                // As the zero value, this is also what an unset field reads as, so it cannot be told apart from not answered.
                 DOES_NOT_FOLLOW_SFDR_GUIDELINES = 0;
+                // The product falls under SFDR Article 6.
                 FOLLOWS_ARTICLE_6_GUIDELINES = 1;
+                // The product is not classified under SFDR but has characteristics similar to an Article 8 product.
                 ARTICLE_8_LIKE = 2;
+                // The product is not classified under SFDR but has characteristics similar to an Article 9 product.
                 ARTICLE_9_LIKE = 3;
+                // The product is neither an Article 8 nor an Article 9 product.
                 NOT_ARTICLE_8_OR_9 = 4;
                 // Product with ESG characteristics
                 ARTICLE_8_PRODUCT = 5;
@@ -182,30 +200,55 @@ message RT000F0J4 {
             SFDRProductType sfdr_product_type = 7;
             // Enumeration of ESG Labels
             enum ESGLabel {
+                // Not specified.
                 ESG_LABEL_UNSPECIFIED = 0;
+                // ICMA (International Capital Market Association) Green Bond Principles.
                 A_ICMA_GREEN_BOND_PRINCIPLES = 1;
+                // EU Green Bond Standard.
                 B_EU_GREEN_BOND_STANDARD = 2;
+                // EU Ecolabel for financial products.
                 C_EU_ECOLABEL_FOR_FINANCIAL_PRODUCTS = 3;
+                // FNG-Siegel, the sustainable fund label of the Forum Nachhaltige Geldanlagen.
                 D_FNG_SIEGEL_FOND = 4;
+                // Climate Bonds Standard of the Climate Bonds Initiative (CBI).
                 E_CBI_CLIMATE_BONDS_STANDARDS = 5;
+                // ICMA (International Capital Market Association) Social Bond Principles.
                 F_ICMA_SOCIAL_BONDS_PRINCIPLES = 6;
+                // LuxFLAG ESG label.
                 G_LUXFLAG_ESG = 7;
+                // LuxFLAG Climate Finance label.
                 H_LUXFLAG_CLIMATE_FINANCE = 8;
+                // LuxFLAG Environment label.
                 I_LUXFLAG_ENVIRONMENT = 9;
+                // "Kein Verstoß gegen Atomwaffensperrvertrag" (no breach of the Treaty on the Non-Proliferation of Nuclear Weapons).
                 J_KEIN_VERSTOSS_GEGEN_ATOMWAFFENSPERRVERTRAG = 10;
+                // French ISR (Investissement Socialement Responsable) label.
                 K_ISR = 11;
+                // Belgian Towards Sustainability label.
                 L_TOWARDS_SUSTAINABILITY = 12;
+                // Austrian Ecolabel (Das Österreichische Umweltzeichen), guideline UZ 49 for sustainable financial products.
                 M_UZ49_DAS_OSTERREICHISCHE_UMWELTZEICHEN = 13;
+                // Nordic Swan Ecolabel.
                 N_NORDIC_SWAN = 14;
+                // French Greenfin label.
                 O_GREENFIN_LABEL = 15;
+                // French Finansol label.
                 P_FINANSOL = 16;
+                // DDV (Deutscher Derivate Verband) Nachhaltigkeitskodex, ESG strategy.
                 Q_DDV_NACHHALTIGKEITSKODEX_ESG_STRATEGIE = 17;
+                // DDV (Deutscher Derivate Verband) Nachhaltigkeitskodex, ESG impact.
                 R_DDV_NACHHALTIGKEITSKODEX_ESG_IMPACT = 18;
+                // Grüner Pfandbrief (German green covered bond).
                 S_GRUNER_PFANDBRIEF = 19;
+                // Sozialer Pfandbrief (German social covered bond).
                 T_SOZIALER_PFANDBRIEF = 20;
+                // LuxFLAG Microfinance label.
                 U_LUXFLAG_MICROFINANCE = 21;
+                // LuxFLAG Sustainable Insurance Products label.
                 V_LUXFLAG_SUSTAINABLE_INSURANCE_PRODUCTS = 22;
+                // Charte ESG française des produits structurés (French ESG charter for structured products).
                 X_CHARTE_ESG_FRANCAISE_DES_PRODUITS_STRUCTURES = 23;
+                // Another label or standard not listed.
                 Z_OTHER = 99;
             }
             // Disclosure of applicable ESG labels. See 20060_Financial_Instrument_ESG_Label_Or_Standard
@@ -218,9 +261,13 @@ message RT000F0J4 {
             double fund_of_fund_min_exposure_article_9 = 10;
             // Enumeration of main SFDR focus
             enum MainFocusAreas {
+                // Not specified.
                 FOCUS_UNSPECIFIED = 0;
+                // Environmental.
                 ENVIRONMENTAL = 1;
+                // Social.
                 SOCIAL = 2;
+                // Governance (the G in ESG).
                 GOVERNMENTAL = 3;
             }
             // The main ESG focus of the fund
@@ -301,62 +348,104 @@ message RT000F0J4 {
             bool thematic_approach = 10;
             // Enumeration of thematic environmental investment strategies
             enum EnvironmentalThemes {
+                // Not specified.
                 ENVIRONMENTAL_THEME_UNSPECIFIED = 0;
+                // Energy.
                 A_ENERGY = 1;
+                // Renewable energy.
                 B_RENEWABLE_ENERGY = 2;
+                // Raw materials.
                 C_RAW_MATERIALS = 3;
+                // Water and land.
                 D_WATER_AND_LAND = 4;
+                // Waste.
                 E_WASTE = 5;
+                // Greenhouse gas emissions.
                 F_GREENHOUSE_GAS_EMISSIONS = 6;
+                // Biodiversity.
                 G_BIODIVERSITY = 7;
+                // Circular economy.
                 H_CIRCULAR_ECONOMY = 8;
+                // Another environmental theme.
                 I_ENVIRONMENTAL_OTHER = 9;
             }
             // 20270_Financial_Instrument_Environmental_Thematic_Characteristics.
             repeated EnvironmentalThemes environmental_themes = 11;
             // Enumeration of thematic social investment strategies
             enum SocialThemes {
+                // Not specified.
                 SOCIAL_THEME_UNSPECIFIED = 0;
+                // Tackling inequality.
                 A_INEQUALITY = 1;
+                // Social cohesion.
                 B_SOCIAL_COHESION = 2;
+                // Social integration.
                 C_SOCIAL_INTEGRATION = 3;
+                // Labour relations.
                 D_LABOUR_RELATIONS = 4;
+                // Investment in human capital.
                 E_INVESTMENT_IN_HUMAN_CAPITAL = 5;
+                // Economically or socially disadvantaged communities.
                 F_ECONOMICALLY_OR_SOCIALLY_DISADVANTAGED_COMMUNITIES = 6;
+                // Another social theme.
                 G_SOCIAL_OTHER = 7;
             }
             // 20280_Financial_Instrument_Social_Thematic_Characteristics
             repeated SocialThemes social_themes = 12;
             // Enumeration of thematic governance investment strategies
             enum GovernanceThemes {
+                // Not specified.
                 GOVERNANCE_THEME_UNSPECIFIED = 0;
+                // Sound management structures.
                 A_SOUND_MANAGEMENT_STRUCTURES = 1;
+                // Employee relations.
                 B_EMPLOYEE_RELATIONS = 2;
+                // Remuneration of staff.
                 C_RENUMERATION_OF_STAFF = 3;
+                // Tax compliance.
                 D_TAX_COMPLIANCE = 4;
+                // Another governance theme.
                 E_GOVERANCE_OTHER = 5;
             }
             // 20290_Financial_Instrument_Governance_Thematic_Characteristics
             repeated GovernanceThemes governance_themes = 13;
             // Enumeration of UN Sustainable Development Goals
             enum SustainableDevelopmentGoals {
+                // Not specified.
                 SDG_UNSPECIFIED = 0;
+                // SDG 1: No poverty.
                 A_NO_POVERTY = 1;
+                // SDG 2: Zero hunger.
                 B_NO_HUNGER = 2;
+                // SDG 3: Good health and well-being.
                 C_GOOD_HEALTH_AND_WELLBEING = 3;
+                // SDG 4: Quality education.
                 D_QUALITY_EDUCATION = 4;
+                // SDG 5: Gender equality.
                 E_GENDER_EQUALITY = 5;
+                // SDG 6: Clean water and sanitation.
                 F_CLEAN_WATER_AND_SANITATION = 6;
+                // SDG 7: Affordable and clean energy.
                 G_AFFORDABLE_AND_CLEAN_ENERGY = 7;
+                // SDG 8: Decent work and economic growth.
                 H_DECENT_WORK_AND_ECONOMIC_GROWTH = 8;
+                // SDG 9: Industry, innovation and infrastructure.
                 I_INDUSTRY_INNOVATION_AND_INFRASTRUCTURE = 9;
+                // SDG 10: Reduced inequalities.
                 J_REDUCED_INEQUALITY = 10;
+                // SDG 11: Sustainable cities and communities.
                 K_SUSTAINABLE_CITIES_AND_COMMUNITIES = 11;
+                // SDG 12: Responsible consumption and production.
                 L_RESPONSIBLE_CONSUMPTION_AND_PRODUCTION = 12;
+                // SDG 13: Climate action.
                 M_CLIMATE_ACTION = 13;
+                // SDG 14: Life below water.
                 N_LIFE_BELOW_WATER = 14;
+                // SDG 15: Life on land.
                 O_LIFE_ON_LAND = 15;
+                // SDG 16: Peace, justice and strong institutions.
                 P_PEACE_AND_JUSTICE_STRONG_INSTITUTIONS = 16;
+                // SDG 17: Partnerships for the goals.
                 Q_PARTNERSHIPS_TO_ACHIEVE_GOALS = 17;
             }
             // 20300_Financial_Instrument_Alignment_With_Sustainable_Development_Goals
@@ -383,7 +472,7 @@ message RT000F0J4 {
             string esg_benchmark_id = 23;
             // Enumerations of benchmark identifiers
             enum BenchmarkIdentifierTypes {
-                // Source not specified by the user.
+                // Identifier type not specified.
                 IDENTIFIER_UNSPECIFIED = 0;
                 // ISO 6166 code of ISIN when available
                 ISIN = 1;
@@ -394,7 +483,7 @@ message RT000F0J4 {
                 // PermID - Refinitiv Permanent Identifiers
                 PERM_ID = 4;
             }
-            // Codification chosen to identify the share class
+            // Codification chosen to identify the ESG benchmark in `esg_benchmark_id`.
             BenchmarkIdentifierTypes esg_benchmark_id_type = 24;
             // 20390_Financial_Instrument_Minimum_Or_Planned_Asset_Allocation_Date.
             // Link to pre-contractual report. Before there is a pre contractual report, the date is the date of commitment (equal to or before today). Then it will be the date of the latest pre-contractual report
@@ -403,9 +492,13 @@ message RT000F0J4 {
             double minimum_or_planned_investments_with_environmental_or_social_characteristics = 26;
             // Enumerations for 20410_Financial_Instrument_EU_SFDR_Methodology_For_Sustainable_Investments_Calculation
             enum SustainableInvestmentCalculationApproaches {
+                // Not specified.
                 CALCULATION_APPROACH_UNSPECIFIED = 0;
+                // Based on revenue (turnover).
                 REVENUE = 1;
+                // Based on capital expenditure (CapEx).
                 CAPEX = 2;
+                // Based on operational expenditure (OpEx).
                 OPEX = 3;
             }
             // 20410_Financial_Instrument_EU_SFDR_Methodology_For_Sustainable_Investments_Calculation
@@ -498,5 +591,6 @@ message RT000F0J4 {
 
 // Batch set of RT000F0J4 responses
 message RT000F0J4_batch {
+    // The RT000F0J4 responses in the batch.
     repeated RT000F0J4 response = 1;
 }

@@ -4,12 +4,37 @@ import "alis/open/options/v1/options.proto";
 
 option (alis.open.options.v1.file).json_schema.generate = true;
 
+// Manages the Git repositories of an Alis Build landing zone and searches
+// the logs of Google Cloud projects.
+//
+// The package has two services:
+//
+// - `Monitoring` searches the log entries of a Google Cloud project over a
+//   time range (`SearchLogs`). Entries follow the shape of a Cloud Logging
+//   `LogEntry`, and `SearchLogsRequest.Severity` uses the same levels and
+//   numbers as `google.logging.type.LogSeverity`.
+// - `Repos` works with the Git repositories of a landing zone: list
+//   repositories; create, list and delete branches; commit file changes; list
+//   commits and files; and read a file at a given ref.
+//
+// Repositories are identified as `{landing_zone_id}/{repo}`, e.g.
+// `alistest/proto`. `SearchLogs` paginates with page tokens, while
+// `ListBranches` and `ListCommits` take a `limit` and a 1-indexed `page`.
+//
+// Both files set `(alis.open.options.v1.file).json_schema.generate`, so a
+// JSON Schema is generated for every message in the package.
 package alis.build.v1;
 
+// Searches the logs of Google Cloud projects.
 service Monitoring {
+  // Searches the log entries of a Google Cloud project within a time range,
+  // optionally filtered by severity. Entries are returned oldest to newest,
+  // one page at a time; pass `next_page_token` back as `page_token` to get
+  // the next page.
   rpc SearchLogs(SearchLogsRequest) returns (SearchLogsResponse) {}
 }
 
+// Request message for `SearchLogs`.
 message SearchLogsRequest {
   // The google cloud project id.
   string project_id = 1;
@@ -26,8 +51,11 @@ message SearchLogsRequest {
   // The next_page_token from a previous response, to get the next page.
   // All other fields must match that previous request.
   string page_token = 6;
+  // The severity level of a log entry. The values and their numbers match
+  // `google.logging.type.LogSeverity`.
   enum Severity {
-    // No assigned severity level.
+    // No assigned severity level. As the `severity` filter of a
+    // `SearchLogsRequest`, it means no severity filtering is done.
     DEFAULT = 0;
     // Information useful for debugging or tracing.
     DEBUG	= 100;
@@ -37,23 +65,25 @@ message SearchLogsRequest {
     NOTICE = 300;
     // Warning events that might escalate into problems.
     WARNING = 400;
-    // Errorevents likely to cause problems or localized failures.
+    // Error events likely to cause problems or localized failures.
     ERROR = 500;
-    // Severeproblems, outages, or vulnerabilities.
+    // Severe problems, outages, or vulnerabilities.
     CRITICAL = 600;
-    // Immediatehuman action and intervention is required.
+    // Immediate human action and intervention is required.
     ALERT	= 700;
-    // Extremecritical event; one or more systems are entirely unusable.
+    // Extreme critical event; one or more systems are entirely unusable.
     EMERGENCY	= 800;
   }
 }
 
+// Response message for `SearchLogs`.
 message SearchLogsResponse {
   // The matching log entries, ordered oldest to newest.
   repeated LogEntry entries = 1;
   // Pass as page_token to get the next page. Empty if this is the last page.
   string next_page_token = 2;
 
+  // A single log entry that matched the search.
   message LogEntry {
     // Time the event described by the entry occurred, RFC3339.
     // E.g. "2022-01-01T00:00:00Z"
@@ -84,6 +114,8 @@ message SearchLogsResponse {
     // Source location that produced the entry, when the writer supplied it.
     SourceLocation source_location = 11;
 
+    // The monitored resource that produced a log entry, identified by its
+    // type and labels.
     message Resource {
       // Resource type.
       // E.g. "cloud_run_revision", "gce_instance", "k8s_container"
@@ -93,7 +125,9 @@ message SearchLogsResponse {
       map<string, string> labels = 2;
     }
 
+    // The HTTP request that a log entry describes.
     message HttpRequest {
+      // The HTTP request method.
       // E.g. "GET", "POST"
       string method = 1;
       // Full request URL.
@@ -114,6 +148,7 @@ message SearchLogsResponse {
       int64 response_size = 8;
     }
 
+    // The location in the source code that wrote a log entry.
     message SourceLocation {
       // Source file name.
       // E.g. "main.go"

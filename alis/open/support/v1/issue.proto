@@ -15,7 +15,7 @@ option go_package = "open.alis.services/protobuf/alis/open/support/v1";
 // IssuesService provides RPCs for managing Issue resources.
 service IssuesService {
   // Validates any proto message that is used directly or indirectly by this service.
-  // Most common use issue is to validate request messages from a client-side application.
+  // Most common use case is to validate request messages from a client-side application.
   rpc ValidateMessage(alis.open.validation.v1.ValidateMessageRequest) returns (alis.open.validation.v1.ValidateMessageResponse) {}
   // Retrieves the validation rules for any proto message that is used directly or indirectly by this service.
   // Serves as live auto-documentation of the validation rules in this service.
@@ -73,7 +73,7 @@ message Issue {
     Type type = 1;
     // The potential types of content blocks
     enum Type {
-      // TYPE_UNSPECIFIED
+      // The content block type is not specified.
       TYPE_UNSPECIFIED = 0;
       // Body text
       TEXT_BODY = 1;
@@ -180,7 +180,7 @@ message Issue {
   User reporter = 7;
   // The builder or support agent assigned to manage this issue.
   User assignee = 8;
-  // The user that reported the issue.
+  // A user referenced by an Issue, such as its reporter or assignee.
   message User {
     // The unique name of the User which cannot be changed.
     // Format: users/([a-z0-9-]{2,50})
@@ -200,7 +200,8 @@ message Issue {
   IssueVisibility visibility = 9;
   // Visibility of the issue
   enum IssueVisibility {
-    // Issue visibility is not specified.
+    // Issue visibility is not specified; the issue is treated as
+    // `ISSUE_VISIBILITY_PRIVATE`.
     ISSUE_VISIBILITY_UNSPECIFIED = 0;
     // The issue is visible only to the reporter, assignee and allowed users.
     ISSUE_VISIBILITY_PRIVATE = 1;
@@ -230,7 +231,7 @@ message UpdateIssueRequest {
   // The Issue to update with all of its fields.
   // The Issue's `name` field is used to identify the Issue to update.
   Issue issue = 1;
-  // The fields to update in snake_issue.
+  // The fields to update in snake_case.
   // All fields are updated if not set.
   google.protobuf.FieldMask update_mask = 2;
 }
@@ -240,7 +241,7 @@ message GetIssueRequest {
   // The unique name of the Issue.
   // Format: issues/*
   string name = 1;
-  // The fields to return in snake_issue.
+  // The fields to return in snake_case.
   // All fields are returned if not set.
   google.protobuf.FieldMask read_mask = 2;
 }
@@ -251,7 +252,7 @@ message ListIssuesRequest {
   int32 page_size = 1;
   // A page token, received from a previous ListIssues call.
   string page_token = 2;
-  // The fields to return in snake_issue.
+  // The fields to return in snake_case.
   // All fields are returned if not set.
   google.protobuf.FieldMask read_mask = 3;
   // A filter to apply to the list of Issues.
@@ -287,7 +288,7 @@ message EditNewIssueRequest {
   Issue issue = 1;
 }
 
-// The request message for the CancelNewIssueRequest method
+// The request message for the CancelNewIssue method
 message CancelNewIssueRequest {
   // The issue to cancel
   string issue = 1;
@@ -295,7 +296,8 @@ message CancelNewIssueRequest {
 
 // The request message for the SetIssueAssignee method
 message SetIssueAssigneeRequest {
-  // The Issue to update with the new requesters
+  // The Issue to set the assignee on
+  // Format: issues/*
   string issue = 1;
   // The new assignee for the issue
   Issue.User assignee = 2;
@@ -303,7 +305,8 @@ message SetIssueAssigneeRequest {
 
 // The request message for the AddIssueViewers method
 message AddIssueViewersRequest {
-  // The Issue to update with the new requesters
+  // The Issue to add the viewers to
+  // Format: issues/*
   string issue = 1;
   // The viewers for the issue.
   // Format: users/([a-z0-9-]{2,50})
@@ -312,7 +315,8 @@ message AddIssueViewersRequest {
 
 // The request message for the RemoveIssueViewers method
 message RemoveIssueViewersRequest {
-  // The Issue to update with the new requesters
+  // The Issue to remove the viewers from
+  // Format: issues/*
   string issue = 1;
   // The viewers for the issue.
   // Format: users/([a-z0-9-]{2,50})

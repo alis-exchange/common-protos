@@ -16,30 +16,45 @@ option go_package = "go.alis.build/common/standards/open/v1";
 
 // The CSSF self-assessment questionnaire to be submitted annually by Undertakings for Collective Investment as per Circular CSSF 21/790. See https://www.cssf.lu/en/Document/circular-cssf-21-790/
 message RT000D034 {
-    // Definition of questions related to a fund specific cost
+    // An explanation that applies to a specific (sub-)fund.
     message FundSpecificExplanation {
-        // The CSSF of the fund / sub-fund
+        // The CSSF code of the fund / sub-fund
         string cssf_code = 1;
-        // The name of the fund to which the financial instrument belongs. // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information.
+        // The name of the fund to which the financial instrument belongs.
+        // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information.
         string fund_name = 2;
-        // Description of the cost
+        // The explanation for the (sub-)fund.
         string explanation = 3;
     }
     // Standard frequency responses
     enum Frequency {
+        // Not answered.
         FREQUENCY_UNSPECIFIED = 0;
+        // Once a day.
         DAILY = 1;
+        // Once a week.
         WEEKLY = 2;
+        // Once a month.
         MONTHLY = 3;
+        // Once a quarter (every three months).
         QUARTERLY = 4;
+        // Twice a year.
         BI_ANNUALLY = 5;
+        // Once a year.
         ANNUALLY = 6;
+        // As needed, with no fixed schedule.
         AD_HOC = 7;
     }
+    // Yes / no answer with a free-text explanation.
+    // Unlike the shared `standards.open.v1.YesNoExplain`, whether a YES or a NO needs an explanation depends on the question.
     message YesNoExplain {
+        // Yes or no answer.
         enum Response {
+            // Not answered.
             RESPONSE_UNSPECIFIED = 0;
+            // Yes.
             YES = 1;
+            // No.
             NO = 2;
         }
         // Primary Yes / No response.
@@ -63,9 +78,13 @@ message RT000D034 {
     int32 number_of_staff_dealing_with_aml_cft = 5;
     // Enumeration of license types
     enum License {
+        // Not specified.
         LICENSE_UNSPECIFIED = 0;
+        // Undertakings for Collective Investment in Transferable Securities (UCITS).
         UCITS = 1;
+        // Alternative Investment Fund (AIF).
         AIF = 2;
+        // Money market fund (MMF).
         MONEY_MARKET = 3;
     }
     // What licenses does the entity have
@@ -116,38 +135,66 @@ message RT000D034 {
     repeated DescriptiveFundInformation fund_descriptions = 9;
     // 2. Did the Fund record any capital transaction(s) in its accounts for any (sub-)fund during the year?
     google.type.Money subscriptions_value = 10;
+    // Value of the redemptions recorded in the Fund's accounts for any (sub-)fund during the year (question 2).
     google.type.Money redemptions_value = 11;
     // Enumeration of types of instruments
     enum InstrumentType {
+        // Not specified.
         INSTRUMENT_TYPE_UNSPECIFIED = 0;
+        // Money market instruments.
         MONEY_MARKET_INSTRUMENTS = 1;
+        // Deposits (term / cash).
         DEPOSITS_TERM_OR_CASH = 2;
+        // Repurchase transactions (repo / reverse repo).
         REPURCHASE_TRANSACTIONS_REPO_OR_REVERSE_REPO = 3;
+        // Securities lending.
         SECURITIES_LENDING = 4;
+        // Listed equities.
         LISTED_EQUITIES = 5;
+        // Corporate bonds.
         CORPORATE_BONDS = 6;
+        // Government / municipal bonds.
         GOVERNMENT_OR_MUNICIPAL_BONDS = 7;
+        // Real estate investment trusts (REITs).
         REAL_ESTATE_INVESTMENT_TRUSTS_REITS = 8;
+        // Convertible bonds.
         CONVERTIBLE_BONDS = 9;
+        // Loans / private credits.
         LOANS_OR_PRIVATE_CREDITS = 10;
+        // Structured / securitized products.
         STRUCTURED_OR_SECURITIZED_PRODUCTS = 11;
+        // Equity derivatives.
         EQUITY_DERIVATIVES = 12;
+        // Fixed income derivatives.
         FIXED_INCOME_DERIVATIVES = 13;
+        // Credit derivatives.
         CREDIT_DERIVATIVES = 14;
+        // Foreign exchange (FX) derivatives.
         FX_DERIVATIVES = 15;
+        // Commodity derivatives.
         COMMODITY_DERIVATIVES = 16;
+        // Other derivatives.
         OTHER_DERIVATIVES = 17;
+        // Hedge funds (HF).
         HEDGE_FUNDS_HF = 18;
+        // Real estate / infrastructure / renewables, held directly or indirectly.
         REAL_ESTATE_OR_INFRASTRUCTURE_OR_RENEWABLES_DIRECT_OR_INDIRECT = 19;
+        // Private equity, held directly or indirectly.
         PRIVATE_EQUITY_DIRECT_OR_INDIRECT = 20;
+        // Open-ended funds, excluding hedge funds, real estate and private equity funds.
         OPEN_ENDED_FUNDS_EXCL_HF_OR_RE_OR_PE = 21;
+        // Closed-ended funds, excluding hedge funds, real estate and private equity funds.
         CLOSED_ENDED_FUNDS_EXC_HF_OR_RE_OR_PE = 22;
+        // Physical assets: direct investments in real / tangible assets, excluding real estate, infrastructure and renewables.
         PHYSICAL_ASSETS_DIRECT_INVESTMENTS_IN_REAL_OR_TANGIBLE_ASSETS_EXCL_RE_OR_INFRASTRUCTURE_OR_RENEWABLES = 23;
+        // Physical assets: indirect investments in real / tangible assets, excluding real estate, infrastructure and renewables.
         PHYSICAL_ASSETS_INDIRECT_INVESTMENTS_IN_REAL_OR_TANGIBLE_ASSETS_EXCL_RE_OR_INFRASTRUCTURE_OR_RENEWABLES = 24;
+        // Other type of investment, specified in `other_instrument_types_invested_in`.
         OTHER = 25;
     }
     // 3. In which types of investments was the Fund invested at year-end (direct investments, except where
     repeated InstrumentType instrument_types_invested_in = 12;
+    // Other types of investment held at year-end, when `OTHER` is selected in `instrument_types_invested_in` (question 3).
     repeated string other_instrument_types_invested_in = 13;
     // 4. Was any (sub-)fund invested at year-end at the level of its portfolio in a special purpose vehicle
     bool invested_in_spv = 14;
@@ -170,28 +217,49 @@ message RT000D034 {
         int32 number_of_management_resignations = 4;
         // Enumeration of management meeting subjects
         enum ManagementMeetingSubjects {
+            // Not specified.
             MANAGEMENT_MEETING_SUBJECT_UNSPECIFIED = 0;
+            // Oversight of delegated activities: IFM (investment fund manager).
             DELEGATE_OVERSIGHT_IFM = 1;
+            // Oversight of delegated activities: central administration.
             DELEGATE_OVERSIGHT_CENTRAL_ADMINISTRATION = 2;
+            // Oversight of delegated activities: transfer / registrar agent.
             DELEGATE_OVERSIGHT_TRANSFER_OR_REGISTRAR_AGENT = 3;
+            // Oversight of delegated activities: distributor(s).
             DELEGATE_OVERSIGHT_DISTRIBUTORS = 4;
+            // Oversight of delegated activities: portfolio manager(s).
             DELEGATE_OVERSIGHT_PORTFOLIO_MANAGERS = 5;
+            // Oversight of delegated activities: investment adviser(s).
             DELEGATE_OVERSIGHT_INVESTMENT_ADVISORS = 6;
+            // Portfolio management of the Fund.
             PORTFOLIO_MANAGEMENT_OF_FUND = 7;
+            // Risk management and risks of the Fund.
             RISK_MANAGEMENT_AND_FUND_RISKS = 8;
+            // Cyber / IT risk.
             CYBER_AND_IT_RISKS = 9;
+            // Fund development and performance of the Fund.
             FUND_DEVELOPMENT_AND_PERFORMANCE = 10;
+            // Investment compliance.
             INVESTMENT_COMPLIANCE = 11;
+            // Valuation / NAV determination.
             VALUATION_AND_NAV_DETERMINATION = 12;
+            // Fees / expenses charged to the Fund, including total expense ratios.
             FEES_AND_EXPENSES = 13;
             // i. Capital transactions at the level of the Fund (e.g. subscriptions, redemptions, distributions, liquidity management tools, capital calls, etc...)
             CAPITAL_TRANSACTIONS = 14;
+            // Conflicts of interest.
             CONFLICTS_OF_INTEREST = 15;
+            // Anti-money laundering and countering the financing of terrorism (AML/CFT).
             AML_CFT = 16;
+            // Central administration / accounting issues in the Fund.
             CENTRAL_ADMINISTRATION_OR_ACCOUNTING_ISSUES = 17;
+            // Marketing.
             MARKETING = 18;
+            // Relationship with the depositary.
             RELATIONSHIP_WITH_DEPOSITORY = 19;
+            // Regulatory developments.
             REGULATORY_DEVELOPMENTS = 20;
+            // Other subject, specified in `other_management_meeting_subjects`.
             OTHER = 21;
         }
         // 2.1.5. Which subjects were covered in the meetings held by the Management of the Fund during the financial year?
@@ -274,6 +342,7 @@ message RT000D034 {
         int32 number_funds_sold_to_retail_investors_on_lookthrough_basis = 39;
         // enumeration of types of informed investors
         enum InformedInvestorCategories {
+            // Not specified.
             INFORMED_INVESTOR_CATEGORY_UNSPECIFIED = 0;
             // a. Institutional investors / professional investors
             INSTITUTIONAL_OR_PROFESSIONAL_INVESTORS = 1;
@@ -310,9 +379,10 @@ message RT000D034 {
         YesNoExplain delegation_of_ongoing_ex_post_investment_compliance = 3;
         // Definition of an investment restriction not verified
         message NotVerifiedInvestmentRestrictionsByFund {
-            // The CSSF of the fund / sub-fund
+            // The CSSF code of the fund / sub-fund
             string cssf_code = 1;
-            // The name of the fund to which the financial instrument belongs. // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information.
+            // The name of the fund to which the financial instrument belongs.
+            // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information.
             string fund_name = 2;
             // Is the fund active (false if in liquidation)
             bool active = 4;
@@ -359,11 +429,12 @@ message RT000D034 {
             YesNoExplain financial_collateral_no_active_breaches = 9;
             // 15. Did the trash ratio in accordance with article 41(2)(a) of the UCI Law in respect to any (sub-)fund of the Fund represent more than 5% of the TNA as at year-end?
             bool trash_ratio_exceeded_five_percent_at_year_end = 10;
-            // Definition of an investment restriction not verified
+            // Trash ratio of a (sub-)fund at year-end (question 15.1).
             message TrashRatioByFund {
-                // The CSSF of the fund / sub-fund
+                // The CSSF code of the fund / sub-fund
                 string cssf_code = 1;
-                // The name of the fund to which the financial instrument belongs. // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information.
+                // The name of the fund to which the financial instrument belongs.
+                // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information.
                 string fund_name = 2;
                 // Is the fund active (false if in liquidation)
                 bool active = 4;
@@ -496,9 +567,10 @@ message RT000D034 {
             repeated ProportionOfNavValuedByModelByFund proportion_of_nav_valued_by_model_by_fund = 6;
             // Definition of an valuation exposure by fund
             message ProportionOfNavValuedByModelByFund {
-                // The CSSF of the fund / sub-fund
+                // The CSSF code of the fund / sub-fund
                 string cssf_code = 1;
-                // The name of the fund to which the financial instrument belongs. // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information.
+                // The name of the fund to which the financial instrument belongs.
+                // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information.
                 string fund_name = 2;
                 // Minimum % NAV valued by model
                 double minimum = 3;
@@ -516,13 +588,14 @@ message RT000D034 {
             YesNoExplain all_assets_and_fdis_valued_on_according_to_prospectus = 2;
             // Definition of max / min exposure by fund
             message MaxMinExposureByFund {
-                // The CSSF of the fund / sub-fund
+                // The CSSF code of the fund / sub-fund
                 string cssf_code = 1;
-                // The name of the fund to which the financial instrument belongs. // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information.
+                // The name of the fund to which the financial instrument belongs.
+                // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information.
                 string fund_name = 2;
-                // Minimum % NAV valued by model
+                // Minimum % of NAV concerned
                 double minimum = 3;
-                // Maximum % NAV valued by model
+                // Maximum % of NAV concerned
                 double maximum = 4;
             }
             // 12. Did any (sub-)fund(s) invest a material portion of the NAV in unquoted assets and/or OTC FDIs which are valued by an external valuer as at year-end?
@@ -536,7 +609,7 @@ message RT000D034 {
         }
         // Self assessment of adherence to legal and regulatory valuation requirements - UCI, SIF, SICAR
         LegalAndRegulatoryValuationRequirements_UCI_SIF_SICAR legal_and_regulatory_valuation_requirements_uci_sif_sicar = 11;
-        // Questions related to LEGAL/REGULATORY Valuation Requirements - UCI, SIF, SICAR
+        // Questions related to LEGAL/REGULATORY Valuation Requirements - MMF
         message LegalAndRegulatoryValuationRequirements_MMF {
             // 14. Were all the assets held by the MMF valued on an ongoing basis during the year in compliance with the chapter IV (articles 29-33) of the MMF Regulation? 14.1. If the answer to Q14. is NO, explain.
             YesNoExplain all_assets_in_compliance = 1;
@@ -549,13 +622,14 @@ message RT000D034 {
         bool any_funds_invest_material_portion_of_nav_in_assets_or_fdis_valued_at_lower_frequency_than_nav = 14;
         // Definition of types of instruments valued at lower frequency
         message InstrumentTypesValuedAtLowerThanNavFrequencyByFund {
-            // The CSSF of the fund / sub-fund
+            // The CSSF code of the fund / sub-fund
             string cssf_code = 1;
-            // The name of the fund to which the financial instrument belongs. // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information.
+            // The name of the fund to which the financial instrument belongs.
+            // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information.
             string fund_name = 2;
-            // Minimum % NAV valued by model
+            // Minimum % of NAV in assets or FDIs valued at a lower frequency than the NAV
             double minimum = 3;
-            // Maximum % NAV valued by model
+            // Maximum % of NAV in assets or FDIs valued at a lower frequency than the NAV
             double maximum = 4;
             // Types of investments
             repeated string investment_types = 5;
@@ -564,13 +638,14 @@ message RT000D034 {
         repeated InstrumentTypesValuedAtLowerThanNavFrequencyByFund instrument_types_valued_at_lower_than_nav_frequency_by_fund = 15;
         // Definition of valuation exposure by fund
         message MaxMinExposureByFund {
-            // The CSSF of the fund / sub-fund
+            // The CSSF code of the fund / sub-fund
             string cssf_code = 1;
-            // The name of the fund to which the financial instrument belongs. // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information.
+            // The name of the fund to which the financial instrument belongs.
+            // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information.
             string fund_name = 2;
-            // Minimum % NAV valued by model
+            // Minimum % of NAV concerned
             double minimum = 3;
-            // Maximum % NAV valued by model
+            // Maximum % of NAV concerned
             double maximum = 4;
         }
         // 17. Did any (sub-)fund(s) invest a material portion of the NAV in non-standard OTC FDIs at year-end? 32
@@ -591,9 +666,10 @@ message RT000D034 {
         YesNoExplain experienced_operational_or_it_risk_impacting_nav_determination_across_all_subfunds = 23;
         // Definition of data provided on an issue only impacting a specific sub-fund
         message FundSpecificExplanation {
-            // The CSSF of the fund / sub-fund
+            // The CSSF code of the fund / sub-fund
             string cssf_code = 1;
-            // The name of the fund to which the financial instrument belongs. // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information.
+            // The name of the fund to which the financial instrument belongs.
+            // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information.
             string fund_name = 2;
             // Is the sub-fund active or in liquidation?
             bool active = 3;
@@ -616,11 +692,13 @@ message RT000D034 {
         YesNoExplain if_valuation_not_independent_procedures_carried_out_to_ensure_fair_valuation = 30;
         // 24. Did the Management of the Fund refuse to approve a valuation provided by a external valuer?
         bool management_refused_valuation_provided_by_external_valuer = 31;
-        // Definition of details on management refused external valuation
+        // Details of an investment concerned, per (sub-)fund. Used for refused external valuations (24), valuer disclaimers (25),
+        // sales at a material discount (28) and non-arm's length transactions (30).
         message InvestmentDetailsByFund {
-            // The CSSF of the fund / sub-fund
+            // The CSSF code of the fund / sub-fund
             string cssf_code = 1;
-            // The name of the fund to which the financial instrument belongs. // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information.
+            // The name of the fund to which the financial instrument belongs.
+            // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information.
             string fund_name = 2;
             // The investment concerned
             string investment = 3;
@@ -670,11 +748,12 @@ message RT000D034 {
         YesNoExplain documented_assessment_performed_regarding_market_timing_risk = 5;
         // 4. Are there any (sub-)fund(s), due to their structure/set-up, exposed to the risk of market timing?
         bool any_funds_exposed_to_risk_of_market_timing = 6;
-        // FundInformation
+        // Identifies a (sub-)fund by CSSF code and name.
         message FundInformation {
-            // The CSSF of the fund / sub-fund
+            // The CSSF code of the fund / sub-fund
             string cssf_code = 1;
-            // The name of the fund to which the financial instrument belongs. // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information.
+            // The name of the fund to which the financial instrument belongs.
+            // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information.
             string fund_name = 2;
         }
         // List any sub funds which, due to their structure/set-up, are exposed to the risk of market timing?
@@ -791,11 +870,12 @@ message RT000D034 {
         bool redemption_in_kind_has_been_used = 62;
         // Details number of transactions per fund
         message NumberOfTransactionsByFund {
-            // The CSSF of the fund / sub-fund
+            // The CSSF code of the fund / sub-fund
             string cssf_code = 1;
-            // The name of the fund to which the financial instrument belongs. // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information.
+            // The name of the fund to which the financial instrument belongs.
+            // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information.
             string fund_name = 2;
-            // The number of redemption in kind transactions by fund
+            // The number of in-kind transactions for the (sub-)fund: redemptions in kind (14.1.1) or contributions in kind (21.1.1).
             int32 number_of_transactions = 3;
         }
         // 14.1.1. Mention the corresponding (sub-)fund(s) concerned and the number of redemption in kind transactions
@@ -857,9 +937,10 @@ message RT000D034 {
     message ExpensesAndIncome {
         // Definition of questions related to a fund specific cost
         message FundSpecificCostOrFee {
-            // The CSSF of the fund / sub-fund
+            // The CSSF code of the fund / sub-fund
             string cssf_code = 1;
-            // The name of the fund to which the financial instrument belongs. // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information.
+            // The name of the fund to which the financial instrument belongs.
+            // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information.
             string fund_name = 2;
             // Description of the cost
             string cost_description = 3;
@@ -899,15 +980,16 @@ message RT000D034 {
         YesNoExplain formal_assessment_performed_to_verify_effective_service_in_investors_best_interest = 12;
         // Definition of a Total Expense Ratio
         message ExpenseRatio {
-            // The CSSF of the fund / sub-fund
+            // The CSSF code of the fund / sub-fund
             string cssf_code = 1;
-            // The name of the fund to which the financial instrument belongs. // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information.
+            // The name of the fund to which the financial instrument belongs.
+            // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information.
             string fund_name = 2;
             // The global identifier of the most representative share class
             string share_class_id = 3;
             // Enumerations of financial identifiers
             enum ShareClassIdentifierTypes {
-                // Source not specified by the user.
+                // Identifier type not specified.
                 IDENTIFIER_UNSPECIFIED = 0;
                 // ISO 6166 code of ISIN when available
                 ISIN = 1;
@@ -948,15 +1030,22 @@ message RT000D034 {
         bool expense_ration_of_any_subfund_subject_to_material_increase = 14;
         // Identifying information of a fund subject to a material increase
         message MaterialIncreaseInFundExpenses {
-            // The CSSF of the fund / sub-fund
+            // The CSSF code of the fund / sub-fund
             string cssf_code = 1;
-            // The name of the fund to which the financial instrument belongs. // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information.
+            // The name of the fund to which the financial instrument belongs.
+            // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information.
             string fund_name = 2;
+            // Reason for a material increase in a (sub-)fund's TER compared with the previous year.
             enum CostIncreaseReason {
+                // Not specified.
                 REASON_UNSPECIFIED = 0;
+                // Change in the cost/fee structure materialized in the prospectus.
                 CHANGE_IN_COST_STRUCTURE_IN_PROSPECTUS = 1;
+                // Decrease in NAV.
                 DECREASE_IN_NAV = 2;
+                // Non-recurring fees.
                 NON_RECURRING_FEES = 3;
+                // Other reason, described in `comments`.
                 OTHER = 4;
             }
             // reason for material increase
@@ -978,9 +1067,10 @@ message RT000D034 {
         bool total_transaction_costs_above_materiality_threshold_for_any_fund = 20;
         // Transaction cost per fund
         message FundSpecificTransactionCost {
-            // The CSSF of the fund / sub-fund
+            // The CSSF code of the fund / sub-fund
             string cssf_code = 1;
-            // The name of the fund to which the financial instrument belongs. // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information.
+            // The name of the fund to which the financial instrument belongs.
+            // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information.
             string fund_name = 2;
             // Actual ratio (% of transaction costs/average NAV) as decimal. e.g. 3% 0.003
             double transaction_cost = 3;
@@ -999,9 +1089,10 @@ message RT000D034 {
         repeated FundSpecificExplanation performance_fee_calculation_parameters_not_in_line_with_prospectus_and_market_by_fund = 26;
         // Performance fee / carried intrest charged for a fund in a year
         message FundSpecificPerformanceCharges {
-            // The CSSF of the fund / sub-fund
+            // The CSSF code of the fund / sub-fund
             string cssf_code = 1;
-            // The name of the fund to which the financial instrument belongs. // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information.
+            // The name of the fund to which the financial instrument belongs.
+            // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information.
             string fund_name = 2;
             // ISO code of base currency of (sub-)fund
             string base_currency = 3;
@@ -1143,7 +1234,6 @@ message RT000D034 {
             YesNoExplain escalation_on_oversight_of_income_calculation_and_distribution_other = 46;
             // 5.5. If the answer to Q5. is YES, has the escalation concerned any other irregularities? If Yes, explain.
             YesNoExplain management_notified_of_any_escalation_from_depositary_to_ifm_any_other_irregularities = 47;
-            // 6. Has a reconciliation process against the depositary's records been in place for the Fund /(sub-)fund(s) during the year concerning the assets safekept at depositary? If NO, explain.
         }
         // Self assessment responses related to depositary relationships for 7.1. UCITS /REGULATED AIFs WITH AUTHORISED AIFM
         DepositaryRelationshipUCITSandRegulatedAIFsWithAIFM ucits_and_regulated_aifs_with_authorised_aifm = 1;
@@ -1175,9 +1265,11 @@ message RT000D034 {
             YesNoExplain all_identified_differences_in_third_party_custodian_reconciliations_resolved = 12;
             // 9. Did the depositary confirm all assets that are held at a third party custodian on behalf of the Fund as at year-end?
             bool depositary_confirmed_all_assets_held_at_third_party_custodian = 13;
-            // Details of assets not held with third party custodian
+            // Type and explanation for assets held at a third-party custodian that the depositary did not confirm at year-end (question 9.1).
             message AssetTypeAndDetails {
+                // Type of assets concerned.
                 string type_of_asset = 1;
+                // Explanation, including the impact on sub-funds.
                 string explanation = 2;
             }
             // 9.1. If the answer to Q9. is NO, mention the type of assets and explain (including impact on sub-funds)
@@ -1228,5 +1320,6 @@ message RT000D034 {
 
 // Batch set of RT000D034 responses
 message RT000D034_batch {
+    // The RT000D034 responses in the batch.
     repeated RT000D034 response = 1;
 }

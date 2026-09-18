@@ -88,7 +88,7 @@ service UsersService {
 
   // Edits the info of the currently signed in user.
   // This is useful for client-side applications to edit the signed in user's information.
-  // Allows the user to edit their given_name, family_name, picture, contact_number, position, education, linkedin_uri and metadata.
+  // Allows the user to edit their given_name, family_name, picture, contact_number, position, education and linkedin_uri.
   rpc EditMyInfo(EditMyInfoRequest) returns (User) {}
 
   // Edits the metadata of the currently signed in user.
@@ -107,7 +107,7 @@ service UsersService {
   rpc SetUserPicture(SetUserPictureRequest) returns (SetUserPictureResponse) {}
 }
 
-// The request message for the `UploadImage` method.
+// The request message for the `SetUserPicture` method.
 message SetUserPictureRequest {
   // The user to set the picture for
   // Format: users/*
@@ -123,7 +123,7 @@ message SetUserPictureRequest {
   string mime_type = 3;
 }
 
-// The response message for the `UploadImage` method.
+// The response message for the `SetUserPicture` method.
 message SetUserPictureResponse {
   // The uri link to the original image.
   string public_uri = 1;
@@ -171,7 +171,7 @@ message User {
   // successfully synched to the relevant google group since it was added/changed in the config
   string google_group = 12;
 
-  // Any metadata about the User. The user can edit this using EditMyInfo.
+  // Any metadata about the User. The user can edit this using EditMyMetadata.
   google.protobuf.Any metadata = 11;
   // Any internal metadata about the User. The user can not edit this, but can see it.
   google.protobuf.Any internal_metadata = 19;
@@ -236,6 +236,7 @@ message User {
   // The details of each account this user belongs to if multiple accounts are
   // supported. Key is the account id.
   map<string, Account> accounts = 99;
+  // The User's details within one account, keyed by account id in `accounts`.
   message Account {
     // The seat the user has for each of the product's offerings.
     map<int32, Seat> seats = 1;
@@ -402,6 +403,7 @@ message RetrieveMaskedUsersResponse {
 
 // The request message for the RetrieveMaskedUser method.
 message RetrieveMaskedUserRequest {
+  // Identifies the User to retrieve, either by resource name or by email.
   oneof identifier {
     // The unique name of the User.
     // Format: users/([a-z0-9-]{2,50})
@@ -420,7 +422,7 @@ message MaskedUser {
   google.protobuf.Timestamp create_time = 2;
   // The last time the User was updated.
   google.protobuf.Timestamp update_time = 3;
-  // The email of the User. Alis will never overwrite this field.
+  // The masked email of the User. Alis will never overwrite this field.
   string masked_email = 4;
   // The identity provider of the User.
   IdentityProvider identity_provider = 6;

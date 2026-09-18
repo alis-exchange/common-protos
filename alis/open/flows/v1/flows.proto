@@ -1,5 +1,25 @@
 syntax = "proto3";
 
+// Records the steps an API request goes through while it runs, so clients can
+// follow the progress of the underlying business logic.
+//
+// `FlowsService` exposes one resource:
+//
+// - `Flow` (`flows/{flow}`, where `{flow}` is 32 lowercase hex characters):
+//   the journey of one API request, identified by the method that produced it
+//   (`source`) and made up of `Flow.Step`s, each with its own `State`.
+//
+// Flows nest. A flow can be the child of a step in another flow, in which case
+// `parent_id` holds `{flow_id}-{step_id}`, the same format as the
+// `x-alis-flow-parent` header. `ListFlows` and `StreamFlows` return the flows
+// under a parent flow, or root flows when no parent is set. `GenerateFlowTree`
+// returns a flow with its descendants populated in the output-only
+// `Step.children`, plus the children of the leaf steps so the tree can be
+// expanded on demand.
+//
+// The service also consumes Pub/Sub push messages
+// (`alis.open.pubsub.v1.PubSubMessage`) through `HandleEvent` and
+// `HandleDeadLetter`.
 package alis.open.flows.v1;
 
 import "alis/open/pubsub/v1/pubsub.proto";
@@ -19,7 +39,8 @@ service FlowsService {
   rpc GetFlow(GetFlowRequest) returns (Flow) {}
   // Lists Flows.
   rpc ListFlows(ListFlowsRequest) returns (ListFlowsResponse) {}
-  // Streams Flows.
+  // Streams Flows under a parent flow, or root flows when no parent is set,
+  // as a server stream of `Flow` messages.
   rpc StreamFlows(StreamFlowsRequest) returns (stream Flow) {}
   // Generate a tree of Flows and Steps.
   // This method returns a single Flow resource but with the Flow children populated.
@@ -75,21 +96,21 @@ message Flow {
     string description = 3;
     // The state of the step
     State state = 4;
-    // State enum.
+    // The lifecycle state of a step.
     enum State {
       // State is not specified
       STATE_UNSPECIFIED = 0;
-      // The flow has been queued
+      // The step has been queued
       QUEUED = 1;
-      // The flow is in progress
+      // The step is in progress
       IN_PROGRESS = 2;
-      // The flow has been cancelled
+      // The step has been cancelled
       CANCELLED = 3;
-      // The flow is complete
+      // The step is complete
       COMPLETED = 4;
-      // An internal error occurred provisioning or updating the flow
+      // The step failed
       FAILED = 5;
-      // The flow is awaiting human review or input
+      // The step is awaiting human review or input
       AWAITING_INPUT = 6;
     }
     reserved 5, 6, 7;
@@ -108,7 +129,7 @@ message Flow {
 
   // The time at which the Flow was created.
   google.protobuf.Timestamp create_time = 97;
-  // The time at which the Flow was created.
+  // The time at which the Flow was last updated.
   google.protobuf.Timestamp update_time = 98;
   // The time at which the Flow was published.
   google.protobuf.Timestamp publish_time = 99;

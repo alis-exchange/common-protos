@@ -17,9 +17,13 @@ option go_package = "go.alis.build/common/standards/open/v1";
 message RT00085Z9 {
   // Response where a NO requires further information
   message YesNoExplain {
+    // Yes or no answer.
     enum Response {
+      // No answer given.
       RESPONSE_UNSPECIFIED = 0;
+      // Yes.
       YES = 1;
+      // No. Give the reason in `explanation`.
       NO = 2;
     }
     // Yes / No response.
@@ -29,9 +33,13 @@ message RT00085Z9 {
   }
   // Response where a YES requires further information
   message YesExplainNo {
+    // Yes or no answer.
     enum Response {
+      // No answer given.
       RESPONSE_UNSPECIFIED = 0;
+      // Yes. Give details in `explanation`.
       YES = 1;
+      // No.
       NO = 2;
     }
     // Yes / No response.
@@ -41,9 +49,13 @@ message RT00085Z9 {
   }
   // Response where further information is required regardless of whether a Yes or No is provided
   message YesNoAndExplain {
+    // Yes or no answer.
     enum Response {
+      // No answer given.
       RESPONSE_UNSPECIFIED = 0;
+      // Yes. Give further information in `explanation`.
       YES = 1;
+      // No. Give further information in `explanation`.
       NO = 2;
     }
     // Yes / No response.
@@ -53,8 +65,11 @@ message RT00085Z9 {
   }
   // Definition of a name and digital signature
   message NameAndDigitalSignature {
+    // The full name of the signatory.
     string full_name = 1;
+    // The date of signing.
     google.type.Date date = 2;
+    // The digital signature of the signatory.
     string signature = 3;
   }
   // The name of the financial institution
@@ -99,7 +114,7 @@ message RT00085Z9 {
     message TradedSecurityIdentifier {
       // Enumerations of financial identifiers
       enum FinancialInstrumentIdentifier {
-        // Source not specified by the user.
+        // Identifier type not specified.
         IDENTIFIER_UNSPECIFIED = 0;
         // FIGI (Financial Instrument Global Identifier). To look up the FIGI navigate to https://www.openfigi.com/.
         FIGI = 1;
@@ -115,7 +130,7 @@ message RT00085Z9 {
     TradedSecurityIdentifier security_identifier = 7;
     // The definition of a beneficial owner resource
     message SignificantShareholder {
-      // The resource name of the client
+      // The display name of the significant shareholder
       string display_name = 1;
       // Types of account holders
       enum BeneficialOwnerType {
@@ -157,7 +172,7 @@ message RT00085Z9 {
         string LEI = 3;
         // The directors or managers of the legal entity
         repeated NaturalPerson directors_or_managers = 4;
-        // The own
+        // The ownership type of the legal entity
         OwnershipType ownership_type = 6;
         // If PRIVATE, then the shareholders owning more than 10% or more of the entity
         //        repeated SignificantShareholder shareholders = 7;
@@ -483,5 +498,6 @@ message RT00085Z9 {
 
 // Batch set of RT00085Z9 responses
 message RT00085Z9_batch {
+  // The RT00085Z9 responses in the batch.
   repeated RT00085Z9 response = 1;
 }

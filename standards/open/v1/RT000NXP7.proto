@@ -20,20 +20,24 @@ import "google/protobuf/wrappers.proto";
 option go_package = "go.alis.build/common/standards/open/v1";
 
 // The CSSF SFDR Periodic Disclosure is a  data collection exercise is to collect, in a digital format,
-// information contained in precontractual disclosure documents/templates.
+// information contained in periodic disclosure documents/templates.
 //
 // See https://www.cssf.lu/en/2023/06/sfdr-data-collection-exercise-applicable-to-investment-fund-managers-ifms-and-institutions-for-occupational-retirement-provision-iorps-on-periodic-disclosures-in-relation-to-regulation-eu-2019-2/
 // See the following for the technical guidance: https://www.cssf.lu/en/Document/sfdr-uci-periodic-data-collection-practical-and-technical-guidance/
 // See https://edesk.apps.cssf.lu/edesk-dashboard/docs/sfdr-periodic/jsonschema/v1_0_0/sfdr-periodic-input-jsonschema-v1_0_0
 // for JSON Schema
 message RT000NXP7 {
+  // Metadata about the report: its unique identifier, type, format version,
+  // authors and creation time.
   message Header {
+    // The type of report being submitted.
     enum ReportType {
       // Unspecified
       REPORT_TYPE_UNSPECIFIED = 0;
       // SFDR_PERIODIC_FUND
       SFDR_PERIODIC_FUND = 1;
     }
+    // The version of the report format.
     enum Version {
       // Unspecified
       VERSION_UNSPECIFIED = 0;
@@ -59,10 +63,12 @@ message RT000NXP7 {
       (standards.open.v1.fdx_options).required = true,
       (standards.open.v1.fdx_options).question = "Version (i.e. V1.0.0)"
     ];
+    // Who created the report.
     string created_by = 4 [
       json_name="createdBy",
       (standards.open.v1.fdx_options).question = "Created By:"
     ];
+    // Who submitted the report.
     string submitted_by = 5 [
       json_name="submittedBy",
       (standards.open.v1.fdx_options).question = "Submitted By:"
@@ -80,6 +86,7 @@ message RT000NXP7 {
   ];
   // The payload of the report (required)
   message Payload {
+    // The questionnaire answers for the entity and its sub-funds.
     SFDRPeriodicReport sfdr_periodic_report = 1 [
       json_name="sfdrPeriodicReport",
       (standards.open.v1.fdx_options).required = true,
@@ -118,7 +125,7 @@ message RT000NXP7 {
       (standards.open.v1.fdx_options).required = true,
       (standards.open.v1.fdx_options).question = "Complete the following questions for all Article  subfunds"
     ];
-    // List of Article 9 subfunds
+    // Largest investments of the Article 8 and Article 9 subfunds
     repeated TopInvestmentsSubfunds top_investments_subfunds = 5 [
       json_name="topInvestmentsSubfunds",
       (standards.open.v1.fdx_options).required = true,
@@ -176,25 +183,45 @@ message RT000NXP7 {
       json_name="socialObjectiveIndicator",
       (standards.open.v1.fdx_options).question = "with a social objective"
     ];
+    // Environmental and social characteristics that a sub-fund can promote.
     enum EAndSCharacteristic {
-      E_AND_S_CHARACTERISTICS_UNSPECIFIED = 0; // Not Applicable
-      EEN = 1; // Environmental - energy
-      EREN = 2; // Environmental - renewable energy
-      ERMA = 3; // Environmental - raw materials
-      EWL = 4; // Environmental - water and land
-      EWAS = 5; // Environmental - waste
-      EGGE = 6; // Environmental - greenhouse gas emissions
-      EBIO = 7; // Environmental - biodiversity
-      ECECO = 8; // Environmental - circular economy
-      EOTH = 9; // Environmental - other
-      SINEQ = 10; // Social - inequality
-      SSOCO = 11; // Social - social cohesion
-      SSOIN = 12; // Social - social integration
-      SLARE = 13; // Social - labour relations
-      SIHC = 14; // Social - investment in human capital
-      SESDC = 15; // Social - economically or socially disadvantaged communities
-      SOTH = 16; // Social - other
+      // Default value: not applicable or not set.
+      E_AND_S_CHARACTERISTICS_UNSPECIFIED = 0;
+      // Environmental - energy
+      EEN = 1;
+      // Environmental - renewable energy
+      EREN = 2;
+      // Environmental - raw materials
+      ERMA = 3;
+      // Environmental - water and land
+      EWL = 4;
+      // Environmental - waste
+      EWAS = 5;
+      // Environmental - greenhouse gas emissions
+      EGGE = 6;
+      // Environmental - biodiversity
+      EBIO = 7;
+      // Environmental - circular economy
+      ECECO = 8;
+      // Environmental - other
+      EOTH = 9;
+      // Social - inequality
+      SINEQ = 10;
+      // Social - social cohesion
+      SSOCO = 11;
+      // Social - social integration
+      SSOIN = 12;
+      // Social - labour relations
+      SLARE = 13;
+      // Social - investment in human capital
+      SIHC = 14;
+      // Social - economically or socially disadvantaged communities
+      SESDC = 15;
+      // Social - other
+      SOTH = 16;
     }
+    // The environmental and/or social characteristics the sub-fund promotes.
+    // The field is required if the value of the field sustainableInvestmentsIndicator is Y
     repeated EAndSCharacteristic e_and_s_characteristics = 9 [
       json_name="eAndSCharacteristics",
       (standards.open.v1.fdx_options).required = true,
@@ -230,16 +257,26 @@ message RT000NXP7 {
       (standards.open.v1.fdx_options).description = "The field is required if the value of the field goodGovernancePolicyIndicator is N",
       (standards.open.v1.fdx_options).conditional = "Payload.SfdrPeriodicReport.Article8Subfunds.0.GoodGovernancePracticesIndicator?2:1"
     ];
+    // Objectives of the sustainable investments that a sub-fund makes.
     enum SustainableInvestmentObjective {
-      SUSTAINABLE_INVESTMENT_OBJECTIVES_UNSPECIFIED = 0; // Not Applicable
-      CCM = 1; // Climate change mitigation
-      CCA = 2; // Climate change adaptation
-      UPWM = 3; // The sustainable use and protection of water and marine resources
-      TCE = 4; // The transition to a circular economy
-      PPC = 5; // Pollution prevention and control
-      PRBE = 6; // The protection and restoration of biodiversity and ecosystems
-      SO = 7; // Social objective
-      RCE = 8; //
+      // Default value: not applicable or not set.
+      SUSTAINABLE_INVESTMENT_OBJECTIVES_UNSPECIFIED = 0;
+      // Climate change mitigation
+      CCM = 1;
+      // Climate change adaptation
+      CCA = 2;
+      // The sustainable use and protection of water and marine resources
+      UPWM = 3;
+      // The transition to a circular economy
+      TCE = 4;
+      // Pollution prevention and control
+      PPC = 5;
+      // The protection and restoration of biodiversity and ecosystems
+      PRBE = 6;
+      // Social objective
+      SO = 7;
+      // Reduction in carbon emissions
+      RCE = 8;
     }
     // What were the objectives of the sustainable investments that the subfund partially made?
     repeated SustainableInvestmentObjective sustainable_investments_objectives = 15 [
@@ -319,7 +356,7 @@ message RT000NXP7 {
       json_name="remainingInvestmentsInclSovereignBondsTurnoverProportion",
       (standards.open.v1.fdx_options).question = "TTaxonomy aligned investments (excluding fossil gas and nuclear energy related activities) including sovereign bonds expressed as a share of turnover (in %)"
     ];
-    // Taxonomy aligned investments (excluding fossil gas and nuclear energy related activities) including sovereign bonds expressed as a share of turnover (in %)
+    // Taxonomy aligned investments in fossil gas related activities including sovereign bonds expressed as a share of CapEx (in %)
     double fossil_gas_investments_incl_sovereign_bonds_capex_proportion = 30 [
       json_name="fossilGasInvestmentsInclSovereignBondsCapexProportion",
       (standards.open.v1.fdx_options).question = "Taxonomy aligned investments in fossil gas related activities  including sovereign bonds expressed as a share of CapEx (in %)"
@@ -374,7 +411,7 @@ message RT000NXP7 {
       json_name="nuclearEnergyInvestmentsExclSovereignBondsCapexProportion",
       (standards.open.v1.fdx_options).question = "Taxonomy aligned investments in nuclear energy related activities excluding sovereign bonds expressed as a share of CapEx (in %)"
     ];
-    // Taxonomy aligned investments (excluding fossil gas and nuclear energy related activities)  excluding sovereign bonds expressed as a share of
+    // Taxonomy aligned investments (excluding fossil gas and nuclear energy related activities)  excluding sovereign bonds expressed as a share of CapEx (in %)
     double remaining_investments_excl_sovereign_bonds_capex_proportion = 41 [
       json_name="remainingInvestmentsExclSovereignBondsCapexProportion",
       (standards.open.v1.fdx_options).question = "Taxonomy aligned investments (excluding fossil gas and nuclear energy related activities)  excluding sovereign bonds expressed as a share of"
@@ -511,16 +548,26 @@ message RT000NXP7 {
       (standards.open.v1.fdx_options).description = "The field is required if the value of the field goodGovernancePolicyIndicator is N",
       (standards.open.v1.fdx_options).conditional = "Payload.SfdrPeriodicReport.Article9Subfunds.0.GoodGovernancePolicyIndicator?2:1"
     ];
+    // Objectives of the sustainable investments that a sub-fund makes.
     enum SustainableInvestmentObjective {
-      SUSTAINABLE_INVESTMENT_OBJECTIVES_UNSPECIFIED = 0; // Not Applicable
-      CCM = 1; // Climate change mitigation
-      CCA = 2; // Climate change adaptation
-      UPWM = 3; // The sustainable use and protection of water and marine resources
-      TCE = 4; // The transition to a circular economy
-      PPC = 5; // Pollution prevention and control
-      PRBE = 6; // The protection and restoration of biodiversity and ecosystems
-      SO = 7; // Social objective
-      RCE = 8; //
+      // Default value: not applicable or not set.
+      SUSTAINABLE_INVESTMENT_OBJECTIVES_UNSPECIFIED = 0;
+      // Climate change mitigation
+      CCM = 1;
+      // Climate change adaptation
+      CCA = 2;
+      // The sustainable use and protection of water and marine resources
+      UPWM = 3;
+      // The transition to a circular economy
+      TCE = 4;
+      // Pollution prevention and control
+      PPC = 5;
+      // The protection and restoration of biodiversity and ecosystems
+      PRBE = 6;
+      // Social objective
+      SO = 7;
+      // Reduction in carbon emissions
+      RCE = 8;
     }
     // What were the objectives of the sustainable investments that the subfund made?
     repeated SustainableInvestmentObjective sustainable_investments_objectives = 12 [
@@ -582,7 +629,7 @@ message RT000NXP7 {
       json_name = "remainingInvestmentsInclSovereignBondsTurnoverProportion",
       (standards.open.v1.fdx_options).question = "TTaxonomy aligned investments (excluding fossil gas and nuclear energy related activities) including sovereign bonds expressed as a share of turnover (in %)"
     ];
-    // Taxonomy aligned investments (excluding fossil gas and nuclear energy related activities) including sovereign bonds expressed as a share of turnover (in %)
+    // Taxonomy aligned investments in fossil gas related activities including sovereign bonds expressed as a share of CapEx (in %)
     double fossil_gas_investments_incl_sovereign_bonds_capex_proportion = 30 [
       json_name = "fossilGasInvestmentsInclSovereignBondsCapexProportion",
       (standards.open.v1.fdx_options).question = "Taxonomy aligned investments in fossil gas related activities  including sovereign bonds expressed as a share of CapEx (in %)"
@@ -637,7 +684,7 @@ message RT000NXP7 {
       json_name = "nuclearEnergyInvestmentsExclSovereignBondsCapexProportion",
       (standards.open.v1.fdx_options).question = "Taxonomy aligned investments in nuclear energy related activities excluding sovereign bonds expressed as a share of CapEx (in %)"
     ];
-    // Taxonomy aligned investments (excluding fossil gas and nuclear energy related activities)  excluding sovereign bonds expressed as a share of
+    // Taxonomy aligned investments (excluding fossil gas and nuclear energy related activities)  excluding sovereign bonds expressed as a share of CapEx (in %)
     double remaining_investments_excl_sovereign_bonds_capex_proportion = 41 [
       json_name = "remainingInvestmentsExclSovereignBondsCapexProportion",
       (standards.open.v1.fdx_options).question = "Taxonomy aligned investments (excluding fossil gas and nuclear energy related activities)  excluding sovereign bonds expressed as a share of"
@@ -740,7 +787,7 @@ message RT000NXP7 {
   }
   // Y / N requiring no further explanation
   enum YesNo {
-    // Not Applicable
+    // Default value: not applicable or not set.
     YES_NO_NA_UNSPECIFIED = 0;
     // Yes
     Y = 1;

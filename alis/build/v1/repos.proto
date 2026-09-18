@@ -6,44 +6,66 @@ option (alis.open.options.v1.file).json_schema.generate = true;
 
 package alis.build.v1;
 
+// Manages the Git repositories of a landing zone: their branches, commits
+// and files.
 service Repos {
+  // Lists the repositories in a landing zone.
   rpc ListRepos(ListReposRequest) returns (ListReposResponse) {}
+  // Creates a branch in a repository, starting from an existing ref.
   rpc CreateBranch(CreateBranchRequest) returns (Empty) {}
+  // Lists the branches of a repository. Paginated with `limit` and a
+  // 1-indexed `page`.
   rpc ListBranches(ListBranchesRequest) returns (ListBranchesResponse) {}
+  // Deletes a branch from a repository.
   rpc DeleteBranch(DeleteBranchRequest) returns (Empty) {}
+  // Creates a commit on a branch that creates, updates or deletes the files
+  // listed in `operations`.
   rpc CreateCommit(CreateCommitRequest) returns (Empty) {}
+  // Lists the commits of a repository starting from `start_ref`, optionally
+  // limited to a path. Paginated with `limit` and a 1-indexed `page`.
   rpc ListCommits(ListCommitsRequest) returns (ListCommitsResponse) {}
+  // Lists the files under a path of a repository at a given ref.
   rpc ListFiles(ListFilesRequest) returns (ListFilesResponse) {}
+  // Returns the content and SHA of a single file at a given ref.
   rpc ViewFile(ViewFileRequest) returns (ViewFileResponse) {}
 }
 
+// An empty message, returned by RPCs that have no response data.
 message Empty {}
 
+// Request message for `ListRepos`.
 message ListReposRequest {
+  // The ID of the landing zone whose repositories to list.
   // E.g. "alistest"
   string landing_zone_id = 1;
 }
 
+// Response message for `ListRepos`.
 message ListReposResponse {
+  // The repositories in the landing zone.
   repeated Repo repos = 1;
 }
 
+// Request message for `CreateBranch`.
 message CreateBranchRequest {
   // Format: {landing_zone_id}/{repo}
   // E.g. "alistest/proto"
   string repo = 1;
+  // The name of the branch to create.
   // E.g. "feature-x"
   string branch = 2;
   // The reference to create the branch from, e.g. HEAD or a commit hash.
   string ref = 3;
 }
 
+// A Git repository in a landing zone.
 message Repo {
   // Format: {landing_zone_id}/{repo}
   // E.g. "alistest/proto"
   string name = 1;
 }
 
+// Request message for `ListBranches`.
 message ListBranchesRequest {
   // Format: {landing_zone_id}/{repo}
   // E.g. "alistest/proto"
@@ -54,41 +76,56 @@ message ListBranchesRequest {
   int32 page = 3;
 }
 
+// Response message for `ListBranches`.
 message ListBranchesResponse {
+  // The branches on the requested page.
   repeated Branch branches = 1;
 }
 
+// A branch of a repository.
 message Branch {
   // E.g. "feature-x"
   string name = 1;
 }
 
+// Request message for `DeleteBranch`.
 message DeleteBranchRequest {
   // Format: {landing_zone_id}/{repo}
   // E.g. "alistest/proto"
   string repo = 1;
+  // The name of the branch to delete.
   // E.g. "feature-x"
   string branch = 2;
 }
 
+// Request message for `CreateCommit`.
 message CreateCommitRequest {
   // Format: {landing_zone_id}/{repo}
   // E.g. "alistest/proto"
   string repo = 1;
+  // The branch to commit to.
   // E.g. "feature-x"
   string branch = 2;
+  // The commit message.
   // E.g. "feat: add a new feature"
   string message = 3;
+  // The file changes the commit makes.
   repeated Operation operations = 4;
+  // A change to a single file in a commit.
   message Operation {
     // Path of the file relative to the repo root.
     string path = 1;
     // Type of operation to perform.
     Type type = 2;
+    // The kind of change an operation makes to a file.
     enum Type {
+      // Not set. The default value; should not be used.
       UNSPECIFIED = 0;
+      // Creates a new file at `path` with `content`.
       CREATE = 1;
+      // Replaces the content of the existing file at `path` with `content`.
       UPDATE = 2;
+      // Deletes the existing file at `path`.
       DELETE = 3;
     }
     // Content to create/update.
@@ -98,6 +135,7 @@ message CreateCommitRequest {
   }
 }
 
+// Request message for `ListCommits`.
 message ListCommitsRequest {
   // Format: {landing_zone_id}/{repo}
   // E.g. "alistest/proto"
@@ -112,24 +150,36 @@ message ListCommitsRequest {
   int32 page = 5;
 }
 
+// Response message for `ListCommits`.
 message ListCommitsResponse {
+  // The commits on the requested page.
   repeated Commit commits = 1;
 }
 
+// A commit in a repository.
 message Commit {
+  // The commit SHA.
   string sha = 1;
+  // The email address of the committer.
   string committer_email = 2;
+  // The time the commit was created.
   string created_at = 3;
+  // The commit message.
   string message = 4;
+  // The files the commit changed.
   repeated Change changes = 5;
+  // A file changed by a commit.
   message Change {
+    // Path of the file relative to the repo root.
     // E.g. "folder/file.proto"
     string path = 1;
+    // How the commit changed the file.
     // E.g. added/modified/deleted
     string status = 2;
   }
 }
 
+// Request message for `ListFiles`.
 message ListFilesRequest {
   // Format: {landing_zone_id}/{repo}
   // E.g. "alistest/proto"
@@ -140,9 +190,13 @@ message ListFilesRequest {
   string path = 3;
 }
 
+// Response message for `ListFiles`.
 message ListFilesResponse {
+  // The files under the requested path.
   repeated File files = 1;
+  // A file in a repository.
   message File {
+    // Path of the file relative to the repo root.
     // E.g. "folder/file.proto"
     string path = 1;
     // The sha of the file (not the commit).
@@ -150,16 +204,19 @@ message ListFilesResponse {
   }
 }
 
+// Request message for `ViewFile`.
 message ViewFileRequest {
   // Format: {landing_zone_id}/{repo}
   // E.g. "alistest/proto"
   string repo = 1;
   // The branch or commit at which to view the file for, e.g. HEAD or a commit hash.
   string ref = 2;
+  // Path of the file to view, relative to the repo root.
   // E.g. "folder/file.proto"
   string path = 3;
 }
 
+// Response message for `ViewFile`.
 message ViewFileResponse {
   // The actual file content.
   string content = 1;

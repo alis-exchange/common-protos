@@ -1,5 +1,25 @@
 syntax = "proto3";
 
+// Holds the attributes the Compliance Exchange (CX) engine uses to classify a
+// financial instrument under regulatory and industry classification sets.
+//
+// The package defines no service. Its one top-level message, `Instrument`
+// (`instruments/{instrument}`, keyed by a Bloomberg or custom FIGI), is
+// embedded in the IN instrument (`alis.open.in.v1.Instrument`) as
+// `engines.cx`. Besides basic reference data (market sector, exchange,
+// currency, country, issuer), it carries one nested message per set:
+//
+// - `asisa`: ASISA asset class and category, credit ratings, and related
+//   attributes.
+// - `mifid`: MiFID asset class.
+// - `ucits`: UCITS eligibility attributes.
+// - `reg28`: Reg 28 category and issuer attributes.
+// - `cisca`: CISCA category, leverage, and index weight.
+// - `reg30`: Regulation 30 (Annexure B of the Medical Schemes Act) category.
+// - `sarbC23`: SARB (South African Reserve Bank) C23 form rows.
+//
+// Each set has a `Validation` recording whether the instrument's attributes
+// meet that set's requirements and which fields need attention.
 package alis.open.cx.v1;
 
 import "google/protobuf/timestamp.proto";
@@ -46,7 +66,7 @@ message Instrument {
     MTGE = 8;
     // Municipal Bonds
     MUNI = 9;
-    // Don't know what this is... ;)
+    // Preferred Stock
     PFD = 10;
   }
   // Exchange Code
@@ -319,7 +339,7 @@ message Instrument {
       MTGE = 8;
       // Municipal Bonds
       MUNI = 9;
-      // Don't know what this is... ;)
+      // Preferred Stock
       PFD = 10;
     }
     // Description of the specific instrument type within its market sector.
@@ -507,7 +527,7 @@ message Instrument {
       MONEY_MARKET_ISSUED_OR_GUARANTEED_BY_LISTED_AND_EXCHANGE_TRADED_ENTITY_NOT_DESCRIBED_OTHERWISE = 30;
       // Money market security issued/guaranteed by an unlisted entity not described by any money market category
       MONEY_MARKET_ISSUED_OR_GUARANTEED_BY_UNLISTED_ENTITY = 31;
-      //
+      // Assets held in liquid form
       ASSETS_IN_LIQUID_FORM = 32;
     }
 
@@ -547,7 +567,7 @@ message Instrument {
 
   // SARB C23
   SarbC23 sarbC23 = 106;
-  // The Reg28 set
+  // The SARB C23 set
   message SarbC23 {
     // The different categories of securities
     // These are defined by the C23 form, essentially each row in the table has a unique row number / id.
@@ -679,9 +699,10 @@ message Instrument {
     CUSTOM = 2;
   }
 
-  // Validation details
+  // Whether an instrument's attributes meet the requirements for a set, and
+  // which fields need attention.
   message Validation {
-    // Is valid
+    // Whether the instrument's attributes meet the requirements for the set.
     bool is_valid = 1;
     // Fields which require attention
     repeated Field invalid_fields = 2;

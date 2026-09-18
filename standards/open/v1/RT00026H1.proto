@@ -48,7 +48,7 @@ message RT00026H1 {
     string external_exchange_id_bb_exchange_code = 202;
     // Enumerations of asset categories
     enum AssetCategory {
-        // Source not specified by the user.
+        // Asset category not specified.
         ASSET_CATEGORY_UNSPECIFIED = 0;
         // Asset
         ASSET = 1;
@@ -92,5 +92,6 @@ message RT00026H1 {
 
 // Batch set of RT00026H1 responses
 message RT00026H1_batch {
+    // The RT00026H1 responses in the batch.
     repeated RT00026H1 response = 1;
 }

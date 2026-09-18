@@ -15,7 +15,7 @@ option go_package = "open.alis.services/protobuf/alis/open/support/v1";
 // IssueSubscribersService provides RPCs for managing IssueSubscriber resources.
 service IssueSubscribersService {
   // Validates any proto message that is used directly or indirectly by this service.
-  // Most common use issue is to validate request messages from a client-side application.
+  // Most common use case is to validate request messages from a client-side application.
   rpc ValidateMessage(alis.open.validation.v1.ValidateMessageRequest) returns (alis.open.validation.v1.ValidateMessageResponse) {}
   // Retrieves the validation rules for any proto message that is used directly or indirectly by this service.
   // Serves as live auto-documentation of the validation rules in this service.
@@ -89,7 +89,7 @@ message ListIssueSubscribersRequest {
   int32 page_size = 2;
   // A page token, received from a previous ListIssueSubscribers call.
   string page_token = 3;
-  // The fields to return in snake_issue.
+  // The fields to return in snake_case.
   // All fields are returned if not set.
   google.protobuf.FieldMask read_mask = 4;
   // The filter to apply

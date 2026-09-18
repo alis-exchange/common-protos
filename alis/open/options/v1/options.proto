@@ -1,5 +1,34 @@
 syntax = "proto3";
 
+// Custom options that control how alis code generators treat a proto file,
+// currently JSON Schema (Draft 2020-12) generation by
+// `protoc-gen-go-jsonschema`.
+//
+// Three extensions, each at field number 1001 of its descriptor options
+// message, carry the options:
+//
+// - `(alis.open.options.v1.file)` (`FileOptions`): turns schema generation on
+//   for every message in the file.
+// - `(alis.open.options.v1.message)` (`MessageOptions`): overrides the file
+//   default for one message and declares schema-level oneof groups.
+// - `(alis.open.options.v1.field)` (`FieldOptions`): adds JSON Schema keywords
+//   to a field, such as `title`, `pattern`, `format`, numeric and length
+//   bounds, `enum`, `default` and `examples`.
+//
+// ```proto
+// import "alis/open/options/v1/options.proto";
+//
+// option (alis.open.options.v1.file).json_schema.generate = true;
+//
+// message Contact {
+//   string email = 1 [(alis.open.options.v1.field).json_schema = {
+//     format: "email"
+//   }];
+// }
+// ```
+//
+// A message referenced by a generating message is always generated, even if
+// it opts out, so that `$ref` pointers resolve.
 package alis.open.options.v1;
 
 import "google/protobuf/descriptor.proto";

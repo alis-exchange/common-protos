@@ -20,7 +20,7 @@ message IamConfig {
     OauthProvider microsoft = 2;
     // Email auth provider
     EmailAuthProvider email = 3;
-    // Linked auth provider
+    // LinkedIn auth provider
     OauthProvider linkedin = 4;
     // Apple auth provider
     AppleAuthProvider apple = 5;
@@ -117,7 +117,7 @@ message IamConfig {
   repeated CookieDomain cookie_domains = 4;
   // The definition of the cookie domain
   message CookieDomain {
-    // The host refers to the sub-domain which will
+    // The host refers to the sub-domain which will host
     // the authentication, ie. require users to sign in or sign up.
     string host = 1;
     // The domain refers to the domain for
@@ -132,7 +132,7 @@ message IamConfig {
     SameSite same_site = 3;
     // The enum for the SameSite setting
     enum SameSite {
-      // Unspecified
+      // Not specified; `SAME_SITE_LAX` is used.
       SAME_SITE_UNSPECIFIED = 0;
       // The cookie is sent in the request
       // if the request is for the same site
@@ -188,7 +188,7 @@ message EmailAuthProvider {
     // The SendGrid API key to use.
     //
     // The key should be created (https://app.sendgrid.com/settings/api_keys)
-    // to have Restriced Access and needs to have the following permissions:
+    // to have Restricted Access and needs to have the following permissions:
     //   - Mail Send
     string api_key = 1;
     // The template to use for sending the email
@@ -211,7 +211,7 @@ message EmailAuthProvider {
   // Default is none, but highly recommended to set to prevent spam.
   google.protobuf.Duration throttle_duration = 3;
 
-  // The duration that a user must is auto signed in for after clicking the sign in link.
+  // The duration that a user is auto signed in for after clicking the sign in link.
   // This corresponds directly to the expiry date on the refresh token.
   // If not set, a user is signed in for 8 hours.
   google.protobuf.Duration signed_in_duration = 4;

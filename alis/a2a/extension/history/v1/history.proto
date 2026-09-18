@@ -1,5 +1,25 @@
 syntax = "proto3";
 
+// Stores A2A conversations as threads of events that clients can list and
+// stream, and tracks what each user has read.
+//
+// `ThreadService` manages three resources:
+//
+// - `Thread` (`threads/{context_id}`): one conversation, keyed by its A2A
+//   context ID.
+// - `ThreadEvent` (`threads/{context_id}/events/{event_id}`): one recorded
+//   `lf.a2a.v1` payload: a `Task`, `Message`, `TaskStatusUpdateEvent`, or
+//   `TaskArtifactUpdateEvent`.
+// - `UserThreadState` (`threads/{context_id}/userStates/{userId}`): one
+//   user's read position and pin state for a thread.
+//
+// Each event gets a monotonic `sequence` within its thread. A thread is unread
+// for a user while its `latest_sequence` exceeds their `read_sequence`;
+// `ListThreads` reports this on the caller-scoped `ThreadView`. The service
+// also exposes IAM policy methods for its resources.
+//
+// `alis.agui.history.v1` is the AG-UI counterpart; it keeps only thread
+// metadata and leaves event history to ADK sessions.
 package alis.a2a.extension.history.v1;
 
 import "alis/iam/v1/iam.proto";
@@ -44,7 +64,8 @@ service ThreadService {
   rpc SetThreadDisplayName(SetThreadDisplayNameRequest) returns (Thread) {}
 }
 
-// An Thread resource
+// A persisted A2A conversation, identified by its A2A context ID. The
+// conversation's content is stored as child `ThreadEvent` resources.
 message Thread {
   // The resource name of the Thread.
   // threads/{context_id}
@@ -69,11 +90,14 @@ message Thread {
   google.protobuf.Timestamp create_time = 98;
 }
 
-// An ThreadEvent resource
+// One entry in a thread: an A2A task snapshot, message, status update, or
+// artifact update, stored with its position in the thread.
 message ThreadEvent {
   // The resource name of the event.
   // threads/{context_id}/events/{event_id}
   string name = 1;
+  // The A2A payload recorded by this event. The choices mirror the payload of
+  // `lf.a2a.v1.StreamResponse`.
   oneof payload {
     // A Task object containing the current state of the task.
     lf.a2a.v1.Task task = 2;
@@ -120,7 +144,8 @@ message GetThreadRequest {
   // The resource name of the Thread to retrieve.
   string name = 1;
   // A read mask to specify which fields to return.
-  // If not specified, view will determine the fields returned.
+  // If not specified, the server's default view determines the fields
+  // returned.
   google.protobuf.FieldMask read_mask = 3;
 }
 
@@ -130,7 +155,8 @@ message GetUserThreadStateRequest {
   // Format: threads/{context_id}/userStates/{userId}
   string name = 1;
   // A read mask to specify which fields to return.
-  // If not specified, view will determine the fields returned.
+  // If not specified, the server's default view determines the fields
+  // returned.
   google.protobuf.FieldMask read_mask = 3;
 }
 
@@ -153,7 +179,8 @@ message ListThreadsRequest {
   // Example: my-agent-v1. However, this can be any unique identifier that client decides to use.
   string agent_id = 4;
   // A read mask to specify which fields to return.
-  // If not specified, view will determine the fields returned.
+  // If not specified, the server's default view determines the fields
+  // returned.
   google.protobuf.FieldMask read_mask = 5;
 }
 
@@ -185,7 +212,8 @@ message GetThreadEventRequest {
   // Format: threads/{context_id}/events/{event_id}
   string name = 1;
   // A read mask to specify which fields to return.
-  // If not specified, view will determine the fields returned.
+  // If not specified, the server's default view determines the fields
+  // returned.
   google.protobuf.FieldMask read_mask = 3;
 }
 
@@ -199,7 +227,8 @@ message ListThreadEventsRequest {
   // A page token to retrieve the next page of results.
   string page_token = 3;
   // A read mask to specify which fields to return.
-  // If not specified, view will determine the fields returned.
+  // If not specified, the server's default view determines the fields
+  // returned.
   google.protobuf.FieldMask read_mask = 5;
 }
 
@@ -226,7 +255,8 @@ message StreamThreadEventsRequest {
   string parent = 1;
 
   // A read mask to specify which fields to return.
-  // If not specified, view will determine the fields returned.
+  // If not specified, the server's default view determines the fields
+  // returned.
   google.protobuf.FieldMask read_mask = 3;
 }
 

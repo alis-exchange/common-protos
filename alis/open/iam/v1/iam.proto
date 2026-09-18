@@ -10,7 +10,7 @@ message AddIamBindingsRequest {
   // The principals (users, service accounts or groups)
   // E.g: user:123456789, serviceAccount:alis-build@..., builders,builders:alis,builders:alis.os,admins,admins:alis.os
   repeated string principals = 2;
-  // The roles Resource to give the principals. At least one role must be provided.
+  // The roles to grant to the principals. At least one role must be provided.
   // Format: ['roles/*', ...]
   // Example: ['roles/owner', 'roles/admin']
   repeated string roles = 3;

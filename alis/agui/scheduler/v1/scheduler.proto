@@ -1,5 +1,26 @@
 syntax = "proto3";
 
+// Schedules runs of AG-UI agents, either on a recurring cron schedule or once
+// at a set time.
+//
+// `SchedulerService` manages `Cron` resources (`crons/{cron_id}`) and exposes
+// IAM policy methods for them. Each `Cron` holds the prompt to send, the owner
+// the agent is invoked on behalf of, an optional `agent_id` (the launcher's
+// default app when empty), and one of two schedule types:
+//
+// - `TYPE_CRON`: recurring, driven by a unix-cron `expr` and a tz database
+//   `timezone`. An optional `initial_prompt` is sent before the recurring
+//   prompt to establish context.
+// - `TYPE_AT`: a single run at the `at` timestamp. The Cron is archived after
+//   a successful run or a terminal failure.
+//
+// Runs go into the AG-UI thread named by `thread` (`threads/{thread_id}`, where
+// `{thread_id}` is the ADK session ID). When `thread` is empty, the launcher
+// assigns a thread ID after the first successful run. The most recent failure
+// is recorded in `last_failure_time` and `last_failure_message`. `RunCron`
+// runs a Cron immediately, regardless of its schedule.
+//
+// `alis.a2a.extension.scheduler.v1` is the equivalent for A2A agents.
 package alis.agui.scheduler.v1;
 
 import "alis/iam/v1/iam.proto";
@@ -142,7 +163,8 @@ message GetCronRequest {
   // The resource name of the Cron to retrieve.
   string name = 1;
   // A read mask to specify which fields to return.
-  // If not specified, view will determine the fields returned.
+  // If not specified, the server's default view determines the fields
+  // returned.
   google.protobuf.FieldMask read_mask = 3;
 }
 
@@ -161,7 +183,8 @@ message ListCronsRequest {
   // A page token to retrieve the next page of results.
   string page_token = 3;
   // A read mask to specify which fields to return.
-  // If not specified, view will determine the fields returned.
+  // If not specified, the server's default view determines the fields
+  // returned.
   google.protobuf.FieldMask read_mask = 4;
 }
 

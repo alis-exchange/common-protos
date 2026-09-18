@@ -48,7 +48,7 @@ message JTC_SECDIST {
     google.protobuf.DoubleValue accrued_income_gross_base = 15;
     // Prior accrual of income
     google.protobuf.DoubleValue prior_income_accrual = 16;
-    // Current value of the security
+    // Cost value of the security
     google.protobuf.DoubleValue cost_value = 17;
     // Cost basis of the security
     google.protobuf.DoubleValue cost_basis = 18;
@@ -88,7 +88,6 @@ message JTC_SECDIST {
     string account_number_2 = 35;
     // Inception date of the security
     google.type.Date security_inception_date = 36;
-    // Base country of the security
     // The country where the account is based.
     string account_base_country = 37;
     // The currency that the account is denominated in.
@@ -125,35 +124,35 @@ message JTC_SECDIST {
     string amort_accret_to_eff_maturity = 53;
     // The amortization method used for the account.
     string amortization_method = 54;
-    // The category code for the category of the account.
+    // The category code for the category of the security.
     string category_code_category_only = 55;
-    // The category code for the industry of the account.
+    // The category code for the industry of the security.
     string category_code_industry_only = 56;
-    // The category code for the sector of the account.
+    // The category code for the sector of the security.
     string category_code_sector_only = 57;
-    // The category code for the sector and segment of the account.
+    // The category code for the sector and segment of the security.
     string category_code_sector = 58;
-    // The category code for the segment of the account.
+    // The category code for the segment of the security.
     string category_code_segment_only = 59;
-    // The category code for the level of the category of the account.
+    // The category code for the level of the category of the security.
     string category_code_level_category = 60;
-    // The category code for the level of the industry of the account.
+    // The category code for the level of the industry of the security.
     string category_code_level_industry = 61;
-    // The category code for the level of the segment of the account.
+    // The category code for the level of the segment of the security.
     string category_code_level_segment = 62;
-    // The description of the category of the account.
+    // The description of the category of the security.
     string category_description = 63;
-    // The contract size of the account
+    // The contract size of the security
     google.protobuf.DoubleValue contract_size = 64;
-    // The main income category of the account
+    // The main income category of the security
     string income_category_main = 65;
-    // The sub income category of the account
+    // The sub income category of the security
     string income_category_sub = 66;
-    // The issue date of the account
+    // The issue date of the security
     google.type.Date issue_date = 67;
-    // The issue price of the account
+    // The issue price of the security
     google.protobuf.DoubleValue issue_price = 68;
-    // The issuer of the account
+    // The issuer of the security
     string issuer = 69;
     // A memo or note regarding the account
     string com_memo = 70;

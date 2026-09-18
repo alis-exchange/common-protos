@@ -1,5 +1,28 @@
 syntax = "proto3";
 
+// Runs post-deploy tests and evaluations and records the outcome of each
+// finished suite as a `Run` (`runs/{run_id}`).
+//
+// `TestService` has one RPC per kind of run. Each starts a
+// `google.longrunning.Operation` whose response lists the names of the runs
+// it produced:
+//
+// - `RunIntegrationTest`: integration cases scored by deterministic checks.
+// - `RunLoadTest`: generated traffic at a `RunLoadTestRequest.Mode` preset,
+//   with Service Level Objective (SLO) checks on latency, errors, and
+//   throughput.
+// - `RunAgentEval`: agent evaluation cases scored by deterministic checks,
+//   LLM-as-judge scores, rubric dimensions, and ADK prebuilt metrics.
+// - `RunInfraObservation`: Cloud Monitoring snapshots of declared Cloud Run
+//   and Spanner targets, without generating load.
+//
+// Requests select cases by id: `suite.case` selects one case, `suite` selects
+// every case in that suite, and an empty list runs every registered case. An
+// operation completes successfully once execution finishes, even when cases
+// fail, so read `Run.status` for the outcome. Runs, cases, checks, and
+// metrics all report a `Status`. Each completed run is published as a
+// `RunPublishedEvent` for persistence and downstream consumers such as
+// BigQuery or Pub/Sub.
 package alis.evals.v1;
 
 import "google/longrunning/operations.proto";
@@ -128,7 +151,7 @@ message Run {
   Status status = 5;
 
   // Branch-specific result detail. Exactly one branch is set; it corresponds to
-  // kind.
+  // `type`.
   oneof data {
     // Integration test case results (RunIntegrationTest).
     IntegrationTestResults integration_test = 6;
@@ -249,13 +272,17 @@ message LoadTestResults {
 
   // Key/value entry for string-valued associative fields on the wire.
   message StringEntry {
+    // The entry key.
     string key = 1;
+    // The string value associated with `key`.
     string value = 2;
   }
 
   // Key/value entry for int64-valued associative fields on the wire.
   message Int64Entry {
+    // The entry key.
     string key = 1;
+    // The int64 value associated with `key`.
     int64 value = 2;
   }
 
@@ -297,6 +324,8 @@ message LoadTestResults {
     // order. Integration cases continue using checks instead.
     repeated Validation validations = 9;
   }
+  // Performance summary for one load case's load window: the resolved load
+  // settings and the observed request counts, errors, throughput, and latency.
   message Summary {
     // The load intensity mode used for this run.
     RunLoadTestRequest.Mode mode = 1;
@@ -335,7 +364,7 @@ message LoadTestResults {
     // were busy. Distinct from error_count; surfaces generator saturation.
     int64 dropped_count = 10;
 
-    // Semantic assertion outcomes during the load window. Distinct from
+    // Semantic assertion passes during the load window. Distinct from
     // transport error_count — a request may succeed at the wire layer yet
     // fail a check (for example an unexpected eval score).
     int64 check_passed_count = 11;

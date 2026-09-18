@@ -10,7 +10,7 @@ option go_package = "open.alis.services/protobuf/alis/open/notifications/v1";
 // NotificationsService provides RPCs for sending notifications to users or topics.
 service NotificationsService {
   // Validates any proto message that is used directly or indirectly by this service.
-  // Most common use issue is to validate request messages from a client-side application.
+  // Most common use case is to validate request messages from a client-side application.
   rpc ValidateMessage(alis.open.validation.v1.ValidateMessageRequest) returns (alis.open.validation.v1.ValidateMessageResponse) {}
   // Retrieves the validation rules for any proto message that is used directly or indirectly by this service.
   // Serves as live auto-documentation of the validation rules in this service.
@@ -29,6 +29,7 @@ service NotificationsService {
 message SendFcmMessageRequest {
   // The target of the message.
   oneof target {
+    // The user to send the message to.
     // Format: users/{userId}
     string user = 1;
   }

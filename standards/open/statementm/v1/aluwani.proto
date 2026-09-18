@@ -1,4 +1,16 @@
 syntax = "proto3";
+// Layouts of the monthly Statement M report, in which a fund's market values,
+// exposures, flows and returns for the month are reported per category.
+//
+// - `Aluwani`: Statement M as produced by Aluwani Asset Management.
+// - `Gams`: the generic Statement M template published on the GAMS platform.
+//
+// Both messages have the same structure: fund and manager header fields, a
+// market values table (categories, each with a total row and constituent
+// rows, plus total assets gross and net of fees) and a cash flows table
+// (individual rows and a totals row). The source is a spreadsheet: field
+// comments name the cell (for example `E4`) or column (`A` to `K`) that each
+// value comes from.
 package standards.open.statementm.v1;
 
 import "google/protobuf/wrappers.proto";
@@ -33,7 +45,7 @@ message Aluwani {
 
     // Total Assets (Gross of Fees)
     Row total_assets_gross_of_fees = 2;
-    // Total Assets (Gross of Fees)
+    // Total Assets (Net of Fees)
     Row total_assets_net_of_fees = 3;
 
     // A single row
@@ -47,7 +59,7 @@ message Aluwani {
       // Exposure Value start
       // Column: C
       google.protobuf.DoubleValue exposure_start = 3;
-      // Market Value start
+      // Purchases consideration
       // Column: D
       google.protobuf.DoubleValue purchases_consideration = 4;
       // Sales Proceeds
@@ -76,6 +88,7 @@ message Aluwani {
 
   // Cashflows Table
   CashFlowsTable cash_flows_table = 6;
+  // The cash flows table: individual cash flow rows and a totals row.
   message CashFlowsTable {
     // Individual rows
     repeated Row rows = 1;

@@ -1,5 +1,26 @@
 syntax = "proto3";
 
+// Defines the financial instrument resource of the IN domain: an instrument's
+// reference data, identifiers, and classifications, plus the engine-specific
+// details that Portfolio Exchange (PX) and Compliance Exchange (CX) attach to
+// it.
+//
+// The package defines no service. Its main types are:
+//
+// - `Instrument` (`instruments/{instrumentID}`, where the ID is a Bloomberg or
+//   custom FIGI): market sector, security type, exchange, currency, country,
+//   issuer, and display ticker, plus:
+//   - `classifications`: Bloomberg, GICS, ICB, Morningstar, and user-defined
+//     theme, sector, and industry classifications.
+//   - `external_ids`: identifiers in other systems, such as FIGI variants,
+//     ISIN, SEDOL, CUSIP, RIC, and Bloomberg ticker.
+//   - `exchange_identifiers`: MIC and vendor exchange codes.
+//   - `engines`: engine-specific details, `alis.open.px.v1.Instrument` and
+//     `alis.open.cx.v1.Instrument`.
+//   - `source_meta`: attribute-level `Source` and update time.
+// - `FigiType`: whether an instrument's FIGI is global or custom.
+// - `Source`: the data sources instrument attributes come from.
+// - `State`: an instrument's state (active, archived, or stale).
 package alis.open.in.v1;
 
 import "alis/open/cx/v1/cx.proto";
@@ -63,7 +84,7 @@ message Instrument {
   Classifications classifications = 7;
   // A set of classifications specific to the instrument.
   message Classifications {
-    // Bloomberg Industry Group
+    // Bloomberg Industry Sector
     // Bloomberg Industry Classification System) level I classification of the security
     // based on its business or economic function and characteristics
     string bloomberg_industry_sector = 1;
@@ -270,7 +291,8 @@ message Instrument {
     string morningstar_exchange_code = 3;
   }
 
-  // Engines
+  // Engine-specific instrument details for Portfolio Exchange (PX) and
+  // Compliance Exchange (CX).
   Engines engines = 23;
   // Instrument details required for common Alis Engines
   message Engines {
@@ -311,7 +333,8 @@ enum FigiType {
   CUSTOM = 2;
 }
 
-// Data sources
+// Data sources of instrument attributes, recorded per attribute in
+// `Instrument.source_meta`.
 enum Source {
   // Source not specified by the user.
   SOURCE_UNSPECIFIED = 0;

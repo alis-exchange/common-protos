@@ -33,7 +33,7 @@ message Gams {
 
     // Total Assets (Gross of Fees)
     Row total_assets_gross_of_fees = 2;
-    // Total Assets (Gross of Fees)
+    // Total Assets (Net of Fees)
     Row total_assets_net_of_fees = 3;
 
     // A single row
@@ -47,7 +47,7 @@ message Gams {
       // Exposure Value start
       // Column: C
       google.protobuf.DoubleValue exposure_start = 3;
-      // Market Value start
+      // Purchases consideration
       // Column: D
       google.protobuf.DoubleValue purchases_consideration = 4;
       // Sales Proceeds
@@ -76,6 +76,7 @@ message Gams {
 
   // Cashflows Table
   CashFlowsTable cash_flows_table = 6;
+  // The cash flows table: individual cash flow rows and a totals row.
   message CashFlowsTable {
     // Individual rows
     repeated Row rows = 1;

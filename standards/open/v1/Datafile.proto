@@ -1,5 +1,42 @@
 syntax = "proto3";
 
+// Machine-readable versions of industry questionnaires, regulatory templates
+// and fund data feeds, used to collect, store and exchange the answers as
+// structured data.
+//
+// Each standard is one top-level message named by its `RT` code, for example
+// `RT000MBG3` for the ICI Distributor Due Diligence Questionnaire. Many also
+// have an `RT..._batch` message that carries several responses at once. The
+// standards fall into these groups:
+//
+// - Due diligence questionnaires: ICI Distributor DDQ (`RT000MBG3`), Wolfsberg
+//   CBDDQ (`RT0005M37`) and FCCQ (`RT00085Z9`), UME Delegate DDQ
+//   (`RT000HL16`), and a fund accounting provider DDQ (`RT000QY46`).
+// - CSSF regulatory returns: the Circular 21/790 self-assessment questionnaire
+//   (`RT0009DB1`, `RT000D034`, `RT000V1D1`), the SFDR pre-contractual
+//   (`RT0001C86`, `RT0007VM1`, `RT0008FD7`) and periodic (`RT000JTL0`,
+//   `RT000NXP7`) data collections, and the entity identifier reports
+//   (`RT000H944`, `RT000K4S9`, `RT000T5C4`, `RT000YFB4`, `RT000YHJ5`).
+// - Industry data templates: the FinDatEx ESG Template (`RT000F0J4`) and the
+//   openfunds fund definition (`RT000DWL9`).
+// - UCITS oversight KPI and MI reports for fund accounting (`RT000FTL8`,
+//   `RT000LFR7`) and transfer agency (`RT000ZR69`, `RT000T542`).
+// - Fund data feeds: holdings (`RT00026H1`) and share class unit prices
+//   (`RT0006XG4`).
+// - Distribution platform templates: the Morningstar holdings template
+//   (`RT0009546`) and the Alexander Forbes Regulation 28 survey (`RT000NVJ3`).
+//   `RT0001G09` (Morningstar returns and net assets) and `RT0003G88` (Allan
+//   Gray asset allocation) are placeholders with no fields yet.
+//
+// `DataFile` (`datafiles/{datafile}`) wraps one completed standard in its
+// `data` field as a `google.protobuf.Any`, together with per-field
+// annotations, review status and supporting file attachments.
+//
+// Questionnaire fields carry the `(standards.open.v1.fdx_options)` field option
+// defined in `FDXOptions`, which records each question's number, wording,
+// section headings, validation pattern and the answer it depends on. Shared
+// answer types live in `YesNo`, `YesNoExplain`, `Frequency` and
+// `RedAmberGreen`.
 package standards.open.v1;
 
 import "google/api/annotations.proto";
@@ -10,7 +47,8 @@ import "google/protobuf/any.proto";
 
 option go_package = "go.alis.build/common/standards/open/v1";
 
-// Message defining an data file resource.
+// A completed data standard, such as a filled-in questionnaire or report,
+// stored with its field annotations and supporting attachments.
 message DataFile {
   // Fully qualified resource name
   // Format: datafiles/{name}
@@ -18,17 +56,20 @@ message DataFile {
   string name = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
   // The display name of the data room file
   string display_name = 2;
-  // Created time of the reportTemplate.
+  // Created time of the data file.
   google.protobuf.Timestamp create_time = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // Update time of the reportTemplate.
+  // Update time of the data file.
   google.protobuf.Timestamp update_time = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
 
   // Data standard type of the data file's marshalled data
   string type = 5;
-  // The data of the file
+  // The completed standard, packed as a `google.protobuf.Any` whose type URL
+  // names the standard's message, for example
+  // `type.googleapis.com/standards.open.v1.RT000MBG3`.
   google.protobuf.Any data = 6;
 
-  // Field Annotations
+  // Annotations on individual fields of `data`, such as who is responsible
+  // for a field, its review status, comments and supporting attachments.
   map<string, FieldAnnotation> field_annotations = 7;
   // Attachments
   repeated FileAttachment  file_attachments = 8;
@@ -38,7 +79,7 @@ message DataFile {
     reserved 1, 2, 3, 4;
 
     // Name of the supporting file
-    // Format: dataFiles/{dataFile}fileAttachments/{fileAttachment}
+    // Format: dataFiles/{dataFile}/fileAttachments/{fileAttachment}
     //
     // The supportingFile identifier has a one-to-one
     // mapping to a file in GCS. On creation, a check
@@ -60,7 +101,6 @@ message DataFile {
     string uploader = 8;
     // The time the file was uploaded.
     google.protobuf.Timestamp upload_time = 9;
-    // Can extend with metadata such as upload_time, uploaded_by, etc..
   }
   // Field Annotation message definition
   message FieldAnnotation {
@@ -71,17 +111,17 @@ message DataFile {
     repeated string responsible_individuals = 2;
     // Status of the field
     FieldState field_status = 3;
-    // FieldStatus emum
+    // Where a field is in the completion and approval workflow.
     enum FieldState {
-      // FIELD_STATE_UNSPECIFIED
+      // No status has been set.
       FIELD_STATE_UNSPECIFIED = 0;
-      // COMPLETED
+      // The field has been answered.
       COMPLETED = 1;
-      // IN_PROGRESS
+      // The field is being worked on.
       IN_PROGRESS = 2;
-      // PENDING_APPROVAL
+      // The field is answered and awaiting approval.
       PENDING_APPROVAL = 3;
-      // APPROVED
+      // The field's answer has been approved.
       APPROVED = 4;
     }
     // Comments on field

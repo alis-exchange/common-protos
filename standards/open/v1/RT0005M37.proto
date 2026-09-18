@@ -21,9 +21,13 @@ option go_package = "go.alis.build/common/standards/open/v1";
 message RT0005M37 {
   // Response where a NO requires further information
   message YesNoExplain {
+    // Yes or no answer.
     enum Response {
+      // No answer given.
       RESPONSE_UNSPECIFIED = 0;
+      // Yes.
       YES = 1;
+      // No. Give the reason in `explanation`.
       NO = 2;
     }
     // Yes / No response.
@@ -33,9 +37,13 @@ message RT0005M37 {
   }
   // Response where a YES requires further information
   message YesExplainNo {
+    // Yes or no answer.
     enum Response {
+      // No answer given.
       RESPONSE_UNSPECIFIED = 0;
+      // Yes. Give details in `explanation`.
       YES = 1;
+      // No.
       NO = 2;
     }
     // Yes / No response.
@@ -45,9 +53,13 @@ message RT0005M37 {
   }
   // Response where further information is required regardless of whether a Yes or No is provided
   message YesNoAndExplain {
+    // Yes or no answer.
     enum Response {
+      // No answer given.
       RESPONSE_UNSPECIFIED = 0;
+      // Yes. Give further information in `explanation`.
       YES = 1;
+      // No. Give further information in `explanation`.
       NO = 2;
     }
     // Yes / No response.
@@ -57,8 +69,11 @@ message RT0005M37 {
   }
   // Definition of a name and digital signature
   message NameAndDigitalSignature {
+    // The full name of the signatory.
     string full_name = 1;
+    // The date of signing.
     google.type.Date date = 2;
+    // The digital signature of the signatory.
     string signature = 3;
   }
   // The name of the financial institution
@@ -103,7 +118,7 @@ message RT0005M37 {
     message TradedSecurityIdentifier {
       // Enumerations of financial identifiers
       enum FinancialInstrumentIdentifier {
-        // Source not specified by the user.
+        // Identifier type not specified.
         IDENTIFIER_UNSPECIFIED = 0;
         // FIGI (Financial Instrument Global Identifier). To look up the FIGI navigate to https://www.openfigi.com/.
         FIGI = 1;
@@ -119,7 +134,7 @@ message RT0005M37 {
     TradedSecurityIdentifier security_identifier = 7;
     // The definition of a beneficial owner resource
     message SignificantShareholder {
-      // The resource name of the client
+      // The display name of the significant shareholder
       string display_name = 1;
       // Types of account holders
       enum BeneficialOwnerType {
@@ -161,7 +176,7 @@ message RT0005M37 {
         string LEI = 3;
         // The directors or managers of the legal entity
         repeated NaturalPerson directors_or_managers = 4;
-        // The own
+        // The ownership type of the legal entity
         OwnershipType ownership_type = 6;
         // If PRIVATE, then the shareholders owning more than 10% or more of the entity
 //        repeated SignificantShareholder shareholders = 7;
@@ -252,8 +267,8 @@ message RT0005M37 {
     // Q17a8 If TRUE to Q17a. Does the entity offer Correspondent banking, does the Entity offer correspondent banking
     //services to regulated MSBs/MVTS?
     YesNoAndExplain offers_correspondent_banking_to_regulated_msbs_and_mvts = 8;
-    // Q17a8 If TRUE to Q17a. Does the entity offer Correspondent banking, does the Entity offer correspondent banking
-    //services to regulated MSBs/MVTS?
+    // Q17a9 If TRUE to Q17a. Does the entity offer Correspondent banking, does the Entity have processes and procedures
+    // in place to identify downstream relationships with MSBs/MVTS?
     YesNoAndExplain offers_correspondent_banking_and_has_processes_to_identify_downstream_relationships_with_msb_and_mvts = 9;
     // Q17b. Does the entity offer Private Banking?
     bool offers_private_banking = 10;
@@ -357,7 +372,7 @@ message RT0005M37 {
     // Q30b Does the Entity have a global ABC policy that:
     // Includes enhanced requirements regarding interaction with public officials? If NO, explain.
     YesNoExplain entity_has_global_abc_policy_that_includes_enhanced_requirements_for_interacting_with_public_officials = 6;
-    // Q30b Does the Entity have a global ABC policy that:
+    // Q30c Does the Entity have a global ABC policy that:
     // Includes a prohibition against the falsification of books and records
     // (this may be within the ABC policy or any other policy applicable to the Legal Entity)? If NO, explain
     YesNoExplain entity_has_global_abc_policy_that_includes_a_prohibition_against_the_falsification_of_books_and_records = 7;
@@ -386,7 +401,7 @@ message RT0005M37 {
     // Corruption risks associated with gifts and hospitality, hiring/internships, charitable donations and political contributions.
     // If NO, explain
     YesNoExplain entity_ewra_covers_risks_associated_with_gifts_and_hospitality = 15;
-    // Q35d Does the Entity's ABC EWRA cover:
+    // Q35e Does the Entity's ABC EWRA cover:
     // Changes in business activities that may materially increase the Entity's corruption risk.
     // If NO, explain
     YesNoExplain entity_ewra_covers_changes_in_business_activities_that_may_increase_risk = 16;
@@ -413,7 +428,7 @@ message RT0005M37 {
     // 3rd parties to which specific compliance activities subject to ABC risk have been outsourced
     // If NO, explain
     YesNoExplain entity_provides_mandatory_abc_training_to_third_parties_subject_to_abc_risk = 22;
-    // Q37e Does the Entity provide mandatory ABC training to::
+    // Q37f Does the Entity provide mandatory ABC training to::
     // Non-employed workers as appropriate (contractors/consultants)
     // If NO, explain
     YesNoExplain entity_provides_mandatory_abc_training_to_non_employed_workers_as_appropriate = 23;
@@ -589,7 +604,7 @@ message RT0005M37 {
     YesNoExplain authorised_signatories_identified = 12;
     // Q57c Are the key controllers identified. If NO, explain.
     YesNoExplain key_controllers_identified = 13;
-    // Q57 Are the other relevant parties identified. If NO, explain.
+    // Q57d Are the other relevant parties identified. If NO, explain.
     YesNoExplain other_relevant_parties_identified = 14;
     // Q58 What is the Entity’s minimum (lowest) threshold applied to beneficial ownership identification? Complete as a decimal e.g. 10% as 0.1
     double lowest_threshold_applied_to_beneficial_ownership = 15;
@@ -615,7 +630,7 @@ message RT0005M37 {
     YesNoExplain risk_based_approach_to_customer_screening_for_adverse_media_applied_at_kyc_renewal = 25;
     // Q62c If YES to Q61, does the entity apply its risk based approach to screening customers for adverse media at a Trigger event
     YesNoExplain risk_based_approach_to_customer_screening_for_adverse_media_applied_at_trigger_event = 26;
-    // Q64 What is the method used by the Entity to screen for adverse media / negative news?
+    // Q63 What is the method used by the Entity to screen for adverse media / negative news?
     string method_used_to_screen_for_adverse_media = 27;
     // Q64 Does the Entity have a risk based approach to screening customers and connected parties to determine
     // whether they are PEPs, or controlled by PEPs?
@@ -887,5 +902,6 @@ message RT0005M37 {
 
 // Batch set of RT0005M37 responses
 message RT0005M37_batch {
+  // The RT0005M37 responses in the batch.
   repeated RT0005M37 response = 1;
 }

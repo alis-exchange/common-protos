@@ -1,5 +1,29 @@
 syntax = "proto3";
 
+// Stores agent sessions: conversations between a user and an agent, the
+// ordered events that make them up, and the state carried across them.
+//
+// `SessionService` manages two resources:
+//
+// - `Session` (`sessions/{session}`): one conversation, owned by a `user_id`
+//   within an `app_name`, with a key-value `state` and an expiry set through
+//   `expire_time` or `ttl`.
+// - `SessionEvent` (`sessions/{session}/events/{event}`): one message from the
+//   user or an agent, with its `Content`, model response metadata, and the
+//   `EventActions` the agent took (state deltas, artifact updates, agent
+//   transfers, tool confirmations, context compaction). Events are added with
+//   `AppendEvent`; events that share an `invocation_id` belong to the same
+//   agent invocation.
+//
+// `AppState` and `UserState` hold state shared across all sessions of an app,
+// or of one user within an app. Their keys appear with the `app:` and `user:`
+// prefixes in the merged session state view; no RPC in this package takes
+// them directly.
+//
+// `Content` and `Part` carry multi-part message content (text, media, function
+// calls and responses, executable code). The remaining messages describe model
+// output: grounding, citations, token usage, log probabilities, and why
+// generation stopped.
 package alis.adk.sessions.v1;
 
 import "google/protobuf/duration.proto";
@@ -400,11 +424,11 @@ message EventActions {
   // Optional. The agent is escalating to a higher level agent.
   bool escalate = 6;
 
-  // Optional. Will only be set by a tool response indicating tool request
-  // authentication configuration.
+  // Optional. Will only be set by a tool response requesting that the user
+  // confirm a tool execution.
   // Map key is the function call ID since one function call response (from
   // model) could correspond to multiple function calls.
-  // Map value is the required auth config, which can be another struct.
+  // Map value is the confirmation request for that function call.
   map<string, ToolConfirmation> requested_tool_confirmations = 7;
 
   // Optional. If set, the event transfers control to the specified agent.
@@ -517,6 +541,8 @@ message Content {
 // A Part must have a fixed IANA MIME type identifying the type and subtype
 // of the media if inline_data or file_data field is filled with raw bytes.
 message Part {
+  // The data carried by this part: text, inline or URI-based media, a
+  // function call or response, or executable code and its result.
   oneof data {
     // Optional. Text part (can be code).
     string text = 1;
@@ -545,6 +571,8 @@ message Part {
     CodeExecutionResult code_execution_result = 9;
   }
 
+  // Metadata describing the media in `data`. `video_metadata` is the only
+  // option.
   oneof metadata {
     // Optional. Video metadata. The metadata should only be specified while the
     // video data is presented in inline_data or file_data.
@@ -651,6 +679,7 @@ message FunctionResponse {
 // type and subtype of the media if the inline_data field is filled with raw
 // bytes.
 message FunctionResponsePart {
+  // The media carried by this part, as inline bytes or a URI reference.
   oneof data {
     // Inline media bytes.
     FunctionResponseBlob inline_data = 1;

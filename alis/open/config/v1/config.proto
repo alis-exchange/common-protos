@@ -1,4 +1,10 @@
 syntax = "proto3";
+// Product configuration that is passed in as an environment variable.
+//
+// `ProductConfig` identifies the product by resource name
+// (`organisations/{organisation}/products/{product}`) and ID, gives the Google
+// Cloud project ID and number of the product, and lists the IAM roles
+// (`alis.open.iam.v1.Role`) defined for the product.
 package alis.open.config.v1;
 
 import "alis/open/iam/v1/role.proto";

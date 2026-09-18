@@ -48,7 +48,7 @@ message RT000FTL8 {
         string fund = 7;
         // Enumeration of metricIDs
         enum MetricID {
-            // The enumeration of the metrics measured
+            // Metric not specified.
             METRIC_ID_UNSPECIFIED = 0;
             // Number of NAVs calculated during the month
             NAVS_CALCULATED = 1;
@@ -73,13 +73,12 @@ message RT000FTL8 {
             NAV_ERRORS_MATERIAL_PROVIDER = 8;
             // The count of material nav errors where the delegate was not responsible
             NAV_ERRORS_MATERIAL_NON_PROVIDER = 9;
-            // The count of material nav errors where the delegate was responsible
+            // The count of non-material nav errors where the delegate was responsible
             NAV_ERRORS_NON_MATERIAL_PROVIDER = 10;
-            // The count of material nav errors where the delegate was not responsible
+            // The count of non-material nav errors where the delegate was not responsible
             NAV_ERRORS_NON_MATERIAL_NON_PROVIDER = 11;
             // The number of securities for which there has not been a price movement for an agreed number of consecutive business days.
             STALE_SECURITIES = 12;
-            // Total number of
             // Number of cash reconciliations reported between 31 to 60 days
             CASH_RECONCILIATIONS_31_TO_60_DAYS = 13;
             // Number of cash reconciliations reported greater than or equal to 61 days
@@ -136,9 +135,9 @@ message RT000FTL8 {
             NAV_DELAYS_CLIENT_OR_THIRD_PARTY = 39;
             // The total number of nav delays caused by other causes
             NAV_DELAYS_OTHER = 40;
-            // The number of funds impacted by provider errors errors
+            // The number of funds impacted by provider errors
             FUNDS_IMPACTED_BY_PROVIDER_ERRORS = 41;
-            // The number of funds impacted by provider errors errors
+            // The number of funds impacted by non-provider errors
             FUNDS_IMPACTED_BY_PROVIDER_NON_PROVIDER_ERRORS = 42;
             // The number of valuations impacted by provider errors
             VALUATIONS_IMPACTED_PROVIDER_ERRORS = 43;
@@ -155,23 +154,26 @@ message RT000FTL8 {
         MetricID metric_id = 8;
         // The type of value used to measure the metric
         enum ValueType {
+            // Value type not specified.
             METRIC_TYPE_UNSPECIFIED = 0;
+            // The metric is a number, for example a count.
             NUMBER = 1;
+            // The metric is a percentage.
             PERCENTAGE = 2;
+            // The metric is an amount of money in the currency given by currency_code.
             CURRENCY = 3;
         }
         // Enumeration for how to interpret the metric value
         ValueType value_type = 9;
-        // If the metric type is "MONEY" then a 3-letter currency code defined in ISO 4217 must be provided.
-        // The country code is required to comply with the 3-letter ISO 3166-1 alpha-3 standard.
-        // The ISO 3166-1 alpha-3 is a set of 3-letter country codes to represent countries and dependent areas.
-        // Make sure the provided country code is in uppercase.
-        // Example: 'USA' for the United States, 'GBR' for Great Britain, 'DEU' for Germany, etc.
+        // If the metric type is "CURRENCY" then a 3-letter currency code defined in ISO 4217 must be provided.
+        // Make sure the provided currency code is in uppercase.
+        // Example: 'USD' for United States Dollar, 'GBP' for Great Britain Pound, 'EUR' for Euro, etc.
         string currency_code = 10;
         // The value of the metric
         double metric = 11;
         // Options for how to evaluate the metric
         enum EvaluationType {
+            // Evaluation type not specified.
             EVALUATION_TYPE_UNSPECIFIED = 0;
             // A higher result is more favorable
             MAXIMISE = 1;
@@ -225,7 +227,7 @@ message RT000FTL8 {
     }
     // Time series of historic net asset value data
     repeated NetAssetValueSnapshot net_asset_values = 51;
-    // Definition of a pricing error occurred in the pricing of a share class
+    // Definition of a pricing error that occurred in the pricing of a security
     message SecurityPricingError {
         // The date the information is being reported
         google.type.Date reporting_date = 1;
@@ -277,7 +279,7 @@ message RT000FTL8 {
         string lei = 60;
         // The identifier used by the producer internally
         string producer_identifier = 61;
-        // The primary identifier relied on to identify the stale security
+        // The primary identifier relied on to identify the security
         // The producer should populate this field with the highest utility security identifier available
         // Tier 1: FIGI or PermID
         // Tier 2: BBG Ticker, RIC
@@ -286,7 +288,7 @@ message RT000FTL8 {
         string primary_identifier = 71;
         // Enumerations of financial identifiers
         enum FinancialInstrumentIdentifier {
-            // Source not specified by the user.
+            // Identifier type not specified.
             IDENTIFIER_UNSPECIFIED = 0;
             // ISO 6166 code of ISIN when available
             ISIN = 1;
@@ -404,7 +406,7 @@ message RT000FTL8 {
         string primary_identifier = 71;
         // Enumerations of financial identifiers
         enum FinancialInstrumentIdentifier {
-            // Source not specified by the user.
+            // Identifier type not specified.
             IDENTIFIER_UNSPECIFIED = 0;
             // ISO 6166 code of ISIN when available
             ISIN = 1;
@@ -499,7 +501,7 @@ message RT000FTL8 {
     repeated StaleSecurity stale_securities = 54;
     // Definition of a break that occurred in agreement on the non-cash holdings of a sub-fund
     message StockBreak {
-        // The date of the stale security report
+        // The date of the stock break report
         google.type.Date report_date = 1;
         // The date the stock break was identified
         google.type.Date identification_date = 2;
@@ -511,7 +513,7 @@ message RT000FTL8 {
         // Should conform to: https://openfunds.org/OFST005010 (Umbrella)
         // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information
         string umbrella_fund = 5;
-        // The identifier used to ID the sub-fun applicable)
+        // The identifier of the sub-fund (if applicable)
         // Should conform to: https://openfunds.org/OFST010110 (Legal Fund Name Only)
         // Refers to the Sub-Fund in the case of an umbrella structure
         // or Fund in the case of a standalone structure
@@ -547,7 +549,7 @@ message RT000FTL8 {
         string lei = 60;
         // The identifier used by the producer internally
         string producer_identifier = 61;
-        // The primary identifier relied on to identify the stale security
+        // The primary identifier relied on to identify the security
         // The producer should populate this field with the highest utility security identifier available
         // Tier 1: FIGI or PermID
         // Tier 2: BBG Ticker, RIC
@@ -556,7 +558,7 @@ message RT000FTL8 {
         string primary_identifier = 71;
         // Enumerations of financial identifiers
         enum FinancialInstrumentIdentifier {
-            // Source not specified by the user.
+            // Identifier type not specified.
             IDENTIFIER_UNSPECIFIED = 0;
             // ISO 6166 code of ISIN when available
             ISIN = 1;
@@ -623,11 +625,11 @@ message RT000FTL8 {
     repeated StockBreak stock_breaks = 55;
     // Definition of break that has occurred in agreement on the cash holdings of a sub-fund
     message CashBreak {
-        // The date of the stale security report
+        // The date of the cash break report
         google.type.Date report_date = 1;
-        // The date the stock break was identified
+        // The date the cash break was identified
         google.type.Date identification_date = 2;
-        // The date the stock break was resolved
+        // The date the cash break was resolved
         google.type.Date resolution_date = 3;
         // The internal identifier of the umbrella
         string umbrella_fund_identifier = 4;
@@ -635,7 +637,7 @@ message RT000FTL8 {
         // Should conform to: https://openfunds.org/OFST005010 (Umbrella)
         // See: https://openfunds.org/knowledge/whitepapers/fundnames/ for more information
         string umbrella_fund = 5;
-        // The identifier used to ID the sub-fun applicable)
+        // The identifier of the sub-fund (if applicable)
         // Should conform to: https://openfunds.org/OFST010110 (Legal Fund Name Only)
         // Refers to the Sub-Fund in the case of an umbrella structure
         // or Fund in the case of a standalone structure
@@ -670,7 +672,7 @@ message RT000FTL8 {
         string share_class_id = 3;
         // Enumerations of financial identifiers
         enum ShareClassIdentifierTypes {
-            // Source not specified by the user.
+            // Identifier type not specified.
             IDENTIFIER_UNSPECIFIED = 0;
             // ISO 6166 code of ISIN when available
             ISIN = 1;
@@ -791,13 +793,13 @@ message RT000FTL8 {
     message PerShareClassNAV {
         // The date of the report
         google.type.Date reporting_date = 1;
-        // The date of the TER (should be the last day of the relevant month)
+        // The date of the NAV
         google.type.Date nav_date = 2;
         // The global identifier of the share class
         string share_class_id = 3;
         // Enumerations of financial identifiers
         enum ShareClassIdentifierTypes {
-            // Source not specified by the user.
+            // Identifier type not specified.
             IDENTIFIER_UNSPECIFIED = 0;
             // ISO 6166 code of ISIN when available
             ISIN = 1;
@@ -827,9 +829,9 @@ message RT000FTL8 {
         string share_class_extension = 5;
         // The number of issued units of the share class
         double units = 6;
-        // The currency code is required to comply with the 3-letter ISO 4217 standard.
+        // The nav per unit in the base currency
         double nav_per_unit_base_currency = 7;
-        // The currency code is required to comply with the 3-letter ISO 4217 standard.
+        // The current total nav of the share class in the base currency
         double total_nav_base_currency = 8;
         // The nav per unit in the reporting currency at at the effective_date
         double nav_per_unit_reporting_currency = 9;
@@ -872,12 +874,19 @@ message RT000FTL8 {
         google.type.Date resolution_date = 10;
         // Enumerations of types of errors
         enum ErrorType {
+            // Error type not specified.
             ERROR_TYPE_UNSPECIFIED = 0;
+            // Error in the valuation of securities other than derivatives.
             SECURITIES_EXCEPT_DERIVATIVES_VALUATION_ERROR = 1;
+            // Accounting error.
             ACCOUNTING_ERROR = 2;
+            // Error in fees or accruals.
             FEES_AND_ACCRUALS_ERROR = 3;
+            // Error in the processing of a corporate action.
             CORPORATE_ACTION_ERROR = 4;
+            // Error in the valuation of derivatives.
             DERIVATIVES_VALUATION_ERROR = 5;
+            // Any other type of error.
             OTHER_ERROR = 6;
         }
         // The nature of the error
@@ -888,9 +897,13 @@ message RT000FTL8 {
         string remediation = 13;
         // Enumerations of impact of the error
         enum Impact {
+            // Impact not specified.
             IMPACT_UNSPECIFIED = 0;
+            // The error had no impact.
             WITHOUT_IMPACT = 1;
+            // The error had an immaterial impact.
             IMMATERIAL_IMPACT = 2;
+            // The error had a material impact.
             MATERIAL_IMPACT = 3;
         }
         // The impact of the error
@@ -954,6 +967,7 @@ message RT000FTL8 {
         google.type.Date breach_period_end_date = 9;
         // Enumerations of types of breaches
         enum BreachType {
+            // Breach type not specified.
             BREACH_TYPE_UNSPECIFIED = 0;
             // Luxembourg UCI Art. 41 (1) L2010 - Eligibility requirements
             LUX_ART_41_ELIGIBILITY_REQUIREMENTS = 1;
@@ -992,32 +1006,37 @@ message RT000FTL8 {
 
 
         }
-        // The nature of the error
+        // The nature of the breach
         BreachType breach_type = 10;
-        // Description and cause of the error
+        // Description and cause of the breach
         string cause = 11;
         // Corrective measures taken to close the investment breach
         string corrective_measures = 12;
         // Measures taken to avoid recurrence
         string remediation = 13;
-        // Enumerations of impact of the error
+        // Enumerations of impact of the breach
         enum Impact {
+            // Impact not specified.
             IMPACT_UNSPECIFIED = 0;
+            // The breach had no impact.
             WITHOUT_IMPACT = 1;
+            // The breach caused an immaterial loss.
             IMMATERIAL_LOSS = 2;
+            // The breach caused an immaterial gain.
             IMMATERIAL_GAIN = 3;
+            // The breach caused a material loss.
             MATERIAL_LOSS = 4;
+            // The breach caused a material gain.
             MATERIAL_GAIN = 5;
         }
-        // The impact of the error
+        // The impact of the breach
         Impact impact = 14;
         // The amount of impact (in currency terms)
         double impact_amount = 15;
         // The currency code of the impact amount
-        // The country code is required to comply with the 3-letter ISO 3166-1 alpha-3 standard.
-        // The ISO 3166-1 alpha-3 is a set of 3-letter country codes to represent countries and dependent areas.
-        // Make sure the provided country code is in uppercase.
-        // Example: 'USA' for the United States, 'GBR' for Great Britain, 'DEU' for Germany, etc.
+        // The currency code is required to comply with the 3-letter ISO 4217 standard.
+        // Make sure the provided currency code is in uppercase.
+        // Example: 'USD' for United States Dollar, 'GBP' for Great Britain Pound, 'EUR' for Euro, etc.
         string impact_amount_currency = 16;
         // Description of the impact calculation method
         string calculation_method = 17;
@@ -1038,6 +1057,7 @@ message RT000FTL8 {
 
 // Batch set of RT000FTL8 responses
 message RT000FTL8_batch {
+    // The RT000FTL8 responses in the batch.
     repeated RT000FTL8 response = 1;
 }
 

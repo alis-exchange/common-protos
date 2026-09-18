@@ -6,12 +6,12 @@ option go_package = "go.alis.build/common/standards/open/v1";
 
 // Represents a Red / Amber / Green enumerator.
 enum RedAmberGreen {
-  // The unspecifed designation.
+  // No Red / Amber / Green designation has been set.
   RAG_UNSPECIFIED = 0;
   // Red
   RED = 1;
   // Amber
   AMBER = 2;
-  // Amber
+  // Green
   GREEN = 3;
 }

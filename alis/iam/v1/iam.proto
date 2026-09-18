@@ -1,5 +1,25 @@
 syntax = "proto3";
 
+// Request and response messages that complement the standard `google.iam.v1`
+// IAM methods with incremental binding changes and batched permission checks.
+//
+// The package defines no service. Services that protect their resources with
+// a `google.iam.v1.Policy` use these messages in their own RPCs:
+//
+// - `AddIamBindingsRequest`: grant roles to principals on a resource,
+//   optionally removing each principal from its other roles.
+// - `RemoveIamBindingsRequest`: remove principals from some or all of their
+//   roles on a resource.
+// - `BatchTestIamPermissionsRequest` and `BatchTestIamPermissionsResponse`:
+//   check which of a set of permissions the caller has on each of several
+//   resources.
+//
+// For example, `alis.a2a.extension.history.v1.ThreadService` has
+// `AddIamBindings` and `RemoveIamBindings` RPCs that take these requests and
+// return a `google.iam.v1.Policy`.
+//
+// Principals are strings such as `user:123456789`, `serviceAccount:...`,
+// `builders` or `admins:alis.os`; roles use the `roles/*` format.
 package alis.iam.v1;
 
 option go_package = "go.alis.build/common/alis/iam/v1";
@@ -11,7 +31,7 @@ message AddIamBindingsRequest {
   // The principals (users, service accounts or groups)
   // E.g: user:123456789, serviceAccount:alis-build@..., builders,builders:alis,builders:alis.os,admins,admins:alis.os
   repeated string principals = 2;
-  // The roles Resource to give the principals. At least one role must be provided.
+  // The roles to grant to the principals. At least one role must be provided.
   // Format: ['roles/*', ...]
   // Example: ['roles/owner', 'roles/admin']
   repeated string roles = 3;
@@ -52,9 +72,9 @@ message BatchTestIamPermissionsResponse {
   repeated ResourcePermissions resource_permissions = 1;
   // The permissions the requester has on a resource.
   message ResourcePermissions {
-    // The resource.
+    // The resource, as given in `BatchTestIamPermissionsRequest.resources`.
     string resource = 1;
-    // The permissions.
+    // The requested permissions that the requester has on `resource`.
     repeated string permissions = 2;
   }
 }

@@ -25,7 +25,7 @@ message RT000LFR7 {
     // For example, if the metric measures data for the month of December 2022, 2022-12-01
     google.type.Date reporting_period_start = 2;
     // The end date of the reporting period of the metric (inclusive)
-    // For example, if the metric measures data for the month of December 2022, 2022-12-01
+    // For example, if the metric measures data for the month of December 2022, 2022-12-31
     google.type.Date reporting_period_end = 3;
     // The relevant identifier of the umbrella
     string umbrella_fund_identifier = 4;
@@ -43,7 +43,7 @@ message RT000LFR7 {
     string fund = 7;
     // Enumeration of metricIDs
     enum MetricID {
-      // The enumeration of the metrics measured
+      // Metric not specified.
       METRIC_ID_UNSPECIFIED = 0;
       // Number of NAVs calculated during the month
       NAVS_CALCULATED = 1;
@@ -68,13 +68,12 @@ message RT000LFR7 {
       NAV_ERRORS_MATERIAL_PROVIDER = 8;
       // The count of material nav errors where the delegate was not responsible
       NAV_ERRORS_MATERIAL_NON_PROVIDER = 9;
-      // The count of material nav errors where the delegate was responsible
+      // The count of non-material nav errors where the delegate was responsible
       NAV_ERRORS_NON_MATERIAL_PROVIDER = 10;
-      // The count of material nav errors where the delegate was not responsible
+      // The count of non-material nav errors where the delegate was not responsible
       NAV_ERRORS_NON_MATERIAL_NON_PROVIDER = 11;
       // The number of securities for which there has not been a price movement for an agreed number of consecutive business days.
       STALE_SECURITIES = 12;
-      // Total number of
       // Number of cash reconciliations reported between 31 to 60 days
       CASH_RECONCILIATIONS_31_TO_60_DAYS = 13;
       // Number of cash reconciliations reported greater than or equal to 61 days
@@ -131,9 +130,9 @@ message RT000LFR7 {
       NAV_DELAYS_CLIENT_OR_THIRD_PARTY = 39;
       // The total number of nav delays caused by other causes
       NAV_DELAYS_OTHER = 40;
-      // The number of funds impacted by provider errors errors
+      // The number of funds impacted by provider errors
       FUNDS_IMPACTED_BY_PROVIDER_ERRORS = 41;
-      // The number of funds impacted by provider errors errors
+      // The number of funds impacted by non-provider errors
       FUNDS_IMPACTED_BY_PROVIDER_NON_PROVIDER_ERRORS = 42;
       // The number of valuations impacted by provider errors
       VALUATIONS_IMPACTED_PROVIDER_ERRORS = 43;
@@ -150,23 +149,26 @@ message RT000LFR7 {
     MetricID metric_id = 8;
     // The type of value used to measure the metric
     enum ValueType {
+      // Value type not specified.
       METRIC_TYPE_UNSPECIFIED = 0;
+      // The metric is a number, for example a count.
       NUMBER = 1;
+      // The metric is a percentage.
       PERCENTAGE = 2;
+      // The metric is an amount of money in the currency given by currency_code.
       CURRENCY = 3;
     }
     // Enumeration for how to interpret the metric value
     ValueType value_type = 9;
     // If the metric type is "CURRENCY" then a 3-letter currency code defined in ISO 4217 must be provided.
-    // The country code is required to comply with the 3-letter ISO 3166-1 alpha-3 standard.
-    // The ISO 3166-1 alpha-3 is a set of 3-letter country codes to represent countries and dependent areas.
-    // Make sure the provided country code is in uppercase.
-    // Example: 'USA' for the United States, 'GBR' for Great Britain, 'DEU' for Germany, etc.
+    // Make sure the provided currency code is in uppercase.
+    // Example: 'USD' for United States Dollar, 'GBP' for Great Britain Pound, 'EUR' for Euro, etc.
     string currency_code = 10;
     // The value of the metric
     double metric = 11;
     // Options for how to evaluate the metric
     enum EvaluationType {
+      // Evaluation type not specified.
       EVALUATION_TYPE_UNSPECIFIED = 0;
       // A higher result is more favorable
       MAXIMISE = 1;

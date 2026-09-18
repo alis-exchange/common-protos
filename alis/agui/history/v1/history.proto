@@ -1,5 +1,25 @@
 syntax = "proto3";
 
+// Keeps thread-level metadata for AG-UI conversations: display names, agent
+// identity, run counts, and each user's read and pin state.
+//
+// Messages and tool calls are not stored here; ADK sessions remain the source
+// of truth for conversation history.
+//
+// `ThreadService` manages two resources:
+//
+// - `Thread` (`threads/{thread_id}`): one AG-UI conversation, created by the
+//   AG-UI launcher on the first `/run_sse` request for a thread ID.
+// - `UserThreadState` (`threads/{thread_id}/userStates/{user_id}`): one user's
+//   read position and pin state for a thread.
+//
+// Each completed `/run_sse` run increments the thread's `run_count`. A thread
+// is unread for a user while `run_count` exceeds their `read_run_count`;
+// `ListThreads` reports this on the caller-scoped `ThreadView`. The service
+// also exposes IAM policy methods for its resources.
+//
+// `alis.a2a.extension.history.v1` is the A2A counterpart, which also stores
+// the conversation events themselves.
 package alis.agui.history.v1;
 
 import "alis/iam/v1/iam.proto";
@@ -90,7 +110,7 @@ message UserThreadState {
   google.protobuf.Timestamp update_time = 98;
 }
 
-// Caller-scoped thread projection returned by list/get APIs.
+// Caller-scoped thread projection returned by `ListThreads`.
 // Merges the shared Thread resource with the caller's UserThreadState.
 message ThreadView {
   // The shared thread resource.

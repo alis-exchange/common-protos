@@ -1,4 +1,25 @@
 syntax = "proto3";
+// A gRPC binding of the Agent2Agent (A2A) protocol for sending messages to
+// an agent and tracking the tasks it performs, shaped to follow AIP-127
+// where appropriate.
+//
+// `A2AService` works with four nouns:
+//
+// - Messages: sent with `SendMessage` or `SendStreamingMessage`. They are
+//   not stored resources.
+// - `Task` (`tasks/{task_id}`): the unit of work, with a status, output
+//   artifacts, and message history. Read with `GetTask` and `ListTasks`,
+//   cancelled with `CancelTask`, and streamed with `TaskSubscription`.
+// - `TaskPushNotificationConfig`
+//   (`tasks/{task_id}/pushNotificationConfigs/{config_id}`): a webhook that
+//   the agent notifies of updates to one task.
+// - `AgentCard`: the agent's self-description (skills, capabilities,
+//   security requirements), read with `GetAgentCard`.
+//
+// `alis.open.agent.v2` defines the same service and messages, except that
+// its `Task` has no `name` field and its `Part` has no `any` option. The
+// `alis.a2a.extension` packages build on the vendored `lf.a2a.v1` contract
+// rather than on this package.
 package alis.open.agent.v1;
 
 import "google/api/annotations.proto";
@@ -19,11 +40,13 @@ option go_package = "open.alis.services/protobuf/alis/open/agent/v1";
 //   interface, only a send and stream custom methods.
 // - Tasks have a get interface and custom cancel and subscribe methods.
 // - TaskPushNotificationConfig are a resource whose parent is a task.
-//   They have get, list and create methods.
+//   They have get, list, create and delete methods.
 // - AgentCard is a static resource with only a get method.
 service A2AService {
-  // Send a message to the agent. This is a blocking call that will return the
-  // task once it is completed, or a LRO if requested.
+  // Send a message to the agent. The response is either a `Task` or a direct
+  // `Message` from the agent. If `configuration.blocking` is true, the call
+  // waits until the task is completed; otherwise the task is returned
+  // immediately.
   rpc SendMessage(SendMessageRequest) returns (SendMessageResponse) {
     option (google.api.http) = {
       post: "/v1/message:send"
@@ -150,15 +173,18 @@ message Task {
   // A set of output artifacts for a Task.
   repeated Artifact artifacts = 5;
   // protolint:disable REPEATED_FIELD_NAMES_PLURALIZED
+
   // The history of interactions from a task.
   repeated Message history = 6;
   // protolint:enable REPEATED_FIELD_NAMES_PLURALIZED
+
   // A key/value object to store custom metadata about a task.
   google.protobuf.Struct metadata = 7;
 }
 
 // The set of states a Task can be in.
 enum TaskState {
+  // The task state is unknown or has not been set.
   TASK_STATE_UNSPECIFIED = 0;
   // Represents the status that acknowledges a task is created
   TASK_STATE_SUBMITTED = 1;
@@ -198,10 +224,17 @@ message TaskStatus {
 // Parts can be purely textual, some sort of file (image, video, etc) or
 // a structured data blob (i.e. JSON).
 message Part {
+  // The content carried by this part.
   oneof part {
+    // Plain text content.
     string              text = 1;
+    // A file, provided by URI or as inline bytes.
     FilePart            file = 2;
+    // Structured data, such as a JSON object.
     DataPart            data = 3;
+    // An arbitrary protobuf message, packed as `google.protobuf.Any`. Only
+    // this package offers this option; `alis.open.agent.v2` and the A2A
+    // `Part` in `lf.a2a.v1` have no equivalent.
     google.protobuf.Any any  = 20;
   }
   // Optional metadata associated with this part.
@@ -213,20 +246,30 @@ message Part {
 // file is large, the agent should read the content as appropriate directly
 // from the file_with_uri source.
 message FilePart {
+  // The file content, referenced by URI or included inline.
   oneof file {
+    // A URI from which the agent can read the file content. Suited to large
+    // files.
     string file_with_uri   = 1;
+    // The file content as raw bytes. Suited to small files. In JSON this is
+    // encoded as a base64 string.
     bytes  file_with_bytes = 2;
   }
+  // The MIME type of the file, for example `image/png`.
   string mime_type = 3;
+  // An optional name for the file, for example `document.pdf`.
   string name      = 4;
 }
 
 // DataPart represents a structured blob. This is most commonly a JSON payload.
 message DataPart {
+  // The structured data, as a JSON object.
   google.protobuf.Struct data = 1;
 }
 
+// Identifies the sender of a message.
 enum Role {
+  // The sender role has not been set.
   ROLE_UNSPECIFIED = 0;
   // USER role refers to communication from the client to the server.
   ROLE_USER = 1;
@@ -254,9 +297,11 @@ message Message {
   // A role for the message.
   Role role = 4;
   // protolint:disable REPEATED_FIELD_NAMES_PLURALIZED
+
   // Parts is the container of the message content.
   repeated Part parts = 5;
   // protolint:enable REPEATED_FIELD_NAMES_PLURALIZED
+
   // Any optional metadata to provide along with the message.
   google.protobuf.Struct metadata = 6;
   // The URIs of extensions that are present or contributed to this Message.
@@ -381,6 +426,7 @@ message AgentCard {
   // The security scheme details used for authenticating with this agent.
   map<string, SecurityScheme> security_schemes = 8;
   // protolint:disable REPEATED_FIELD_NAMES_PLURALIZED
+
   // Security requirements for contacting the agent.
   // This list can be seen as an OR of ANDs. Each object in the list describes
   // one possible set of security requirements that must be present on a
@@ -396,6 +442,7 @@ message AgentCard {
   // }
   repeated Security security = 9;
   // protolint:enable REPEATED_FIELD_NAMES_PLURALIZED
+
   // The set of interaction modes that the agent supports across all skills.
   // This can be overridden per skill. Defined as mime types.
   repeated string default_input_modes = 10;
@@ -478,12 +525,14 @@ message AgentSkill {
   // Possible output modalities produced
   repeated string output_modes = 7;
   // protolint:disable REPEATED_FIELD_NAMES_PLURALIZED
+
   // Security schemes necessary for the agent to leverage this skill.
   // As in the overall AgentCard.security, this list represents a logical OR of
   // security requirement objects. Each object is a set of security schemes
   // that must be used together (a logical AND).
   repeated Security security = 8;
   // protolint:enable REPEATED_FIELD_NAMES_PLURALIZED
+
 }
 
 // AgentCardSignature represents a JWS signature of an AgentCard.
@@ -498,6 +547,8 @@ message AgentCardSignature {
   google.protobuf.Struct header = 3;
 }
 
+// A push notification configuration for a specific task. It is a resource
+// whose parent is the task.
 message TaskPushNotificationConfig {
   // The resource name of the config.
   // Format: tasks/{task_id}/pushNotificationConfigs/{config_id}
@@ -507,25 +558,44 @@ message TaskPushNotificationConfig {
 }
 
 // protolint:disable REPEATED_FIELD_NAMES_PLURALIZED
+
+// A list of strings. Used as the map value in `Security.schemes` to hold the
+// scopes a security scheme requires.
 message StringList {
+  // The string values.
   repeated string list = 1;
 }
 // protolint:enable REPEATED_FIELD_NAMES_PLURALIZED
 
+// A set of security schemes that must all be satisfied together (a logical
+// AND). `AgentCard.security` and `AgentSkill.security` list alternative sets,
+// any one of which is sufficient (a logical OR).
 message Security {
+  // The security schemes to satisfy, keyed by the scheme names declared in
+  // `AgentCard.security_schemes`. Each value lists the scopes required for
+  // that scheme and may be empty.
   map<string, StringList> schemes = 1;
 }
 
+// Defines a security scheme that can be used to authenticate with the agent,
+// based on the OpenAPI Security Scheme Object.
 message SecurityScheme {
+  // The type of security scheme and its settings.
   oneof scheme {
+    // API key-based authentication.
     APIKeySecurityScheme        api_key_security_scheme         = 1;
+    // HTTP authentication, such as Basic or Bearer.
     HTTPAuthSecurityScheme      http_auth_security_scheme       = 2;
+    // OAuth 2.0 authentication.
     OAuth2SecurityScheme        oauth2_security_scheme          = 3;
+    // OpenID Connect authentication.
     OpenIdConnectSecurityScheme open_id_connect_security_scheme = 4;
+    // Mutual TLS authentication.
     MutualTlsSecurityScheme     mtls_security_scheme            = 5;
   }
 }
 
+// Defines a security scheme using an API key.
 message APIKeySecurityScheme {
   // Description of this security scheme.
   string description = 1;
@@ -535,6 +605,8 @@ message APIKeySecurityScheme {
   string name = 3;
 }
 
+// Defines a security scheme using HTTP authentication, such as Basic or
+// Bearer.
 message HTTPAuthSecurityScheme {
   // Description of this security scheme.
   string description = 1;
@@ -549,6 +621,7 @@ message HTTPAuthSecurityScheme {
   string bearer_format = 3;
 }
 
+// Defines a security scheme using OAuth 2.0.
 message OAuth2SecurityScheme {
   // Description of this security scheme.
   string description = 1;
@@ -559,6 +632,7 @@ message OAuth2SecurityScheme {
   string oauth2_metadata_url = 3;
 }
 
+// Defines a security scheme using OpenID Connect.
 message OpenIdConnectSecurityScheme {
   // Description of this security scheme.
   string description = 1;
@@ -567,20 +641,29 @@ message OpenIdConnectSecurityScheme {
   string open_id_connect_url = 2;
 }
 
+// Defines a security scheme using mutual TLS (mTLS) authentication.
 message MutualTlsSecurityScheme {
   // Description of this security scheme.
   string description = 1;
 }
 
+// The OAuth 2.0 flow supported by an `OAuth2SecurityScheme`, with its
+// configuration.
 message OAuthFlows {
+  // The OAuth 2.0 flow and its configuration.
   oneof flow {
+    // Configuration for the Authorization Code flow.
     AuthorizationCodeOAuthFlow authorization_code = 1;
+    // Configuration for the Client Credentials flow.
     ClientCredentialsOAuthFlow client_credentials = 2;
+    // Configuration for the Implicit flow.
     ImplicitOAuthFlow          implicit           = 3;
+    // Configuration for the Resource Owner Password Credentials flow.
     PasswordOAuthFlow          password           = 4;
   }
 }
 
+// Configuration for the OAuth 2.0 Authorization Code flow.
 message AuthorizationCodeOAuthFlow {
   // The authorization URL to be used for this flow. This MUST be in the
   // form of a URL. The OAuth2 standard requires the use of TLS
@@ -596,6 +679,7 @@ message AuthorizationCodeOAuthFlow {
   map<string, string> scopes = 4;
 }
 
+// Configuration for the OAuth 2.0 Client Credentials flow.
 message ClientCredentialsOAuthFlow {
   // The token URL to be used for this flow. This MUST be in the form of a URL.
   // The OAuth2 standard requires the use of TLS.
@@ -608,6 +692,7 @@ message ClientCredentialsOAuthFlow {
   map<string, string> scopes = 3;
 }
 
+// Configuration for the OAuth 2.0 Implicit flow.
 message ImplicitOAuthFlow {
   // The authorization URL to be used for this flow. This MUST be in the
   // form of a URL. The OAuth2 standard requires the use of TLS
@@ -620,6 +705,7 @@ message ImplicitOAuthFlow {
   map<string, string> scopes = 3;
 }
 
+// Configuration for the OAuth 2.0 Resource Owner Password Credentials flow.
 message PasswordOAuthFlow {
   // The token URL to be used for this flow. This MUST be in the form of a URL.
   // The OAuth2 standard requires the use of TLS.
@@ -633,6 +719,9 @@ message PasswordOAuthFlow {
 }
 
 ///////////// Request Messages ///////////
+
+// Represents a request for the `SendMessage` and `SendStreamingMessage`
+// methods.
 message SendMessageRequest {
   // The message to send to the agent.
   Message request = 1
@@ -643,6 +732,7 @@ message SendMessageRequest {
   google.protobuf.Struct metadata = 3;
 }
 
+// Represents a request for the `GetTask` method.
 message GetTaskRequest {
   // The resource name of the task.
   // Format: tasks/{task_id}
@@ -651,6 +741,7 @@ message GetTaskRequest {
   int32 history_length = 2;
 }
 
+// Represents a request for the `ListTasks` method.
 message ListTasksRequest {
   // Filter tasks by context ID to get tasks from a specific conversation
   // or session.
@@ -674,24 +765,28 @@ message ListTasksRequest {
   bool include_artifacts = 7;
 }
 
+// Represents a request for the `CancelTask` method.
 message CancelTaskRequest {
   // The resource name of the task to cancel.
   // Format: tasks/{task_id}
   string name = 1;
 }
 
+// Represents a request for the `GetTaskPushNotificationConfig` method.
 message GetTaskPushNotificationConfigRequest {
   // The resource name of the config to retrieve.
   // Format: tasks/{task_id}/pushNotificationConfigs/{config_id}
   string name = 1;
 }
 
+// Represents a request for the `DeleteTaskPushNotificationConfig` method.
 message DeleteTaskPushNotificationConfigRequest {
   // The resource name of the config to delete.
   // Format: tasks/{task_id}/pushNotificationConfigs/{config_id}
   string name = 1;
 }
 
+// Represents a request for the `CreateTaskPushNotificationConfig` method.
 message CreateTaskPushNotificationConfigRequest {
   // The parent task resource for this config.
   // Format: tasks/{task_id}
@@ -703,12 +798,14 @@ message CreateTaskPushNotificationConfigRequest {
   [(google.api.field_behavior) = REQUIRED];
 }
 
+// Represents a request for the `TaskSubscription` method.
 message TaskSubscriptionRequest {
   // The resource name of the task to subscribe to.
   // Format: tasks/{task_id}
   string name = 1;
 }
 
+// Represents a request for the `ListTaskPushNotificationConfig` method.
 message ListTaskPushNotificationConfigRequest {
   // The parent task resource.
   // Format: tasks/{task_id}
@@ -727,14 +824,20 @@ message ListTaskPushNotificationConfigRequest {
   string page_token = 3;
 }
 
+// Represents a request for the `GetAgentCard` method.
 message GetAgentCardRequest {
   // Empty. Added to fix linter violation.
 }
 
 //////// Response Messages ///////////
+
+// Represents the response for the `SendMessage` method.
 message SendMessageResponse {
+  // The result of the message: a task, or a direct reply from the agent.
   oneof payload {
+    // The task created or updated by the message.
     Task    task = 1;
+    // A message from the agent.
     Message msg  = 2 [json_name = "message"];
   }
 }
@@ -746,17 +849,24 @@ message SendMessageResponse {
 // If the response is a task lifecycle, the first response should be a Task
 // object followed by zero or more TaskStatusUpdateEvents and
 // TaskArtifactUpdateEvents. The stream should complete when the Task
-// if in an interrupted or terminal state. A stream that ends before these
-// conditions are met are
+// is in an interrupted or terminal state.
 message StreamResponse {
+  // One item in the stream.
   oneof payload {
+    // The task and its current state. Sent first when the response is a task
+    // lifecycle.
     Task                    task            = 1;
+    // A message from the agent. When the response is a message, this is the
+    // only item in the stream.
     Message                 msg             = 2 [json_name = "message"];
+    // An update to the task's status.
     TaskStatusUpdateEvent   status_update   = 3;
+    // An artifact generated or updated by the task.
     TaskArtifactUpdateEvent artifact_update = 4;
   }
 }
 
+// Represents the response for the `ListTasks` method.
 message ListTasksResponse {
   // Array of tasks matching the specified criteria.
   repeated Task tasks = 1;
@@ -767,6 +877,7 @@ message ListTasksResponse {
   int32 total_size = 3;
 }
 
+// Represents the response for the `ListTaskPushNotificationConfig` method.
 message ListTaskPushNotificationConfigResponse {
   // The list of push notification configurations.
   repeated TaskPushNotificationConfig configs = 1;

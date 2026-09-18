@@ -1,5 +1,26 @@
 syntax = "proto3";
 
+// API usage snapshots that Alis products publish about their own traffic.
+//
+// The package defines one payload, `ProductUsage`: request counts, error
+// rates, latency percentiles and approximate caller counts per gRPC method,
+// aggregated from the Cloud Run request logs of a product's deployments. Each
+// product computes a snapshot hourly and publishes it to the Pub/Sub topic
+// `alis.usage.v1.ProductUsage` in its own Google Cloud project, where any
+// consumer with access to that project may subscribe.
+//
+// A snapshot contains:
+//
+// - `Window`: rolling 24-hour, 7-day and 30-day aggregates, broken down by
+//   deployment project (`DeploymentUsage`) and then by method
+//   (`MethodUsage`).
+// - `DailyCount`: request and error counts per UTC day and deployment project
+//   over the last 30 days, for trend charts.
+//
+// Methods are identified by protobuf package, service and method name, so the
+// figures line up with the product's protobuf contracts. Snapshots are an
+// adoption and usage view for builders, not a replacement for Cloud Logging
+// or Cloud Trace.
 package alis.usage.v1;
 
 import "google/protobuf/timestamp.proto";
@@ -43,6 +64,7 @@ message ProductUsage {
 
   // The rolling windows a snapshot reports on.
   enum WindowKind {
+    // Not set. The default value; should not be used.
     WINDOW_KIND_UNSPECIFIED = 0;
     // The 24 hours up to snapshot_time.
     WINDOW_KIND_ROLLING_24H = 1;
@@ -54,8 +76,11 @@ message ProductUsage {
 
   // Aggregates over one rolling window.
   message Window {
+    // Which rolling window these aggregates cover.
     WindowKind kind = 1;
+    // The start of the window.
     google.protobuf.Timestamp start_time = 2;
+    // The end of the window. Rolling windows run up to `snapshot_time`.
     google.protobuf.Timestamp end_time = 3;
     // One entry per deployment (environment) Google Cloud project that
     // received traffic in the window.
@@ -83,11 +108,13 @@ message ProductUsage {
     string method = 3;
     // The Cloud Run service that served the requests, e.g. "orders-v1".
     string cloud_run_service = 4;
+    // Request statistics for this method in this deployment and window.
     MethodStats stats = 5;
   }
 
   // Request statistics derived from Cloud Run request logs.
   message MethodStats {
+    // The number of requests.
     int64 request_count = 1;
     // Requests with an HTTP status other than 200. gRPC errors surface as
     // non-200 statuses on the Cloud Run request log entry.
@@ -96,7 +123,9 @@ message ProductUsage {
     double error_rate = 3;
     // Request latency percentiles in seconds.
     double latency_p50 = 4;
+    // 95th percentile request latency, in seconds.
     double latency_p95 = 5;
+    // 99th percentile request latency, in seconds.
     double latency_p99 = 6;
     // Approximate number of distinct callers, estimated from the request's
     // (remote IP, user agent) pair. Request logs carry no caller identity, so
@@ -108,8 +137,12 @@ message ProductUsage {
   message DailyCount {
     // The UTC day in RFC 3339 date-only form, e.g. "2026-08-31".
     string date = 1;
+    // The Google Cloud project id of the deployment (environment) project.
     string google_project_id = 2;
+    // The number of requests on that day.
     int64 request_count = 3;
+    // The number of requests on that day with an HTTP status other than 200,
+    // counted as in `MethodStats.error_count`.
     int64 error_count = 4;
   }
 }

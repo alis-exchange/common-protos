@@ -1,5 +1,17 @@
 syntax = "proto3";
 
+// Registers the devices users receive notifications on, and sends
+// notifications to users through Firebase Cloud Messaging (FCM).
+//
+// - `DevicesService` manages `Device` resources
+//   (`users/{user}/devices/{device}`): a user's device and its device token.
+//   `RegisterDevice` registers a device by ID and token. The IAM RPCs take a
+//   device name as the resource.
+// - `NotificationsService` sends FCM messages (title, body, and optional
+//   image, data payload and URI) to a user, one at a time or in a batch.
+//
+// Both services also expose `ValidateMessage` and `RetrieveRules` from
+// `alis.open.validation.v1`.
 package alis.open.notifications.v1;
 
 import "alis/open/iam/v1/iam.proto";
@@ -15,7 +27,7 @@ option go_package = "open.alis.services/protobuf/alis/open/notifications/v1";
 // DevicesService provides RPCs for managing Device resources.
 service DevicesService {
   // Validates any proto message that is used directly or indirectly by this service.
-  // Most common use issue is to validate request messages from a client-side application.
+  // Most common use case is to validate request messages from a client-side application.
   rpc ValidateMessage(alis.open.validation.v1.ValidateMessageRequest) returns (alis.open.validation.v1.ValidateMessageResponse) {}
   // Retrieves the validation rules for any proto message that is used directly or indirectly by this service.
   // Serves as live auto-documentation of the validation rules in this service.
@@ -60,6 +72,7 @@ service DevicesService {
 
 // A user's device that can receive notifications.
 message Device {
+  // The resource name of the device.
   // Format: users/([a-z0-9-]{2,50})/devices/([a-zA-Z0-9-_]{2,50})
   string name = 1;
   // Device token
@@ -74,6 +87,7 @@ message Device {
 
 // Request message for the GetDevice method.
 message GetDeviceRequest {
+  // The resource name of the device to get.
   // Format: users/([a-z0-9-]{2,50})/devices/([a-zA-Z0-9-_]{2,50})
   string name = 1;
 }
@@ -105,6 +119,7 @@ message ListDevicesResponse {
 
 // Request message for the DeleteDevice method.
 message DeleteDeviceRequest {
+  // The resource name of the device to delete.
   // Format: users/([a-z0-9-]{2,50})/devices/([a-zA-Z0-9-_]{2,50})
   string name = 1;
 }

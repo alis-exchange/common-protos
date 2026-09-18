@@ -158,6 +158,7 @@ message RT0009DB1 {
             (standards.open.v1.fdx_options).question = "Did the Fund record any capital transaction(s) in its accounts for any (sub-)fund during the year? Subscriptions"
 
         ];
+        // Whether the Fund recorded any redemptions in its accounts for any (sub-)fund during the year (question 2).
         YesNo redemptions = 11 [
             (standards.open.v1.fdx_options).h1 = "1.	DESCRIPTIVE INFORMATION",
             (standards.open.v1.fdx_options).number = "2a.",
@@ -313,7 +314,7 @@ message RT0009DB1 {
             (standards.open.v1.fdx_options).number = "3.y",
             (standards.open.v1.fdx_options).question = "In which types of investments was the Fund invested at year-end (direct investments, except where otherwise specified)? y.	Other"
         ];
-        // Invested in y.	Other
+        // Specifies the investment(s) or type(s) of investment held under "y. Other" (question 3.y); asked when `invested_in_other_assets` is YES.
         string other_assets = 37 [
             (standards.open.v1.fdx_options).h1 = "1.	DESCRIPTIVE INFORMATION",
             (standards.open.v1.fdx_options).number = "3.y.b",
@@ -326,7 +327,8 @@ message RT0009DB1 {
             (standards.open.v1.fdx_options).number = "4",
             (standards.open.v1.fdx_options).question = "Was any (sub-)fund invested at year-end at the level of its portfolio in a special purpose vehicle (SPV) or other similar intermediate vehicles/entities for facilitating the investment in the underlying assets?"
         ];
-        // Number of SPVs invested in
+        // Number of sub-funds investing in SPVs or other similar intermediate vehicles (question 4.1); asked when `invested_in_spv` is YES.
+        // Despite the field name, this counts sub-funds, not SPVs.
         int32 number_of_spvs = 39 [
             (standards.open.v1.fdx_options).h1 = "1.	DESCRIPTIVE INFORMATION",
             (standards.open.v1.fdx_options).number = "4.1",
@@ -580,7 +582,7 @@ message RT0009DB1 {
             (standards.open.v1.fdx_options).number = "6.a",
             (standards.open.v1.fdx_options).question = "Did the Management of the Fund attend trainings during the year? b.	AML/CFT training(s)"
         ];
-        // Management didn't attend professional training - explain
+        // Management didn't attend AML / CFT training - explain
         string no_management_training_aml_cft_explain = 25  [
             (standards.open.v1.fdx_options).h1 = "2.	ORGANISATION OF THE FUND",
             (standards.open.v1.fdx_options).h2 = "2.1.	OVERSIGHT",
@@ -693,7 +695,7 @@ message RT0009DB1 {
             (standards.open.v1.fdx_options).question = "If Y to Q7.g, specify the delegate(s) / service provider(s)",
             (standards.open.v1.fdx_options).conditional = "Organisation.MaterialDeficiencyOther?1:0"
         ];
-        // Any material organizational deficiency regarding legal, regulatory or contractual responsibilities - Other
+        // Any material organizational deficiency regarding legal, regulatory or contractual responsibilities - Depositary
         YesNo material_deficiency_depositary = 40 [
             (standards.open.v1.fdx_options).h1 = "2.	ORGANISATION OF THE FUND",
             (standards.open.v1.fdx_options).h2 = "2.1.	OVERSIGHT",
@@ -748,7 +750,8 @@ message RT0009DB1 {
             (standards.open.v1.fdx_options).question = "If the answer to Q9 is YES, explain",
             (standards.open.v1.fdx_options).conditional = "Organisation.ReceivedRequestFromForeignCompetentAuthorityConcerningPotentialIssue?1:0"
         ];
-        // Requests regarding issues related to functioning of fund
+        // Sanctions received from a foreign national competent authority regarding wrongdoings at the level of the fund (question 10).
+        // Despite the field name, the question asks about sanctions, not requests.
         YesNo received_request_from_foreign_competent_authority_concerning_wrongdoings = 47  [
             (standards.open.v1.fdx_options).h1 = "2.	ORGANISATION OF THE FUND",
             (standards.open.v1.fdx_options).h2 = "2.1.	OVERSIGHT",
@@ -763,7 +766,7 @@ message RT0009DB1 {
             (standards.open.v1.fdx_options).question = "If the answer to Q10 is YES, explain",
             (standards.open.v1.fdx_options).conditional = "Organisation.ReceivedRequestFromForeignCompetentAuthorityConcerningWrongdoings?1:0"
         ];
-        // Requests regarding issues related to functioning of fund
+        // Investor claims or complaints received during the year in relation to the functioning of the fund (question 11)
         YesNo fund_received_investor_complaint_during_year = 49  [
             (standards.open.v1.fdx_options).h1 = "2.	ORGANISATION OF THE FUND",
             (standards.open.v1.fdx_options).h2 = "2.1.	OVERSIGHT",
@@ -831,7 +834,7 @@ message RT0009DB1 {
             (standards.open.v1.fdx_options).number = "14",
             (standards.open.v1.fdx_options).question = "Did the Fund notify (respectively did any service provider notify on behalf of the Fund) a suspected fraud and/or a suspected case of money laundering/terrorist financing to the State Attorney’s Office (“Parquet”) and/or the Financial Intelligence Unit (“Cellule de Renseignement Financier”) during the year?"
         ];
-        // If the answer to any_cases_of_suspected_or_actual_fraud is YES, explain
+        // If the answer to Q14. is YES, indicate the number
         int32 notification_of_suspected_fraud_number = 58  [
             (standards.open.v1.fdx_options).h1 = "2.	ORGANISATION OF THE FUND",
             (standards.open.v1.fdx_options).h2 = "2.1.	OVERSIGHT",
@@ -839,7 +842,7 @@ message RT0009DB1 {
             (standards.open.v1.fdx_options).question = "If the answer to Q14. is YES, indicate the number.",
             (standards.open.v1.fdx_options).conditional = "Organisation.NotificationOfSuspectedFraud?1:0"
         ];
-        // If the answer to any_cases_of_suspected_or_actual_fraud is YES, explain
+        // If the answer to Q14. is YES, did the Fund send a copy of all these communication(s) to the CSSF as required by the Circular CSSF 11/528?
         YesNo notification_of_suspected_fraud_notified = 59  [
             (standards.open.v1.fdx_options).h1 = "2.	ORGANISATION OF THE FUND",
             (standards.open.v1.fdx_options).h2 = "2.1.	OVERSIGHT",
@@ -848,7 +851,7 @@ message RT0009DB1 {
             (standards.open.v1.fdx_options).conditional = "Organisation.NotificationOfSuspectedFraud?1:0",
             (standards.open.v1.fdx_options).default = "1"
         ];
-        // If the answer to any_cases_of_suspected_or_actual_fraud is YES, explain
+        // If the answer to Q14.2 is NO, explain
         string notification_of_suspected_fraud_notified_explain = 60  [
             (standards.open.v1.fdx_options).h1 = "2.	ORGANISATION OF THE FUND",
             (standards.open.v1.fdx_options).h2 = "2.1.	OVERSIGHT",
@@ -865,7 +868,7 @@ message RT0009DB1 {
             (standards.open.v1.fdx_options).description = "The question applies only to SIFs which are not referred to in the specific provisions of Part II of the SIF Law and which, on that basis, have to comply with the provisions of the CSSF Regulation N° 15-07. As a consequence, the question is applicable to SIFs which are managed by a registered AIFM, respectively SIFs which do not qualify as an AIF.",
             (standards.open.v1.fdx_options).default = "1"
         ];
-        // NAdopted Risk Management System of SIF - Explain
+        // If the response to Q15. is NO, explain
         string adopted_risk_management_system_of_sif_explain = 62  [
             (standards.open.v1.fdx_options).h1 = "2.	ORGANISATION OF THE FUND",
             (standards.open.v1.fdx_options).h2 = "2.1.	OVERSIGHT",
@@ -964,7 +967,7 @@ message RT0009DB1 {
             (standards.open.v1.fdx_options).question = "If the answer to Q16.1.3.2. is NO, explain",
             (standards.open.v1.fdx_options).conditional = "Organisation.ConflictsOfInterestIdentifiedProceduresReported?0:1"
         ];
-        // Conflicts of interest identified - procedures - reported
+        // Was the share/unit class of any (sub-)fund sold to retail investors (on a look-through basis) at year-end?
         YesNo sold_to_retail_investors = 74  [
             (standards.open.v1.fdx_options).h1 = "2.	ORGANISATION OF THE FUND",
             (standards.open.v1.fdx_options).h2 = "2.3.	INVESTORS IN UCIs, SIFs AND SICARs",
@@ -973,7 +976,7 @@ message RT0009DB1 {
             (standards.open.v1.fdx_options).question = "Was the share/unit class of any (sub-)fund sold to retail investors (on a look-through basis) at year- end?",
             (standards.open.v1.fdx_options).description = "Look-through refers to identifying any retail investor that invested in a sub-fund through a financial intermediary."
         ];
-        // Conflicts of interest identified - procedures - reported
+        // If the answer to Q17. is YES, mention the number of sub-funds
         string sold_to_retail_investors_sub_funds = 75  [
             (standards.open.v1.fdx_options).h1 = "2.	ORGANISATION OF THE FUND",
             (standards.open.v1.fdx_options).h2 = "2.3.	INVESTORS IN UCIs, SIFs AND SICARs",
@@ -1009,7 +1012,7 @@ message RT0009DB1 {
             (standards.open.v1.fdx_options).question = "Did the investors in the Fund at year-end belong to this category? c.	Investors confirmed in writing that they adhere to the status of well-informed investor and have been the subject of an assessment made by a credit institution within the meaning of Directive 2006/48/EC, by an investment firm within the meaning of Directive 2004/39/EC or by a management company within the meaning of “Directive 2009/65/EC”4 certifying his expertise, his experience and his knowledge in adequately apprising an investment in the specialised investment fund",
             (standards.open.v1.fdx_options).description = "Several categories for Q18 can be marked YES"
         ];
-        // Investor Categories - Well Informed
+        // Procedures in place to ensure that all investors are well-informed investors (question 19)
         YesNo procedures_in_place_to_ensure_investors_well_informed = 79  [
             (standards.open.v1.fdx_options).h1 = "2.	ORGANISATION OF THE FUND",
             (standards.open.v1.fdx_options).h2 = "2.3.	INVESTORS IN UCIs, SIFs AND SICARs",
@@ -1018,7 +1021,7 @@ message RT0009DB1 {
             (standards.open.v1.fdx_options).question = "Are procedures in place for the Fund to ensure that all investors are well-informed investors in accordance with article 2 of the SIF Law or with article 2 of the SICAR Law?",
             (standards.open.v1.fdx_options).default = "1"
         ];
-        // Conflicts of interest identified - procedures - reported
+        // If the answer to Q19 is NO, explain
         string procedures_in_place_to_ensure_investors_well_informed_explain = 80  [
             (standards.open.v1.fdx_options).h1 = "2.	ORGANISATION OF THE FUND",
             (standards.open.v1.fdx_options).h2 = "2.3.	INVESTORS IN UCIs, SIFs AND SICARs",
@@ -1083,7 +1086,7 @@ message RT0009DB1 {
             (standards.open.v1.fdx_options).question = "20.	Are procedures in place for the Fund to ensure that: d.	the 'report on the activities' included in the audited annual report provides a complete, consistent and fair description of the activity of the Fund for the year?",
             (standards.open.v1.fdx_options).default = "1"
         ];
-        // Annual Audit - Accounting Standard Compliance - Explain
+        // Annual Audit - Report on Activities Compliance - Explain
         string annual_audit_report_explain = 88  [
             (standards.open.v1.fdx_options).h1 = "2.	ORGANISATION OF THE FUND",
             (standards.open.v1.fdx_options).h2 = "2.4.	ANNUAL REPORT",
@@ -1171,13 +1174,13 @@ message RT0009DB1 {
             (standards.open.v1.fdx_options).question = "If the answer to Q4.1. is YES, mention the concerned investment restrictions",
             (standards.open.v1.fdx_options).conditional = "InvestmentCompliance.InvestmentRestrictionsNotVerifiedForAllSubFunds?1:0"
         ];
-        // Information to be provided where an investment restriction is not provided for a certain sub-fund
+        // Information to be provided where an investment restriction is not verified for a certain sub-fund
         message SubFundWhereInvestmentRestrictionNotVerified {
-            // The CSSF of the fund / sub-fund
+            // Name of the (sub-)fund
             string fund_name = 1 [
                 (standards.open.v1.fdx_options).question = "Name of the (sub-)fund"
             ];
-            // Is the fund in liquidation (false if in liquidation)
+            // Whether the sub-fund is active at year-end or in liquidation
             ActiveOrLiquidation active = 2 [
                 (standards.open.v1.fdx_options).question = "Is the sub-fund active at year-end (vs. in liquidation)?",
                 (standards.open.v1.fdx_options).default = "1"
@@ -1475,16 +1478,16 @@ message RT0009DB1 {
         ];
         // Definition of the information to be provided for a fund where the trash ratio was more than 5%
         message TrashRatioByFund {
-            // The CSSF of the fund / sub-fund
+            // Name of the (sub-)fund
             string fund_name = 1 [
                 (standards.open.v1.fdx_options).question = "Name of the (sub-)fund"
             ];
-            // Is the fund in liquidation (false if in liquidation)
+            // Whether the sub-fund is active at year-end (YES) or in liquidation (NO)
             YesNo active = 2 [
                 (standards.open.v1.fdx_options).question = "Is the sub-fund active at year-end (vs. in liquidation)?",
                 (standards.open.v1.fdx_options).default = "1"
             ];
-            // Concerned Investment Restriction
+            // Trash ratio of the sub-fund at year-end, in % of NAV
             double trash_ratio = 3 [
                 (standards.open.v1.fdx_options).question = "Trash ratio (in % of NAV)"
             ];
@@ -1980,7 +1983,7 @@ message RT0009DB1 {
             (standards.open.v1.fdx_options).description = "9	For the sub-funds qualified as MMF, the sub-section 3.2.4. is the sole section to be completed in the section 3.2.",
             (standards.open.v1.fdx_options).default  = "1"
         ];
-        // 21.g	explain
+        // 21.h explain
         string complied_with_article16_on_eligible_shares_or_units_of_mmfs_explain = 89 [
             (standards.open.v1.fdx_options).h1 = "3.	INVESTMENT COMPLIANCE",
             (standards.open.v1.fdx_options).h2 = "3.2.	LEGAL/REGULATORY INVESTMENT RESTRICTIONS",
@@ -2090,7 +2093,7 @@ message RT0009DB1 {
             (standards.open.v1.fdx_options).description = "9	For the sub-funds qualified as MMF, the sub-section 3.2.4. is the sole section to be completed in the section 3.2.",
             (standards.open.v1.fdx_options).default  = "1"
         ];
-        // 24.b.explain
+        // 24.c.explain
         string complied_on_ongoing_basis_with_article24_and_article25_on_portfolio_rules_explain = 99 [
             (standards.open.v1.fdx_options).h1 = "3.	INVESTMENT COMPLIANCE",
             (standards.open.v1.fdx_options).h2 = "3.2.	LEGAL/REGULATORY INVESTMENT RESTRICTIONS",
@@ -2412,7 +2415,7 @@ message RT0009DB1 {
             (standards.open.v1.fdx_options).question = "Were all the transferable securities / money market instruments held by the (sub-)funds in the trash ratio valued on a periodic basis using information provided by the issuer of the security or using competent investment research as required by the article 2(1)(c)(ii) of the EAD GDR 2008?",
             (standards.open.v1.fdx_options).default = "1"
         ];
-        // 9.1.	If the answer to Q8. is NO, explain
+        // 9.1. If the answer to Q9. is NO, explain
         string all_instruments_in_trash_ratio_valued_on_an_ongoing_basis_using_issuer_information_or_competent_research_explain = 26 [
             (standards.open.v1.fdx_options).h1 = "4.	VALUATION",
             (standards.open.v1.fdx_options).h2 = "4.2.	LEGAL/REGULATORY REQUIREMENTS",
@@ -2431,6 +2434,7 @@ message RT0009DB1 {
             (standards.open.v1.fdx_options).description = "The materiality threshold refers to the threshold applicable for NAV errors in accordance with Circular CSSF 02/77 (e.g. 1% for equity funds) for UCITS and UCIs, respectively the threshold decided by the Management of the Fund for SIFs and SICARs on the basis of specific internal rules. The materiality threshold applicable for each sub-fund has to be provided under question 31 of the section 1 General information. For investments in securities, the market value is to be considered and, for the investments in FDIs, the notional/commitment is to be considered.",
             (standards.open.v1.fdx_options).default = "0"
         ];
+        // Number of sub-funds investing a material portion of NAV in investments valued by model, and the minimum / maximum % of NAV across them (question 10.1).
         message ProportionOfNavValuedByModelByFund {
             // Number of sub-funds
             int32 number_sub_funds = 1 [
@@ -2495,18 +2499,19 @@ message RT0009DB1 {
             (standards.open.v1.fdx_options).description = "The materiality threshold refers to the threshold applicable for NAV errors in accordance with Circular CSSF 02/77 (e.g. 1% for equity funds) for UCITS and UCIs, respectively the threshold decided by the Management of the Fund for SIFs and SICARs on the basis of specific internal rules. The materiality threshold applicable for each sub-fund has to be provided under question 31 of the section 1 General information. For investments in securities, the market value is to be considered and, for the investments in FDIs, the notional/commitment is to be considered. An external valuer, by analogy with AIFM Law, refers to a legal or natural person independent from the Fund, the IFM and any other persons with close links to the Fund or the IFM.",
             (standards.open.v1.fdx_options).default = "0"
         ];
+        // Number of sub-funds investing a material portion of NAV in unquoted assets and/or OTC FDIs valued by an external valuer, and the minimum / maximum % of NAV across them (question 12.1).
         message FundsWithUnquotedAssets {
             // Number of sub-funds
             int32 number_sub_funds = 1 [
                 (standards.open.v1.fdx_options).question = "Number of sub-funds",
                 (standards.open.v1.fdx_options).description = "Number of sub-funds: Indicate the NUMBER (i.e. 0, 1, 2, 3, etc.) of sub-funds for which a material portion of the NAV is valued by an external valuer as at year-end."
             ];
-            // Minimum % NAV valued by model
+            // Minimum % of NAV across the concerned sub-funds
             double minimum = 2 [
                 (standards.open.v1.fdx_options).question = "Minimum (% of NAV)",
                 (standards.open.v1.fdx_options).description = "Minimum (% of NAV): Among the concerned sub-funds, identify the sub-fund with the lowest percentage of NAV relating to the investments valued by an external valuer as at year-end and indicate this lowest percentage of NAV with investments valued on the basis of valuation model(s) as at year-end."
             ];
-            // Maximum % NAV valued by model
+            // Maximum % of NAV across the concerned sub-funds
             double maximum = 3 [
                 (standards.open.v1.fdx_options).question = "Maximum (% of NAV) ",
                 (standards.open.v1.fdx_options).description = "Maximum (% of NAV): Among the concerned sub-funds, identify the sub-fund with the highest percentage of NAV relating to the investments valued by an external valuer as at year-end and indicate this highest percentage of NAV with investments valued on the basis of valuation model(s) as at year-end."
@@ -2531,6 +2536,7 @@ message RT0009DB1 {
             (standards.open.v1.fdx_options).description = "23	The materiality threshold refers to the threshold applicable for NAV errors in accordance with Circular CSSF 02/77 (e.g. 1% for equity funds) for UCITS and UCIs, respectively the threshold decided by the Management of the Fund for SIFs and SICARs on the basis of specific internal rules. The materiality threshold applicable for each sub-fund has to be provided under question 31 of the section 1 General information. For investments in securities, the market value is to be considered and, for the investments in FDIs, the notional/commitment is to be considered.",
             (standards.open.v1.fdx_options).default = "0"
         ];
+        // Number of sub-funds investing a material portion of NAV in investments valued by models developed by the Fund and/or its IFM, and the minimum / maximum % of NAV across them (question 13.1).
         message FundsWithFundModelValuedAssets {
             // Number of sub-funds
             int32 number_sub_funds = 1 [
@@ -2601,18 +2607,19 @@ message RT0009DB1 {
             (standards.open.v1.fdx_options).description = "The materiality threshold refers to the threshold applicable for NAV errors in accordance with Circular CSSF 02/77 (e.g. 1% for equity funds) for UCITS and UCIs, respectively the threshold decided by the Management of the Fund for SIFs and SICARs on the basis of specific internal rules. The materiality threshold applicable for each sub-fund has to be provided under question 31 of the section 1 General information. For investments in securities, the market value is to be considered and, for the investments in FDIs, the notional/commitment is to be considered.",
             (standards.open.v1.fdx_options).default = "0"
         ];
+        // Number of sub-funds investing a material portion of NAV in assets or FDIs valued at a lower frequency than the NAV, the minimum / maximum % of NAV across them, and the types of investment concerned (question 16.1).
         message FundsWithInstrumentsValuedAtLowerFrequencyThanNav {
             // Number of sub-funds
             int32 number_sub_funds = 1 [
                 (standards.open.v1.fdx_options).question = "Number of sub-funds",
                 (standards.open.v1.fdx_options).description = "Number of sub-funds: Indicate the NUMBER (i.e. 0, 1, 2, 3, etc.) of sub-funds for which a material portion of the NAV is valued by an external valuer as at year-end."
             ];
-            // Minimum % NAV valued by model
+            // Minimum % of NAV across the concerned sub-funds
             double minimum = 2 [
                 (standards.open.v1.fdx_options).question = "Minimum (% of NAV)",
                 (standards.open.v1.fdx_options).description = "Minimum (% of NAV): Among the concerned sub-funds, identify the sub-fund with the lowest percentage of NAV relating to the investments valued by an external valuer as at year-end and indicate this lowest percentage of NAV with investments valued on the basis of valuation model(s) as at year-end."
             ];
-            // Maximum % NAV valued by model
+            // Maximum % of NAV across the concerned sub-funds
             double maximum = 3 [
                 (standards.open.v1.fdx_options).question = "Maximum (% of NAV) ",
                 (standards.open.v1.fdx_options).description = "Maximum (% of NAV): Among the concerned sub-funds, identify the sub-fund with the highest percentage of NAV relating to the investments valued by an external valuer as at year-end and indicate this highest percentage of NAV with investments valued on the basis of valuation model(s) as at year-end."
@@ -2639,18 +2646,19 @@ message RT0009DB1 {
             (standards.open.v1.fdx_options).description = "32	The materiality threshold refers to the threshold applicable for NAV errors in accordance with Circular CSSF 02/77 (e.g. 1% for equity funds) for UCITS and UCIs, respectively the threshold decided by the Management of the Fund for SIFs and SICARs on the basis of specific internal rules. The materiality threshold applicable for each sub-fund has to be provided under question 31 of the section 1 General information. For the investments in FDIs, the notional/commitment is to be considered. Examples of standard OTC FDIs (non-exhaustive) refer to FX Forwards, plain vanilla fixed/floating IRS, plain vanilla index options, plain vanilla options on a single liquid bond or listed equity, standard TRS. Examples of non-standard OTC FDIs (non-exhaustive) refer to non-standard TRS, Credit Default Swaps, Options on Credit Default Swaps, Variance/Volatility Swaps, OTC options on a basket of securities.",
             (standards.open.v1.fdx_options).default = "0"
         ];
+        // Number of sub-funds investing a material portion of NAV in non-standard OTC FDIs, and the minimum / maximum % of NAV across them (question 17.1).
         message FundsWithNonStandardInstruments {
             // Number of sub-funds
             int32 number_sub_funds = 1 [
                 (standards.open.v1.fdx_options).question = "Number of sub-funds",
                 (standards.open.v1.fdx_options).description = "Number of sub-funds: Indicate the NUMBER (i.e. 0, 1, 2, 3, etc.) of sub-funds for which a material portion of the NAV is valued by an external valuer as at year-end."
             ];
-            // Minimum % NAV valued by model
+            // Minimum % of NAV across the concerned sub-funds
             double minimum = 2 [
                 (standards.open.v1.fdx_options).question = "Minimum (% of NAV)",
                 (standards.open.v1.fdx_options).description = "Minimum (% of NAV): Among the concerned sub-funds, identify the sub-fund with the lowest percentage of NAV relating to the investments valued by an external valuer as at year-end and indicate this lowest percentage of NAV with investments valued on the basis of valuation model(s) as at year-end."
             ];
-            // Maximum % NAV valued by model
+            // Maximum % of NAV across the concerned sub-funds
             double maximum = 3 [
                 (standards.open.v1.fdx_options).question = "Maximum (% of NAV) ",
                 (standards.open.v1.fdx_options).description = "Maximum (% of NAV): Among the concerned sub-funds, identify the sub-fund with the highest percentage of NAV relating to the investments valued by an external valuer as at year-end and indicate this highest percentage of NAV with investments valued on the basis of valuation model(s) as at year-end."
@@ -2673,18 +2681,19 @@ message RT0009DB1 {
             (standards.open.v1.fdx_options).description = "For this question, the market value of such investments before haircut is to be considered. The materiality threshold refers to the threshold applicable for NAV errors in accordance with Circular CSSF 02/77 (e.g. 1% for equity funds) for UCITS and UCIs, respectively the threshold decided by the Management of the Fund for SIFs and SICARs on the basis of specific internal rules. The materiality threshold applicable for each sub-fund has to be provided under question 31 of the section 1 General information. For investments in securities, the market value is to be considered and, for the investments in FDIs, the notional/commitment is to be considered.",
             (standards.open.v1.fdx_options).default = "0"
         ];
+        // Number of sub-funds investing a material portion of NAV in investments to which the Management of the Fund applied a haircut, and the minimum / maximum % of NAV across them (question 18.1).
         message FundsWithHaircutInstruments {
             // Number of sub-funds
             int32 number_sub_funds = 1 [
                 (standards.open.v1.fdx_options).question = "Number of sub-funds",
                 (standards.open.v1.fdx_options).description = "Number of sub-funds: Indicate the NUMBER (i.e. 0, 1, 2, 3, etc.) of sub-funds for which a material portion of the NAV is valued by an external valuer as at year-end."
             ];
-            // Minimum % NAV valued by model
+            // Minimum % of NAV across the concerned sub-funds
             double minimum = 2 [
                 (standards.open.v1.fdx_options).question = "Minimum (% of NAV)",
                 (standards.open.v1.fdx_options).description = "Minimum (% of NAV): Among the concerned sub-funds, identify the sub-fund with the lowest percentage of NAV relating to the investments valued by an external valuer as at year-end and indicate this lowest percentage of NAV with investments valued on the basis of valuation model(s) as at year-end."
             ];
-            // Maximum % NAV valued by model
+            // Maximum % of NAV across the concerned sub-funds
             double maximum = 3 [
                 (standards.open.v1.fdx_options).question = "Maximum (% of NAV) ",
                 (standards.open.v1.fdx_options).description = "Maximum (% of NAV): Among the concerned sub-funds, identify the sub-fund with the highest percentage of NAV relating to the investments valued by an external valuer as at year-end and indicate this highest percentage of NAV with investments valued on the basis of valuation model(s) as at year-end."
@@ -2724,6 +2733,7 @@ message RT0009DB1 {
             (standards.open.v1.fdx_options).description = "The materiality threshold refers to the threshold applicable for NAV errors in accordance with Circular CSSF 02/77 (e.g. 1% for equity funds) for UCITS and UCIs, respectively the threshold decided by the Management of the Fund for SIFs and SICARs on the basis of specific internal rules. The materiality threshold applicable for each sub-fund has to be provided under question 31 of the section 1 'General information'. For investments in securities, the market value is to be considered and, for the investments in FDIs, the notional/commitment is to be considered. The NAV calculation process is not an exact science and the result of the calculation should represent the best possible approximation of the true value of the assets/FDIs of a UCI. This question targets the assets/FDIs for which the valuation is particularly uncertain and could lead to a modification of the audit opinion of the auditor on the annual accounts.",
             (standards.open.v1.fdx_options).default = "0"
         ];
+        // A sub-fund investing a material portion of NAV in investments facing valuation uncertainties, with the portion held and an explanation (question 19.1).
         message FundsWithValuationUncertainInstruments {
             // Name of the (sub-)fund
             string sub_fund = 1 [
@@ -2779,6 +2789,7 @@ message RT0009DB1 {
             (standards.open.v1.fdx_options).question = "If the answer to Q20. is YES, did it impact only certain sub-funds?",
             (standards.open.v1.fdx_options).conditional = "Valuation.ExperiencedOperationalOrItRiskImpactingNavDetermination?1:0"
         ];
+        // A sub-fund affected by an operational/IT risk that impacted the NAV determination process, with an explanation of the issue and its impact (question 20.2).
         message FundSpecificExplanation {
             // Name of the (sub-)fund
             string sub_fund = 1 [
@@ -2827,18 +2838,19 @@ message RT0009DB1 {
             (standards.open.v1.fdx_options).description = "A stale price is a price which has not been updated with relevant financial information: - for more than five days for a daily NAV, - for more than two NAV calculation for a weekly or bi-monthly NAV, - for more than one month for a monthly NAV,- at each NAV calculation for other frequencies . The materiality threshold refers to the threshold applicable for NAV errors in accordance with Circular CSSF 02/77 (e.g. 1% for equity funds) for UCITS and UCIs, respectively the threshold decided by the Management of the Fund for SIFs and SICARs on the basis of specific internal rules. The materiality threshold applicable for each sub-fund has to be provided under question 31 of the section 1 General information. For investments in securities, the market value is to be considered and, for the investments in FDIs, the notional/commitment is to be considered.",
             (standards.open.v1.fdx_options).default = "0"
         ];
+        // Number of sub-funds investing a material portion of NAV in assets or FDIs valued on stale prices, and the minimum / maximum % of NAV across them (question 22.1).
         message StalePriceExposure {
             // Number of sub-funds
             int32 number_sub_funds = 1 [
                 (standards.open.v1.fdx_options).question = "Number of sub-funds",
                 (standards.open.v1.fdx_options).description = "Number of sub-funds: Indicate the NUMBER (i.e. 0, 1, 2, 3, etc.) of sub-funds for which a material portion of the NAV in assets or FDIs which are valued on the basis of stale prices as at year-end. When the Fund is a single fund and the answer to Q22. is YES, then number of sub-funds returns 1 and Minimum (% of NAV) / Maximum (% of NAV) return the same number."
             ];
-            // Minimum % NAV valued by model
+            // Minimum % of NAV across the concerned sub-funds
             double minimum = 2 [
                 (standards.open.v1.fdx_options).question = "Minimum (% of NAV)",
                 (standards.open.v1.fdx_options).description = "Minimum (% of NAV): Among the concerned sub-funds, identify the sub-fund with the lowest percentage of NAV in assets or FDIs which are valued on the basis of stale prices as at year-end and indicate this lowest percentage of NAV with investments valued on the basis of valuation model(s) as at year-end."
             ];
-            // Maximum % NAV valued by model
+            // Maximum % of NAV across the concerned sub-funds
             double maximum = 3 [
                 (standards.open.v1.fdx_options).question = "Maximum (% of NAV)",
                 (standards.open.v1.fdx_options).description = "Maximum (% of NAV): Among the concerned sub-funds, identify the sub-fund with the highest percentage of NAV in assets or FDIs which are valued on the basis of stale prices as at year-end and indicate this highest percentage of NAV with investments valued on the basis of valuation model(s) as at year-end."
@@ -2861,18 +2873,19 @@ message RT0009DB1 {
             (standards.open.v1.fdx_options).description = "45	For the purpose of the question all investments held by the (sub-)fund(s) should be considered with regard to the criterion of independent source for the valuation. The materiality threshold refers to the threshold applicable for NAV errors in accordance with Circular CSSF 02/77 (e.g. 1% for equity funds) for UCITS and UCIs, respectively the threshold decided by the Management of the Fund for SIFs and SICARs on the basis of specific internal rules. The materiality threshold applicable for each sub-fund has to be provided under question 31 of the section 1’General information’. For investments in securities, the market value is to be considered and, for the investments in FDIs, the notional/commitment is to be considered",
             (standards.open.v1.fdx_options).default = "0"
         ];
+        // Number of sub-funds investing a material portion of NAV in investments valued with prices from a source that is not independent, and the minimum / maximum % of NAV across them (question 23.1).
         message NonIndependentPriceExposure {
             // Number of sub-funds
             int32 number_sub_funds = 1 [
                 (standards.open.v1.fdx_options).question = "Number of sub-funds",
                 (standards.open.v1.fdx_options).description = "Number of sub-funds: Indicate the NUMBER (i.e. 0, 1, 2, 3, etc.) of sub-funds for which a material portion of the NAV in assets or FDIs which are valued on the basis of stale prices as at year-end. When the Fund is a single fund and the answer to Q22. is YES, then number of sub-funds returns 1 and Minimum (% of NAV) / Maximum (% of NAV) return the same number."
             ];
-            // Minimum % NAV valued by model
+            // Minimum % of NAV across the concerned sub-funds
             double minimum = 2 [
                 (standards.open.v1.fdx_options).question = "Minimum (% of NAV)",
                 (standards.open.v1.fdx_options).description = "Minimum (% of NAV): Among the concerned sub-funds, identify the sub-fund with the lowest percentage of NAV in assets or FDIs which are valued on the basis of stale prices as at year-end and indicate this lowest percentage of NAV with investments valued on the basis of valuation model(s) as at year-end."
             ];
-            // Maximum % NAV valued by model
+            // Maximum % of NAV across the concerned sub-funds
             double maximum = 3 [
                 (standards.open.v1.fdx_options).question = "Maximum (% of NAV)",
                 (standards.open.v1.fdx_options).description = "Maximum (% of NAV): Among the concerned sub-funds, identify the sub-fund with the highest percentage of NAV in assets or FDIs which are valued on the basis of stale prices as at year-end and indicate this highest percentage of NAV with investments valued on the basis of valuation model(s) as at year-end."
@@ -2895,6 +2908,7 @@ message RT0009DB1 {
             (standards.open.v1.fdx_options).default = "1",
             (standards.open.v1.fdx_options).conditional = "Valuation.InvestedMaterialPortionValuedByNonIndependentSource?1:0"
         ];
+        // A sub-fund for which no procedures ensured that prices from a non-independent source correspond to fair value, with an explanation of each issue (question 23.2.1).
         message FundSpecificExplanationNonIndependentValuationProcedures {
             // Name of the (sub-)fund
             string sub_fund = 1 [
@@ -2922,6 +2936,7 @@ message RT0009DB1 {
             (standards.open.v1.fdx_options).description = "An external valuer, by analogy with AIFM Law, refers to a legal or natural person independent from the Fund, the IFM and any other persons with close links to the Fund or the IFM.",
             (standards.open.v1.fdx_options).default = "0"
         ];
+        // A sub-fund for which the Management of the Fund refused to approve a valuation provided by an external valuer, with the investments concerned and an explanation (question 24.1).
         message FundRefusedValuation {
             // Name of the (sub-)fund
             string sub_fund = 1 [
@@ -2949,6 +2964,7 @@ message RT0009DB1 {
             (standards.open.v1.fdx_options).description = "An external valuer, by analogy with AIFM Law, refers to a legal or natural person independent from the Fund, the IFM and any other persons with close links to the Fund or the IFM.",
             (standards.open.v1.fdx_options).default = "0"
         ];
+        // A sub-fund for which an external valuer applied a disclaimer or refused to provide a fair valuation, with the investments concerned and an explanation (question 25.1).
         message FundDisclaimedValuation {
             // Name of the (sub-)fund
             string sub_fund = 1 [
@@ -3028,6 +3044,7 @@ message RT0009DB1 {
             (standards.open.v1.fdx_options).description = "The materiality threshold refers to the threshold applicable for NAV errors in accordance with Circular CSSF 02/77 (e.g. 1% for equity funds) for UCITS and UCIs, respectively the threshold decided by the Management of the Fund for SIFs and SICARs on the basis of specific internal rules. The materiality threshold applicable for each sub-fund has to be provided under question 31 of the section 1 'General information'. For investments in securities, the market value is to be considered and, for the investments in FDIs, the notional/commitment is to be considered.",
             (standards.open.v1.fdx_options).default = "0"
         ];
+        // A sub-fund that sold an investment at a material discount to its last valuation, with the investments concerned and an explanation (question 28.1).
         message FundSoldInvestmentAtMaterialDiscount {
             // Name of the (sub-)fund
             string sub_fund = 1 [
@@ -3070,12 +3087,13 @@ message RT0009DB1 {
             (standards.open.v1.fdx_options).question = "Were all transactions on assets or FDIs (purchases or sales) concluded by any (sub-)fund(s) during the year done on arm’s length basis?",
             (standards.open.v1.fdx_options).default = "1"
         ];
+        // A sub-fund with transactions on assets or FDIs not done on an arm's length basis, with the related conditions and impacts (question 30.1).
         message FundNonArmsLengthTransactions {
             // Name of the (sub-)fund
             string sub_fund = 1 [
                 (standards.open.v1.fdx_options).question = "Name of the (sub-)fund"
             ];
-            // Explanation of concerned investments & explanation
+            // Explanation of the investments concerned, related conditions and impacts
             string explanation_on_investments_conditions_and_impacts = 2 [
                 (standards.open.v1.fdx_options).question = "Explanation on investments, conditions & impacts"
             ];
@@ -3097,12 +3115,13 @@ message RT0009DB1 {
             (standards.open.v1.fdx_options).default = "0",
             (standards.open.v1.fdx_options).conditional = "Valuation.AllTransactionsOnAssetsAndFdisInYearArmsLength?0:1"
         ];
+        // A sub-fund with non-arm's length transactions concluded with a related party, with the investments and related parties concerned (question 30.2.1).
         message FundNonArmsLengthRelatedPartyTransactions {
             // Name of the (sub-)fund
             string sub_fund = 1 [
                 (standards.open.v1.fdx_options).question = "Name of the (sub-)fund"
             ];
-            // Explanation of concerned investments & explanation
+            // Explanation of the investments and related parties concerned
             string explanation_on_investments_conditions_and_impacts = 2 [
                 (standards.open.v1.fdx_options).question = "Explanation on investments, conditions & impacts"
             ];
@@ -3139,8 +3158,10 @@ message RT0009DB1 {
     ];
     // Definition of questions relating to 5. NAV DETERMINATION
     message NavDetermination {
+        // Accounting standard adopted by the Fund for the preparation of its annual report.
         enum AccountingStandard {
-            // Other
+            // Other accounting standard, specified in `adopted_accounting_standards_specify`.
+            // As the zero value, this is also what an unset field reads as.
             OTHER = 0;
             // IFRS
             IFRS = 1;
@@ -3217,6 +3238,7 @@ message RT0009DB1 {
             (standards.open.v1.fdx_options).description = "The section on Late Trading/Market Timing does only apply to a Fund having at least one open-ended sub-fund or being an open-ended single fund. Otherwise, Q3. to Q8. should be filled 'N/A'.",
             (standards.open.v1.fdx_options).default = "0"
         ];
+        // A sub-fund exposed to the risk of market timing because of its structure or set-up (question 4.1).
         message FundAtRiskOfMarketTiming {
             // Name of the (sub-)fund
             string sub_fund = 1 [
@@ -4021,6 +4043,7 @@ message RT0009DB1 {
             (standards.open.v1.fdx_options).conditional = "NavDetermination.ProspectusAllowsRedemptionInKind?1:0",
             (standards.open.v1.fdx_options).default = "0"
         ];
+        // A sub-fund that used redemption in kind during the year, with the number of transactions (question 14.1.1).
         message FundRedemptionsInKind {
             // Name of the (sub-)fund
             string sub_fund = 1 [
@@ -4071,7 +4094,7 @@ message RT0009DB1 {
             (standards.open.v1.fdx_options).conditional = "NavDetermination.RedemptionInKindHasBeenUsed?1:0",
             (standards.open.v1.fdx_options).default = "1"
         ];
-        // 14.1.3.1.	If the answer to Q14.1.2. is NO, explain
+        // 14.1.3.1. If the answer to Q14.1.3. is NO, explain
         string redemptions_in_kind_subject_to_auditor_report_when_required_explain = 99 [
             (standards.open.v1.fdx_options).h1 = "5. NAV DETERMINATION",
             (standards.open.v1.fdx_options).h2 = "5.3.	LIQUIDITY MANAGEMENT TOOLS (LMT)",
@@ -4358,6 +4381,7 @@ message RT0009DB1 {
             (standards.open.v1.fdx_options).default = "0",
             (standards.open.v1.fdx_options).conditional = "NavDetermination.ProspectusAllowsForContributionsInKind?1:0"
         ];
+        // A sub-fund that received contributions in kind during the year, with the number of transactions (question 21.1.1).
         message FundTransactionsInKind {
             // Name of the (sub-)fund
             string sub_fund = 1 [
@@ -4436,11 +4460,13 @@ message RT0009DB1 {
             (standards.open.v1.fdx_options).conditional = "ExpensesAndIncome.AllCostsAndFeesChargedCorrespondedToChargeableServiceInAccordanceWithProspectus?0:1",
             (standards.open.v1.fdx_options).default = "1"
         ];
+        // Costs/fees concerning specific sub-funds, with their monetary amounts (questions 1.1.1.1, 1.2.1.1 and 2.2).
         message FundSpecificCostOrFee {
             // Name of the (sub-)fund
             string sub_fund = 1 [
                 (standards.open.v1.fdx_options).question = "Name of the (sub-)fund"
             ];
+            // The fee(s) concerned and their monetary amount(s) in the sub-fund's base currency, as free text.
             string concerned_fees_and_ammount = 2 [
                 (standards.open.v1.fdx_options).question = "Concerned fee(s) & monetary amount(s) in the sub-fund(s) base currency"
             ];
@@ -4575,8 +4601,9 @@ message RT0009DB1 {
             (standards.open.v1.fdx_options).question = "If the any answer to Q.3. [a. to c.] is NO, explain",
             (standards.open.v1.fdx_options).conditional = "ExpensesAndIncome.FormalAssessmentPerformedToVerifyEffectiveServiceInInvestorsBestInterest?0:1"
         ];
+        // OCR/TER of a (sub-)fund for the year under review (question 4).
         message FundExpenseRatio {
-            // The CSSF of the fund / sub-fund
+            // CSSF code of the (sub-)fund
             string cssf_code = 1 [
                 (standards.open.v1.fdx_options).question = "CSSF Code of the (sub-)fund"
             ];
@@ -4701,6 +4728,8 @@ message RT0009DB1 {
             (standards.open.v1.fdx_options).default = "0",
             (standards.open.v1.fdx_options).description = "Advisory fees correspond to fees received by the advisor from any sub-fund, the IFM or retroceded from the portfolio manager in relation with advisory services for the sub-fund. Portfolio management fees correspond to fees received by the porfolio manager from any sub-fund in relation with portfolio management services, net of retrocession to the advisor, if any, or retrocession to any other entities, if any."
         ];
+        // A sub-fund and the reasons given for it. Used for question 6.1 (advisory fees above portfolio management fees)
+        // and question 7.1 (investment adviser's share of performance fee / carried interest above the portfolio manager's).
         message AdvisoryFeeReasonsByFund {
             // Name of the (sub-)fund
             string sub_fund = 1 [
@@ -4747,6 +4776,7 @@ message RT0009DB1 {
             (standards.open.v1.fdx_options).question = "Have the total transaction costs (acquisition and disposal costs) on assets and FDIs borne by any sub-fund during the year been above the materiality threshold",
             (standards.open.v1.fdx_options).default = "0"
         ];
+        // A sub-fund whose total transaction costs for the year were above the materiality threshold (question 8.1).
         message FundMaterialTransactionCosts {
             // Name of the (sub-)fund
             string sub_fund = 1 [
@@ -4785,6 +4815,7 @@ message RT0009DB1 {
             (standards.open.v1.fdx_options).conditional = "ExpensesAndIncome.ProspectusProvidesForPerformanceFeeOrCarriedInterest?1:0",
             (standards.open.v1.fdx_options).default = "1"
         ];
+        // A sub-fund and an explanation. Used for questions 9.1.1 and 9.2.1 on performance fee / carried interest.
         message FundExplanation {
             // Name of the (sub-)fund
             string sub_fund = 1 [
@@ -4824,6 +4855,7 @@ message RT0009DB1 {
             (standards.open.v1.fdx_options).question = "If the answer to Q9.2. is NO, mention the sub-fund(s) concerned and explain",
             (standards.open.v1.fdx_options).conditional = "ExpensesAndIncome.PerformanceFeeCalculationParametersInLineWithProspectusAndMarket?0:1"
         ];
+        // Performance fee / carried interest charged for the year for one sub-fund (question 9.3).
         message PerformanceFeeBySubFund {
             // CSSF Code of the (sub-)fund
             string cssf_code = 1 [
@@ -5139,10 +5171,13 @@ message RT0009DB1 {
             (standards.open.v1.fdx_options).question = "Did the depositary confirm all the assets of the Fund / (sub-)fund(s) that can be held in custody at year-end, including assets held through respective agent(s) (collateral agent, specialized intermediary or by a prime broker)?",
             (standards.open.v1.fdx_options).default = "1"
         ];
+        // A type of asset the depositary did not confirm at year-end, with an explanation (question 2.1).
         message AssetExplanation {
+            // Type of assets not confirmed by the depositary.
             string asset_type = 1 [
                 (standards.open.v1.fdx_options).question = "Type of assets"
             ];
+            // Explanation, including the impact on sub-funds.
             string explanation = 2 [
                 (standards.open.v1.fdx_options).question = "Explanation"
             ];
@@ -5721,14 +5756,16 @@ message RT0009DB1 {
     ];
     // Enumberation of "Active or in Liquidation"
     enum ActiveOrLiquidation {
-        // Active
+        // Active.
+        // As the zero value, this is also what an unset field reads as.
         ACTIVE = 0;
         // In Liquidation
         IN_LIQUIDATION = 1;
     }
 }
 
-// Batch set of RT000D034 responses
+// Batch set of RT0009DB1 responses
 message RT0009DB1_batch {
+    // The RT0009DB1 responses in the batch.
     repeated RT0009DB1 response = 1;
 }

@@ -3,6 +3,8 @@ package alis.open.validation.v1;
 
 option go_package = "open.alis.services/protobuf/alis/open/validation/v1";
 
+// Validates protobuf messages against their validation rules and returns
+// those rules.
 service ValidationService {
   // Retrieve the validation rules for a given message type.
   rpc RetrieveRules(RetrieveRulesRequest) returns (RetrieveRulesResponse) {}
@@ -11,17 +13,20 @@ service ValidationService {
   rpc ValidateMessage(ValidateMessageRequest) returns (ValidateMessageResponse) {}
 }
 
+// Request message for `RetrieveRules`.
 message RetrieveRulesRequest {
   // REQUIRED: The message type to retrieve rules for.
   // E.g. "alis.os.processes.v1.CreateProcess"
   string msg_type = 1;
 }
 
+// Response message for `RetrieveRules`.
 message RetrieveRulesResponse {
   // The rules for the message type.
   repeated Rule rules = 1;
 }
 
+// Request message for `ValidateMessage`.
 message ValidateMessageRequest {
   // REQUIRED: The message type to validate.
   // E.g. "alis.os.processes.v1.CreateProcess"
@@ -33,6 +38,7 @@ message ValidateMessageRequest {
   repeated string field_paths = 3;
 }
 
+// Response message for `ValidateMessage`.
 message ValidateMessageResponse {
   // The list of rules violated
   repeated Rule violated_rules = 1;
@@ -40,6 +46,8 @@ message ValidateMessageResponse {
   repeated FieldViolation violated_fields = 2;
 }
 
+// A validation rule over one or more fields of a message, possibly composed of
+// nested rules.
 message Rule {
   // Unique identifier for the rule which reads like code
   // Examples:
@@ -60,6 +68,7 @@ message Rule {
   repeated Rule nested_rules = 4;
 }
 
+// The validation rules that a single field violates.
 message FieldViolation {
   // The field path that has a violation
   string field_path = 1;

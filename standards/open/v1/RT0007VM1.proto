@@ -23,13 +23,17 @@ option go_package = "go.alis.build/common/standards/open/v1";
 // See https://edesk.apps.cssf.lu/edesk-dashboard/docs/sfdr-precontractual/jsonschema/v1_0_0/sfdr-precontractual-input-jsonschema-v1_0_0
 // for JSON Schema
 message RT0007VM1 {
+  // Metadata about the report: its unique identifier, type, format version,
+  // authors and creation time.
   message Header {
+    // The type of report being submitted.
     enum ReportType {
       // Unspecified
       REPORT_TYPE_UNSPECIFIED = 0;
       // SFDR_PRECONTRACTUAL
       SFDR_PRECONTRACTUAL = 1;
     }
+    // The version of the report format.
     enum Version {
       // Unspecified
       VERSION_UNSPECIFIED = 0;
@@ -55,10 +59,12 @@ message RT0007VM1 {
       (standards.open.v1.fdx_options).required = true,
       (standards.open.v1.fdx_options).question = "Version (i.e. V1.0.0)"
     ];
+    // Who created the report.
     string created_by = 4 [
       json_name="createdBy",
       (standards.open.v1.fdx_options).question = "Created By:"
     ];
+    // Who submitted the report.
     string submitted_by = 5 [
       json_name="submittedBy",
       (standards.open.v1.fdx_options).question = "Submitted By:"
@@ -75,6 +81,7 @@ message RT0007VM1 {
   ];
   // The payload of the report (required)
   message Payload {
+    // The questionnaire answers for the entity and its sub-funds.
     SFDRPrecontractualReport sfdr_precontractual_report = 1 [
       json_name="sfdrPrecontractualReport",
       (standards.open.v1.fdx_options).required = true,
@@ -161,25 +168,44 @@ message RT0007VM1 {
       (standards.open.v1.fdx_options).default = "2",
       (standards.open.v1.fdx_options).conditional = "Payload.SfdrPrecontractualReport.Article8Subfunds.0.SustainableInvestmentsIndicator?1:2"
     ];
+    // Environmental and social characteristics that a sub-fund can promote.
     enum EAndSCharacteristic {
-      E_AND_S_CHARACTERISTICS_UNSPECIFIED = 0; // Not Applicable
-      EREN = 1; // Environmental - renewable energy
-      ERMA = 2; // Environmental - raw materials
-      EWL = 3; // Environmental - water and land
-      EWAS = 4; // Environmental - waste
-      EGGE = 5; // Environmental - greenhouse gas emissions
-      EBIO = 6; // Environmental - biodiversity
-      ECECO = 7; // Environmental - circular economy
-      EOTH = 8; // Environmental - other
-      SINEQ = 9; // Social - inequality
-      SSOCO = 10; // Social - social cohesion
-      SSOIN = 11; // Social - social integration
-      SLARE = 12; // Social - labour relations
-      SIHC = 13; // Social - investment in human capital
-      SESDC = 14; // Social - economically or socially disadvantaged communities
-      SOTH = 15; // Social - other
-      EEN = 16; // Environmental - energy
+      // Default value: not applicable or not set.
+      E_AND_S_CHARACTERISTICS_UNSPECIFIED = 0;
+      // Environmental - renewable energy
+      EREN = 1;
+      // Environmental - raw materials
+      ERMA = 2;
+      // Environmental - water and land
+      EWL = 3;
+      // Environmental - waste
+      EWAS = 4;
+      // Environmental - greenhouse gas emissions
+      EGGE = 5;
+      // Environmental - biodiversity
+      EBIO = 6;
+      // Environmental - circular economy
+      ECECO = 7;
+      // Environmental - other
+      EOTH = 8;
+      // Social - inequality
+      SINEQ = 9;
+      // Social - social cohesion
+      SSOCO = 10;
+      // Social - social integration
+      SSOIN = 11;
+      // Social - labour relations
+      SLARE = 12;
+      // Social - investment in human capital
+      SIHC = 13;
+      // Social - economically or socially disadvantaged communities
+      SESDC = 14;
+      // Social - other
+      SOTH = 15;
+      // Environmental - energy
+      EEN = 16;
      }
+    // The environmental and/or social characteristics the sub-fund promotes.
     repeated EAndSCharacteristic e_and_s_characteristics = 7 [
       json_name="eAndSCharacteristics",
       (standards.open.v1.fdx_options).required = true,
@@ -199,16 +225,26 @@ message RT0007VM1 {
       (standards.open.v1.fdx_options).question = "Please specify other social characteristics",
       (standards.open.v1.fdx_options).description = "The field is required if SOTH is defined in the list of values for the field eAndSCharacteristics"
     ];
+    // Objectives of the sustainable investments that a sub-fund makes.
     enum SustainableInvestmentObjective {
-      SUSTAINABLE_INVESTMENT_OBJECTIVES_UNSPECIFIED = 0; // Not Applicable
-      CCA = 1; // Climate change adaptation
-      UPWM = 2; // The sustainable use and protection of water and marine resources
-      TCE = 3; // The transition to a circular economy
-      PPC = 4; // Pollution prevention and control
-      PRBE = 5; // The protection and restoration of biodiversity and ecosystems
-      SO = 6; // Social objective
-      CCM = 7; // Climate change mitigation
-      RCE = 8; // 
+      // Default value: not applicable or not set.
+      SUSTAINABLE_INVESTMENT_OBJECTIVES_UNSPECIFIED = 0;
+      // Climate change adaptation
+      CCA = 1;
+      // The sustainable use and protection of water and marine resources
+      UPWM = 2;
+      // The transition to a circular economy
+      TCE = 3;
+      // Pollution prevention and control
+      PPC = 4;
+      // The protection and restoration of biodiversity and ecosystems
+      PRBE = 5;
+      // Social objective
+      SO = 6;
+      // Climate change mitigation
+      CCM = 7;
+      // Reduction in carbon emissions
+      RCE = 8;
     }
     // What are the objectives of the sustainable investments that the sub-fund partially intends to make?
     // The field is required if the value of the field sustainableInvestmentsIndicator is Y
@@ -225,15 +261,24 @@ message RT0007VM1 {
       (standards.open.v1.fdx_options).question = "Does the sub-fund consider principle adverse impacts on sustainability factors?",
       (standards.open.v1.fdx_options).default = "2"
     ];
+    // Investment strategies that a sub-fund can follow.
     enum InvestmentStrategy {
-      INVESTMENT_STRATEGY_UNSPECIFIED = 0; // Not Applicable
-      THE = 1; // Thematic
-      ESGI = 2; // ESG integration
-      ESGE = 3; // ESG engagement
-      II = 4; // Impact investing
-      E = 5; // Exclusions
-      O = 6; // Other
-      BIC = 7; // Bext in Class
+      // Default value: not applicable or not set.
+      INVESTMENT_STRATEGY_UNSPECIFIED = 0;
+      // Thematic
+      THE = 1;
+      // ESG integration
+      ESGI = 2;
+      // ESG engagement
+      ESGE = 3;
+      // Impact investing
+      II = 4;
+      // Exclusions
+      E = 5;
+      // Other
+      O = 6;
+      // Bext in Class
+      BIC = 7;
     }
     // What investment strategy does the sub-fund follow?
     repeated InvestmentStrategy investments_strategies = 12 [
@@ -320,11 +365,17 @@ message RT0007VM1 {
       (standards.open.v1.fdx_options).required = true,
       (standards.open.v1.fdx_options).question = "Does the sub-fund use derivatives as defined in Article 2(1), point (29), of Regulation (EU) No 600/2014 to attain the environmental or social characteristics they promote?"
     ];
+    // Measures in which Taxonomy-aligned activities are expressed: capital
+    // expenditure, operational expenditure or turnover.
     enum TACalculationMethod {
-      TA_CALCULATION_METHOD_UNSPECIFIED = 0; // Not Applicable
-      CAPEX = 1; // Capital expenditure
-      OPEX = 2; // Operational expenditure
-      T = 3; // TURNOVER
+      // Default value: not applicable or not set.
+      TA_CALCULATION_METHOD_UNSPECIFIED = 0;
+      // Capital expenditure
+      CAPEX = 1;
+      // Operational expenditure
+      OPEX = 2;
+      // TURNOVER
+      T = 3;
     }
     // Taxonomy-aligned activities are expressed as a share of.
     // The field is required if the value of the field environmentalObjectiveTaxonomyIndicator is Y
@@ -679,16 +730,26 @@ message RT0007VM1 {
     ];
     // What is the sustainable investment objective of the sub-fund?
     enum EnvironmentalAndSocialObjectives {
-      ENVIRONMENTAL_AND_SOCIAL_OBJECTIVES_UNSPECIFIED = 0; // Not Applicable
-      CCA = 1; // Climate change adaptation
-      UPWM = 2; // The sustainable use and protection of water and marine resources
-      TCE = 3; // Transition to a circular economy
-      PPC = 4; // Pollution prevention and control
-      PRBE = 5; // The protection and restoration of biodiversity and ecosystems
-      RCE = 6; // Reduction in carbon emissions
-      SO = 7; // Social objective
-      CCM = 8; // Climate change mitigation
+      // Default value: not applicable or not set.
+      ENVIRONMENTAL_AND_SOCIAL_OBJECTIVES_UNSPECIFIED = 0;
+      // Climate change adaptation
+      CCA = 1;
+      // The sustainable use and protection of water and marine resources
+      UPWM = 2;
+      // Transition to a circular economy
+      TCE = 3;
+      // Pollution prevention and control
+      PPC = 4;
+      // The protection and restoration of biodiversity and ecosystems
+      PRBE = 5;
+      // Reduction in carbon emissions
+      RCE = 6;
+      // Social objective
+      SO = 7;
+      // Climate change mitigation
+      CCM = 8;
     }
+    // The sustainable investment objectives of the sub-fund.
     repeated EnvironmentalAndSocialObjectives environmental_and_social_objectives = 8 [
       json_name = "environmentalAndSocialObjectives",
       (standards.open.v1.fdx_options).required = true,
@@ -701,15 +762,24 @@ message RT0007VM1 {
       (standards.open.v1.fdx_options).question = "Does the sub-fund consider principal adverse impacts on sustainability factors?",
       (standards.open.v1.fdx_options).default = "2"
     ];
+    // Investment strategies that a sub-fund can follow.
     enum InvestmentStrategy {
-      INVESTMENT_STRATEGY_UNSPECIFIED = 0; // Not Applicable
-      THE = 1; // Thematic
-      ESGI = 2; // ESG integration
-      ESGE = 3; // ESG engagement
-      II = 4; // Impact investing
-      E = 5; // Exclusions
-      O = 6; // Other
-      BIC = 7; // Best in class
+      // Default value: not applicable or not set.
+      INVESTMENT_STRATEGY_UNSPECIFIED = 0;
+      // Thematic
+      THE = 1;
+      // ESG integration
+      ESGI = 2;
+      // ESG engagement
+      ESGE = 3;
+      // Impact investing
+      II = 4;
+      // Exclusions
+      E = 5;
+      // Other
+      O = 6;
+      // Best in class
+      BIC = 7;
     }
     // What investment strategy does the sub-fund follow?
     repeated InvestmentStrategy investments_strategies = 10 [
@@ -788,11 +858,17 @@ message RT0007VM1 {
       (standards.open.v1.fdx_options).question = "Does the sub-fund use derivative instruments as defined in Article2(1), point 29, of Regulation (EU) No 600/2014 to attain the sustainable investment objective?",
       (standards.open.v1.fdx_options).default = "2"
     ];
+    // Measures in which Taxonomy-aligned activities are expressed: capital
+    // expenditure, operational expenditure or turnover.
     enum TACalculationMethod {
-      TA_CALCULATION_METHOD_UNSPECIFIED = 0; // Not Applicable
-      CAPEX = 1; // Capital expenditure
-      OPEX = 2; // Operational expenditure
-      T = 3; // TURNOVER
+      // Default value: not applicable or not set.
+      TA_CALCULATION_METHOD_UNSPECIFIED = 0;
+      // Capital expenditure
+      CAPEX = 1;
+      // Operational expenditure
+      OPEX = 2;
+      // TURNOVER
+      T = 3;
     }
     // Taxonomy-aligned activities are expressed as a share of
     // The field is required if the value of the field environmentalObjectiveTaxonomyIndicator is Y
@@ -1126,7 +1202,7 @@ message RT0007VM1 {
   }
   // Y / N requiring no further explanation
   enum YesNo {
-    // Not Applicable
+    // Default value: not applicable or not set.
     YES_NO_NA_UNSPECIFIED = 0;
     // Yes
     Y = 1;
@@ -1137,5 +1213,6 @@ message RT0007VM1 {
 
 // Batch set of RT0007VM1 responses
 message RT0007VM1_batch {
+  // The RT0007VM1 responses in the batch.
   repeated RT0007VM1 response = 1;
 }

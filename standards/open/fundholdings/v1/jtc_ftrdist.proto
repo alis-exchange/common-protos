@@ -132,7 +132,7 @@ message JTC_FTRDIST {
     google.protobuf.DoubleValue income_payable = 57;
     //Securities purchased payable
     google.protobuf.DoubleValue securities_purchased_payable = 58;
-    //Unrealized loss on fair value estimates
+    //Unrealized loss on foreign exchange contracts
     google.protobuf.DoubleValue unrealized_loss_on_fec = 59;
     //Variation margins payable
     google.protobuf.DoubleValue variation_margins_payable = 60;

@@ -1,5 +1,31 @@
 syntax = "proto3";
 
+// Manages the users, groups, and roles of an Alis product deployment, and
+// configures how its users sign in.
+//
+// Services:
+//
+// - `UsersService` manages `User` resources (`users/{user}`). Besides the
+//   standard methods it has self-service RPCs for the signed-in user
+//   (`RetrieveMyUser`, `EditMyInfo`, `EditMyMetadata`, `RemoveMyUser`) and
+//   masked reads (`MaskedUser`) that hide sensitive details such as the email
+//   address.
+// - `GroupsService` manages `Group` resources (`groups/{group}`), groups of
+//   users.
+//
+// Both services expose the `google.iam.v1` policy RPCs plus `AddIamBindings`
+// and `RemoveIamBindings`. The request messages for those two RPCs are defined
+// here and reused by other packages for their own IAM-protected resources.
+//
+// Other types:
+//
+// - `Role` (`roles/{role}`): a set of permissions, usually gRPC method names,
+//   that can be bound to principals on the listed resource types.
+// - `IamConfig`: optional deployment config that creates an Alis-managed OAuth
+//   reverse proxy endpoint, with its auth providers, self-signup rules and
+//   cookie domains.
+// - `IdentityProvider`: the providers a user can sign in with (Google,
+//   Microsoft, email, LinkedIn, Apple).
 package alis.open.iam.v1;
 
 import "alis/open/iam/v1/iam.proto";
@@ -67,7 +93,7 @@ message GetGroupRequest {
 
 // The request message for the CreateGroup method.
 message CreateGroupRequest {
-  // The user to create
+  // The group to create
   Group group = 1;
 }
 

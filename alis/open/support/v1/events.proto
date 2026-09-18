@@ -16,14 +16,14 @@ service EventsService {
 // Event published when a new issue is created.
 message IssueCreatedEvent {
   // The fully qualified name of the issue.
-  // Format: Format: issues/*
+  // Format: issues/*
   string issue = 1;
 }
 
 // Event published when the requesters of an issue are changed.
 message IssueRequestersChangedEvent {
   // The fully qualified name of the issue.
-  // Format: Format: issues/*
+  // Format: issues/*
   string issue = 1;
   // The fully qualified names of the previous requesters.
   // Format: [users/*]
@@ -33,7 +33,7 @@ message IssueRequestersChangedEvent {
 // Event published when the assignees of an issue are changed.
 message IssueAssigneesChangedEvent {
   // The fully qualified name of the issue.
-  // Format: Format: issues/*
+  // Format: issues/*
   string issue = 1;
   // The fully qualified names of the previous assignees.
   // Format: [users/*]
@@ -43,35 +43,35 @@ message IssueAssigneesChangedEvent {
 // Event published when the type of an issue is changed.
 message IssueTypeChangedEvent {
   // The fully qualified name of the issue.
-  // Format: Format: issues/*
+  // Format: issues/*
   string issue = 1;
 }
 
 // Event published when an issue is closed.
 message IssueClosedEvent {
   // The fully qualified name of the issue.
-  // Format: Format: issues/*
+  // Format: issues/*
   string issue = 1;
 }
 
 // Event published when an issue is reopened.
 message IssueReopenedEvent {
   // The fully qualified name of the issue.
-  // Format: Format: issues/*
+  // Format: issues/*
   string issue = 1;
 }
 
 // Event published when an issue is put on hold.
 message IssueOnHoldEvent {
   // The fully qualified name of the issue.
-  // Format: Format: issues/*
+  // Format: issues/*
   string issue = 1;
 }
 
 // Event published when an issue is resumed.
 message IssueResumedEvent {
   // The fully qualified name of the issue.
-  // Format: Format: issues/*
+  // Format: issues/*
   string issue = 1;
 }
 

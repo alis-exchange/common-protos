@@ -1,4 +1,26 @@
 syntax = "proto3";
+// Checks protobuf messages against the validation rules of the service that
+// uses them, and lists those rules.
+//
+// `ValidationService` defines two RPCs:
+//
+// - `ValidateMessage` takes a message type name and the message as bytes, and
+//   returns the rules it violates (`Rule`) and the violations per field
+//   (`FieldViolation`). `field_paths` limits validation to some fields.
+// - `RetrieveRules` returns the rules that apply to a message type.
+//
+// Other services expose the same two RPCs with these request and response
+// messages, for example `alis.open.iam.v1.UsersService`, so that clients can
+// validate messages, most commonly requests built by a client-side
+// application, and read the service's validation rules as live
+// documentation.
+//
+// A `Rule` is identified by an expression-like `id`, such as
+// `length(F(name), I(1), I(64))`, and has a plain-language `description`, the
+// field paths it evaluates together, and any nested rules.
+//
+// `BookService` and `Book` in `test.proto` are a sample API for testing, not
+// part of the validation contract.
 package alis.open.validation.v1;
 
 import "google/protobuf/empty.proto";
@@ -8,7 +30,8 @@ import "google/type/date.proto";
 
 option go_package = "open.alis.services/protobuf/alis/open/validation/v1";
 
-// TODO: Add service description
+// A sample book API defined for testing. It is not part of the validation
+// contract.
 service BookService {
   // Get a Book resource
   rpc GetBook(GetBookRequest) returns (Book) {}
@@ -41,10 +64,15 @@ message Book {
   Type type = 7;
 }
 
+// The type of a Book.
 enum Type {
+  // Not set. The default value; should not be used.
   TYPE_UNSPECIFIED = 0;
+  // An anonymous book.
   ANONYMOUS = 1;
+  // A children's book.
   CHILDREN = 2;
+  // A book for adults.
   ADULT = 3;
 }
 

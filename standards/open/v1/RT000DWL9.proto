@@ -53,9 +53,14 @@ message RT000DWL9 {
   // [List] of currencies. Please use ISO code 4217 as it can be found on https://www.currency-iso.org/en/home/tables/table-a1.html.
   // Openfunds: OFST010410 (https://openfunds.org/OFST010410)
   string fund_currency = 7;
+  // Whether shares of the fund can be subscribed or redeemed on a regular basis.
   enum OpenEndedOrClosedEndedStructure {
+    // Structure not specified.
     OPEN_ENDED_OR_CLOSED_ENDED_STRUCTURE_UNSPECIFIED = 0;
+    // Open-ended fund: shares can be subscribed or redeemed on a regular basis,
+    // for example daily.
     OPEN_ENDED = 1;
+    // Closed-ended fund: shares cannot be subscribed or redeemed on a regular basis.
     CLOSED_ENDED = 2;
   }
   // Is it possible to subscribe or redeem shares of the fund on a regular basis, i.e. daily? If yes, it is an open-ended fund. If no, it is a closed-ended fund.

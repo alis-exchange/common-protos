@@ -6,12 +6,20 @@ option go_package = "go.alis.build/common/standards/open/v1";
 
 // Standard frequency responses
 enum Frequency {
+  // Not answered.
   FREQUENCY_UNSPECIFIED = 0;
+  // Once a day.
   DAILY = 1;
+  // Once a week.
   WEEKLY = 2;
+  // Once a month.
   MONTHLY = 3;
+  // Once a quarter (every three months).
   QUARTERLY = 4;
+  // Twice a year.
   BI_ANNUALLY = 5;
+  // Once a year.
   ANNUALLY = 6;
+  // As needed, with no fixed schedule.
   AD_HOC = 7;
 }

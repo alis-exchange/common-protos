@@ -13,7 +13,7 @@ option go_package = "open.alis.services/protobuf/alis/open/support/v1";
 // IssueActivitiesService provides RPCs for managing IssueActivity resources.
 service IssueActivitiesService {
   // Validates any proto message that is used directly or indirectly by this service.
-  // Most common use issue is to validate request messages from a client-side application.
+  // Most common use case is to validate request messages from a client-side application.
   rpc ValidateMessage(alis.open.validation.v1.ValidateMessageRequest) returns (alis.open.validation.v1.ValidateMessageResponse) {}
   // Retrieves the validation rules for any proto message that is used directly or indirectly by this service.
   // Serves as live auto-documentation of the validation rules in this service.
@@ -68,6 +68,7 @@ message IssueActivity {
     // The issue type was changed
     TYPE_CHANGE = 3;
     // reserve 4, 5 and 6 for other field changes
+
     // The issue was closed
     CLOSED = 7;
     // The closed issue was reopened
@@ -106,16 +107,16 @@ message GetIssueActivityRequest {
   // The unique name of the IssueActivity.
   // Format: "issues/*/activities/*".
   string name = 1;
-  // The fields to return in snake_issue.
+  // The fields to return in snake_case.
   // All fields are returned if not set.
   google.protobuf.FieldMask read_mask = 2;
 }
 
-// The request message for the DeleteIssueActivity method.
+// The request message for the UpdateIssueActivity method.
 message UpdateIssueActivityRequest {
   // The IssueActivity to update.
   IssueActivity issue_activity = 1;
-  // The fields to update in snake_issue.
+  // The fields to update in snake_case.
   // All fields are updated if not set.
   google.protobuf.FieldMask update_mask = 2;
 }
@@ -136,7 +137,7 @@ message ListIssueActivitiesRequest {
   int32 page_size = 2;
   // A page token, received from a previous ListIssueActivities call.
   string page_token = 3;
-  // The fields to return in snake_issue.
+  // The fields to return in snake_case.
   // All fields are returned if not set.
   google.protobuf.FieldMask read_mask = 4;
   // The filter to apply

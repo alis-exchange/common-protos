@@ -1,22 +1,33 @@
 syntax = "proto3";
 
+// The request body that a Pub/Sub push subscription delivers, so services can
+// receive Pub/Sub events through an ordinary RPC.
+//
+// `PubSubMessage` models the push body: the published `Message` (data,
+// attributes, message ID, publish time and ordering key) and the name of the
+// subscription that delivered it. Event-handling RPCs take it as their
+// request, for example `HandleEvent` and `HandleDeadLetter` on
+// `alis.open.flows.v1.FlowsService`.
+//
+// Push deliveries carry the message ID and publish time under both camelCase
+// and snake_case keys, so `Message` has the extra fields `message_id1` and
+// `publish_time1` to hold the duplicates.
 package alis.open.pubsub.v1;
 
 import "google/protobuf/timestamp.proto";
 
 option go_package = "open.alis.services/protobuf/alis/open/pubsub/v1";
 
-// PubSubMessage is the body/payload/data attribute from an Pub/Sub push HTTP request.
-// As we are using Pub/Sub for many of our events, we declare this message as
-// part of the events package.
+// PubSubMessage is the body/payload/data attribute from a Pub/Sub push HTTP request.
+// As we are using Pub/Sub for many of our events, we declare this message in
+// this shared package.
 message PubSubMessage {
   // A message that is published by publishers and consumed by subscribers. The
   // message must contain either a non-empty data field or at least one attribute.
   // Note that client libraries represent this object differently
   // depending on the language. See the corresponding [client library documentation](https://cloud.google.com/pubsub/docs/reference/libraries) for
-  // more information. See [quotas and limits]
-  // (https://cloud.google.com/pubsub/quotas) for more information about message
-  // limits
+  // more information. See [quotas and limits](https://cloud.google.com/pubsub/quotas)
+  // for more information about message limits.
   Message message = 1;
   // The Body of a Pub/Sub push subscription.
   message Message {

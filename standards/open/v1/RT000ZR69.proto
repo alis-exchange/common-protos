@@ -48,7 +48,7 @@ message RT000ZR69 {
         string fund = 7;
         // Enumeration of metricIDs
         enum MetricID {
-            // The enumeration of the metrics measured
+            // Metric not specified.
             METRIC_ID_UNSPECIFIED = 0;
             // Total number of transactions settled during the month (core + corporate action + other)
             TRANSACTIONS_PROCESSED = 1;
@@ -60,10 +60,10 @@ message RT000ZR69 {
             OTHER_TRANSACTIONS_PROCESSED = 4;
             // The aggregate STP rate across all transactions
             AGGREGATE_TRANSACTIONS_STP_RATE = 5;
-            // The number of STP transactions processed (transactions that came across via an automated method versus manual
+            // The STP rate for core transactions (transactions that came across via an automated method versus manual
             // for example fax/post..etc)
             CORE_TRANSACTIONS_STP_RATE = 6;
-            // The STP transaction rate (stp_transactions_processed / transactions_processed)
+            // The STP rate for corporate action transactions
             CORPORATE_ACTION_TRANSACTIONS_STP_RATE = 7;
             // The total value of net in/outflows in the currency units of the metric subject
             NET_FLOWS = 8;
@@ -85,7 +85,7 @@ message RT000ZR69 {
             PERCENTAGE_ACCOUNTS_WITH_BALANCES = 16;
             // The percentage of accounts in good order at the end of the reporting period
             PERCENTAGE_ACCOUNTS_IN_GOOD_ORDER = 17;
-            // The percentage of large trade reports sent within the agreed timeframe
+            // The percentage of investor reports sent within the agreed timeframe
             INVESTOR_REPORTS_TIMELINESS = 18;
             // Number of phone calls processed
             NUMBER_OF_PHONE_CALLS_PROCESSED = 19;
@@ -99,7 +99,7 @@ message RT000ZR69 {
             AVERAGE_PHONE_QUERY_TIME = 23;
             // The rate at which email response timeliness met agreed service level thresholds
             EMAIL_QUERY_TIMELINESS_RATE = 24;
-            // The rate at which email response timeliness met agreed service level thresholds
+            // The rate at which phone response timeliness met agreed service level thresholds
             PHONE_QUERY_TIMELINESS_RATE = 25;
             // Number of system issues that occurred during the month.
             SYSTEM_ISSUES = 26;
@@ -194,7 +194,7 @@ message RT000ZR69 {
             LARGE_TRADE_REPORTS_TIMELINESS = 112;
             // The number of investor reports sent
             INVESTOR_REPORTS = 113;
-            // The number of large trade reports sent without error
+            // The number of investor reports sent without error
             INVESTOR_REPORTS_ACCURACY = 114;
             // The number of contract notes
             CONTRACT_NOTES_SENT = 115;
@@ -222,9 +222,13 @@ message RT000ZR69 {
         MetricID metric_id = 8;
         // The type of value used to measure the metric
         enum ValueType {
+            // Value type not specified.
             METRIC_TYPE_UNSPECIFIED = 0;
+            // The metric is a number, for example a count.
             NUMBER = 1;
+            // The metric is a percentage.
             PERCENTAGE = 2;
+            // The metric is an amount of money in the currency given by currency_code.
             CURRENCY = 3;
         }
         // Enumeration for how to interpret the metric value
@@ -238,6 +242,7 @@ message RT000ZR69 {
         double metric = 11;
         // Options for how to evaluate the metric
         enum EvaluationType {
+            // Evaluation type not specified.
             EVALUATION_TYPE_UNSPECIFIED = 0;
             // A higher result is more favorable
             MAXIMISE = 1;
@@ -431,7 +436,7 @@ message RT000ZR69 {
         string share_class_id = 4;
         // Enumerations of financial identifiers
         enum ShareClassIdentifierTypes {
-            // Source not specified by the user.
+            // Identifier type not specified.
             IDENTIFIER_UNSPECIFIED = 0;
             // ISO 6166 code of ISIN when available
             ISIN = 1;
@@ -610,9 +615,13 @@ message RT000ZR69 {
         string remediation = 17;
         // Enumerations of impact of the error
         enum Impact {
+            // Impact not specified.
             IMPACT_UNSPECIFIED = 0;
+            // The error had no impact.
             WITHOUT_IMPACT = 1;
+            // The error had an immaterial impact.
             IMMATERIAL = 2;
+            // The error had a material impact.
             MATERIAL = 3;
         }
         // The impact of the error
@@ -620,10 +629,9 @@ message RT000ZR69 {
         // The amount of impact (in currency terms)
         double impact_amount = 19;
         // The currency code of the impact amount
-        // The country code is required to comply with the 3-letter ISO 3166-1 alpha-3 standard.
-        // The ISO 3166-1 alpha-3 is a set of 3-letter country codes to represent countries and dependent areas.
-        // Make sure the provided country code is in uppercase.
-        // Example: 'USA' for the United States, 'GBR' for Great Britain, 'DEU' for Germany, etc.
+        // The currency code is required to comply with the 3-letter ISO 4217 standard.
+        // Make sure the provided currency code is in uppercase.
+        // Example: 'USD' for United States Dollar, 'GBP' for Great Britain Pound, 'EUR' for Euro, etc.
         string impact_amount_currency = 20;
         // Other Comments
         string comments = 51;
@@ -632,5 +640,6 @@ message RT000ZR69 {
 
 // Batch set of RT000ZR69 responses
 message RT000ZR69_batch {
+    // The RT000ZR69 responses in the batch.
     repeated RT000ZR69 response = 1;
 }

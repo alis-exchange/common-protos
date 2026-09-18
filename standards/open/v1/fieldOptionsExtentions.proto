@@ -6,21 +6,76 @@ import "google/protobuf/descriptor.proto";
 
 option go_package = "go.alis.build/common/standards/open/v1";
 
+// Questionnaire metadata for a field of a data standard: how the field is
+// numbered, worded, grouped under headings, validated and shown.
+//
+// Set it on a field through the `fdx_options` extension, one key at a time:
+//
+// ```proto
+// string regulated_entity_registration = 5 [
+//   (standards.open.v1.fdx_options).number = "1.4.a",
+//   (standards.open.v1.fdx_options).question = "If yes, what is your registration number / regulatory license?",
+//   (standards.open.v1.fdx_options).conditional = "GeneralInformation.RegulatedEntity?1:2"
+// ];
+// ```
 message FDXOptions {
+  // Question or label text shown to the person completing the field, as worded
+  // in the source questionnaire or template.
   string question = 1;
+  // Guidance shown with the question: completion instructions, the allowed
+  // answers, or a reference code from the source questionnaire such as
+  // `GEN.1`.
   string description = 2;
+  // Question number as printed in the source questionnaire, for example
+  // `1.4.a`. Free text: it may carry a trailing period or a suffix such as
+  // `.specify`, and is not guaranteed to be unique within a message.
   string number = 3;
+  // Rule that makes the field a follow-up, shown only when another field holds
+  // a given answer. Empty means the field is always shown.
+  //
+  // Format: `<path>?<show>:<other>`, for example
+  // `GeneralInformation.RegulatedEntity?1:2`.
+  //
+  // - `<path>` names the controlling field as a dotted path, usually of
+  //   PascalCase message and field names from the standard's top-level message
+  //   (`GeneralInformation.RegulatedEntity` for the `regulated_entity` field of
+  //   `GeneralInformation`). A numeric segment selects an element of a repeated
+  //   field.
+  // - `<show>` is the answer of the controlling field that makes this field
+  //   applicable: an enum value number for enum fields (`1` for `Y` in a
+  //   `YesNoNA` enum where `Y = 1` and `N = 2`), or `true` / `false` for bool
+  //   fields.
+  // - `<other>` is usually the opposite answer (`2` for `N`, `false`) or `0`.
   string conditional = 4;
+  // Top-level section heading the field is displayed under, for example
+  // `GI. GENERAL INFORMATION`.
   string h1 = 5;
+  // Second-level heading under `h1`, for example `2.1. OVERSIGHT`.
   string h2 = 6;
+  // Third-level heading under `h2`.
   string h3 = 7;
+  // Fourth-level heading under `h3`.
   string h4 = 10;
+  // Regular expression the answer must match. In the standards it checks
+  // `YYYY-MM-DD` dates held in string fields. Empty means no pattern check.
   string validation = 8;
+  // Default answer, written as a string: the enum value number for enum fields
+  // (for example `"1"`), or the literal value for scalar fields (for example
+  // `"-9999"` on a double). Empty means no default.
   string default = 9;
+  // When `true`, the field must be answered. `false`, the default, sets no
+  // requirement through this option.
   bool required = 11;
+  // Property name that carries the field in the external JSON format the
+  // standard maps to, for example the CSSF data collection format for
+  // `RT0008FD7`. It can differ from the proto field's own JSON name:
+  // `umbrella_cssf_code` maps to `entityCssfCode`. Empty means no external
+  // name is set.
   string fdx_json_name = 12;
 }
 
 extend google.protobuf.FieldOptions {
+  // Questionnaire metadata for the field: question number and text, section
+  // headings, visibility rule, default and validation. See `FDXOptions`.
   FDXOptions fdx_options = 70001;
 }

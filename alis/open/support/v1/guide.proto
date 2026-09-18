@@ -45,7 +45,7 @@ message Guide {
     Type type = 1;
     // The potential types of content blocks
     enum Type {
-      // TYPE_UNSPECIFIED
+      // The content block type is not specified.
       TYPE_UNSPECIFIED = 0;
       // A title
       TITLE = 1;
@@ -169,7 +169,7 @@ message Guide {
       Language language = 1;
       // The set of available languages
       enum Language {
-        // Unspecified
+        // The code language is not specified.
         LANGUAGE_UNSPECIFIED = 0;
         // Go
         GO = 1;

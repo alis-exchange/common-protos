@@ -10,68 +10,88 @@ option go_package = "go.alis.build/common/standards/open/v1";
 
 // UME Delegate Due Diligence Questionnaire
 message RT000HL16 {
+  // Section GI. General information about the legal entity: identification,
+  // ownership, tax compliance, fund-related activity and staff headcount.
   message GeneralInformation {
+    // 0.1 Legal name of the entity.
     string legal_entity_name = 1 [
       (standards.open.v1.fdx_options).h1 = "GI.	GENERAL INFORMATION",
       (standards.open.v1.fdx_options).number = "0.1",
       (standards.open.v1.fdx_options).question = "Legal entity name",
       (standards.open.v1.fdx_options).description = "GEN.1"
     ];
+    // 0.2 Country in which the entity is incorporated.
     string country_of_incorporation = 2 [
       (standards.open.v1.fdx_options).h1 = "GI.	GENERAL INFORMATION",
       (standards.open.v1.fdx_options).number = "0.2",
       (standards.open.v1.fdx_options).question = "Legal entity name",
       (standards.open.v1.fdx_options).description = "GEN.2"
     ];
+    // 0.3 Address of the entity.
     string address = 3 [
       (standards.open.v1.fdx_options).h1 = "GI.	GENERAL INFORMATION",
       (standards.open.v1.fdx_options).number = "0.3",
       (standards.open.v1.fdx_options).question = "Address",
       (standards.open.v1.fdx_options).description = "GEN.3"
     ];
+    // 0.4 Website of the company.
     string company_website = 4 [
       (standards.open.v1.fdx_options).h1 = "GI.	GENERAL INFORMATION",
       (standards.open.v1.fdx_options).number = "0.4",
       (standards.open.v1.fdx_options).question = "Company Website",
       (standards.open.v1.fdx_options).description = "GEN.4"
     ];
+    // 0.5 Legal form of the entity.
     string legal_form = 5 [
       (standards.open.v1.fdx_options).h1 = "GI.	GENERAL INFORMATION",
       (standards.open.v1.fdx_options).number = "0.5",
       (standards.open.v1.fdx_options).question = "Legal Form",
       (standards.open.v1.fdx_options).description = "GEN.5"
     ];
+    // 0.6 Legal Entity Identifier (LEI) of the entity.
     string legal_entity_identifier = 6 [
       (standards.open.v1.fdx_options).h1 = "GI.	GENERAL INFORMATION",
       (standards.open.v1.fdx_options).number = "0.6",
       (standards.open.v1.fdx_options).question = "Legal Entity Identifier (LEI)",
       (standards.open.v1.fdx_options).description = "GEN.6"
     ];
+    // 0.7 Date the entity was incorporated, as text in `YYYY-MM-DD` format.
     string date_of_incorporation = 7 [
       (standards.open.v1.fdx_options).h1 = "GI.	GENERAL INFORMATION",
       (standards.open.v1.fdx_options).number = "0.7",
       (standards.open.v1.fdx_options).question = "Date of Incorporation (YYYY-MM-DD)",
       (standards.open.v1.fdx_options).description = "GEN.7"
     ];
+    // 0.8 Ultimate parent company or holding company of the entity: the company
+    // holding 25% or more of the voting shares, or that otherwise ultimately
+    // owns or controls the entity directly or indirectly.
     string ultimate_parent_company_or_holding_company = 8 [
       (standards.open.v1.fdx_options).h1 = "GI.	GENERAL INFORMATION",
       (standards.open.v1.fdx_options).number = "0.8",
       (standards.open.v1.fdx_options).question = "Ultimate parent company or holding company",
       (standards.open.v1.fdx_options).description = "GEN.8 - This  company with 25% or more of the voting shares who ultimately owns or controls directly or indirectly (including by bearer shares) a percentage of more than 25% of shares, voting rights or participation in the capital or by other means"
     ];
+    // 0.9 Whether the entity complies with FATCA (the US Foreign Account Tax
+    // Compliance Act) to the extent it applies to the organisation.
     YesNo facta_compliant = 9 [
       (standards.open.v1.fdx_options).h1 = "GI.	GENERAL INFORMATION",
       (standards.open.v1.fdx_options).number = "0.9",
       (standards.open.v1.fdx_options).question = "Are you compliant with the FATCA legislation to the extent that it applies to your organisation?",
       (standards.open.v1.fdx_options).description = "GEN.9"
     ];
+    // 0.10 Whether the entity complies with AEOI (Automatic Exchange of
+    // Information) or CRS (Common Reporting Standard) legislation to the extent
+    // it applies to the organisation. The questionnaire asks for the
+    // appropriate tax form or self-certifications to be attached.
     YesNo aeoi_or_crs_compliant = 10 [
       (standards.open.v1.fdx_options).h1 = "GI.	GENERAL INFORMATION",
       (standards.open.v1.fdx_options).number = "0.10",
       (standards.open.v1.fdx_options).question = "Are you compliant with the AEOI or CRS legislation to the extent that it applies to your organisation? ",
       (standards.open.v1.fdx_options).description = "GEN.10 - Please attach the appropriate tax form or self certification(s)"
     ];
+    // Fund-related activity the entity carries out.
     enum FundRelatedActivities {
+      // Not answered.
       FUND_RELATED_ACTIVITY_UNSPECIFIED = 0;
       // Advisory services (investment advice)
       ADVISORY_SERVICES = 1;
@@ -88,12 +108,17 @@ message RT000HL16 {
       // Other (please specify)
       OTHER_ACTIVITIES = 99;
     }
+    // 0.11 Type of fund-related activity the entity carries out. For
+    // `OTHER_ACTIVITIES`, describe it in
+    // `type_of_fund_related_activity_specify`.
     FundRelatedActivities type_of_fund_related_activity = 12 [
       (standards.open.v1.fdx_options).h1 = "GI.	GENERAL INFORMATION",
       (standards.open.v1.fdx_options).number = "0.11",
       (standards.open.v1.fdx_options).question = "Type of fund related activity",
       (standards.open.v1.fdx_options).description = "GEN.11 - If Other, please specify"
     ];
+    // 0.11 Description of the fund-related activity when it is not listed. Only
+    // answered when `type_of_fund_related_activity` is `OTHER_ACTIVITIES`.
     string type_of_fund_related_activity_specify = 13 [
       (standards.open.v1.fdx_options).h1 = "GI.	GENERAL INFORMATION",
       (standards.open.v1.fdx_options).number = "0.11.specify",
@@ -101,7 +126,9 @@ message RT000HL16 {
       (standards.open.v1.fdx_options).description = "GEN.11 - If Other, please specify",
       (standards.open.v1.fdx_options).conditional = "GeneralInformation.TypeOfFundRelatedActivity?99:0"
     ];
+    // Kind of fund business that best describes the entity.
     enum FundBusinessDescriptions {
+      // Not answered.
       FUND_BUSINESS_DESCRIPTION_UNSPECIFIED = 0;
       // Retail bank
       RETAIL_BANK = 1;
@@ -152,12 +179,16 @@ message RT000HL16 {
       // Other
       OTHER_DESCRIPTIONS = 99;
     }
+    // 0.12 Kind of fund business that best describes the entity. For
+    // `OTHER_DESCRIPTIONS`, describe it in `fund_business_description_specify`.
     FundBusinessDescriptions fund_business_description = 14 [
       (standards.open.v1.fdx_options).h1 = "GI.	GENERAL INFORMATION",
       (standards.open.v1.fdx_options).number = "0.12",
       (standards.open.v1.fdx_options).question = "Which of the following best describes your company's fund business?",
       (standards.open.v1.fdx_options).description = "GEN.12 - If Other, please specify"
     ];
+    // 0.12 Description of the entity's fund business when it is not listed.
+    // Only answered when `fund_business_description` is `OTHER_DESCRIPTIONS`.
     string fund_business_description_specify = 15 [
       (standards.open.v1.fdx_options).h1 = "GI.	GENERAL INFORMATION",
       (standards.open.v1.fdx_options).number = "0.12.specify",
@@ -165,7 +196,9 @@ message RT000HL16 {
       (standards.open.v1.fdx_options).description = "GEN.12 - If Other, please specify",
       (standards.open.v1.fdx_options).conditional = "GeneralInformation.FundBusinessDescription?99:0"
     ];
+    // Band for the number of staff.
     enum Headcount {
+      // Not answered.
       HEADCOUNT_UNSPECIFIED = 0;
       // 1-3
       HEADCOUNT_1_TO_3 = 1;
@@ -182,6 +215,7 @@ message RT000HL16 {
       // >500
       HEADCOUNT_GREATER_THAN_500 = 7;
     }
+    // 0.13 Number of staff employed by the legal entity, as a band.
     Headcount legal_entity_staff_headcount = 16 [
       (standards.open.v1.fdx_options).h1 = "GI.	GENERAL INFORMATION",
       (standards.open.v1.fdx_options).number = "0.13",
@@ -193,19 +227,27 @@ message RT000HL16 {
   }
   // General Information
   GeneralInformation general_information = 1;
+  // Section OPM. Operating model of the entity: tax residence, financial
+  // supervision and the licences it holds.
   message OperatingModel {
+    // 1.1 Whether the entity's country of incorporation, registration or
+    // principal place of business is aligned with its tax residence.
     YesNo incorporation_aligned_with_tax_residence = 1 [
       (standards.open.v1.fdx_options).h1 = "OPM.	OPERATING MODEL",
       (standards.open.v1.fdx_options).number = "1.1",
       (standards.open.v1.fdx_options).question = "Is your company's country of incorporation, registration, or principal place of business aligned with your company's tax residence?",
       (standards.open.v1.fdx_options).description = "OPM.1"
     ];
+    // 1.2 Whether the entity is regulated by a financial supervisory authority.
+    // A `Y` answer opens follow-up questions 1.2.1 to 1.2.5.
     YesNo regulated_by_financial_supervisory_authority = 2 [
       (standards.open.v1.fdx_options).h1 = "OPM.	OPERATING MODEL",
       (standards.open.v1.fdx_options).number = "1.2",
       (standards.open.v1.fdx_options).question = "Are you regulated by a financial supervisory authority?",
       (standards.open.v1.fdx_options).description = "OPM.2"
     ];
+    // 1.2.1 The financial supervisory authority that regulates the entity. Only
+    // answered when `regulated_by_financial_supervisory_authority` is `Y`.
     string specify_financial_supervisory_authority = 3 [
       (standards.open.v1.fdx_options).h1 = "GI.	GENERAL INFORMATION",
       (standards.open.v1.fdx_options).number = "1.2.1",
@@ -213,6 +255,10 @@ message RT000HL16 {
       (standards.open.v1.fdx_options).description = "OPM.2.1 - If Yes, please specify",
       (standards.open.v1.fdx_options).conditional = "OperatingModel.RegulatedByFinancialSupervisoryAuthority?1:0"
     ];
+    // 1.2.2 Whether the entity's supervisory authority is responsible for
+    // ensuring compliance with anti-money laundering (AML) and counterterrorism
+    // financing (CTF) obligations. Only answered when
+    // `regulated_by_financial_supervisory_authority` is `Y`.
     YesNo financial_supervisory_authority = 4 [
       (standards.open.v1.fdx_options).h1 = "GI.	GENERAL INFORMATION",
       (standards.open.v1.fdx_options).number = "1.2.2",
@@ -220,6 +266,8 @@ message RT000HL16 {
       (standards.open.v1.fdx_options).description = "OPM.2.2",
       (standards.open.v1.fdx_options).conditional = "OperatingModel.RegulatedByFinancialSupervisoryAuthority?1:0"
     ];
+    // 1.2.3.1 Whether the entity holds an insurance company licence. Only
+    // answered when `regulated_by_financial_supervisory_authority` is `Y`.
     YesNo licenses_in_place_insurance_company = 5 [
       (standards.open.v1.fdx_options).h1 = "OPM.	OPERATING MODEL",
       (standards.open.v1.fdx_options).number = "1.2.3.1",
@@ -227,6 +275,9 @@ message RT000HL16 {
       (standards.open.v1.fdx_options).description = "OPM.2.3",
       (standards.open.v1.fdx_options).conditional = "OperatingModel.RegulatedByFinancialSupervisoryAuthority?1:0"
     ];
+    // 1.2.3.2 Whether the entity holds an investment management company
+    // licence. Only answered when
+    // `regulated_by_financial_supervisory_authority` is `Y`.
     YesNo licenses_in_place_investment_management_company = 6 [
       (standards.open.v1.fdx_options).h1 = "OPM.	OPERATING MODEL",
       (standards.open.v1.fdx_options).number = "1.2.3.2",
@@ -234,6 +285,8 @@ message RT000HL16 {
       (standards.open.v1.fdx_options).description = "OPM.2.3",
       (standards.open.v1.fdx_options).conditional = "OperatingModel.RegulatedByFinancialSupervisoryAuthority?1:0"
     ];
+    // 1.2.3.3 Whether the entity holds a financial advisory (IFA) licence. Only
+    // answered when `regulated_by_financial_supervisory_authority` is `Y`.
     YesNo licenses_in_place_financial_advisory_ifa = 7 [
       (standards.open.v1.fdx_options).h1 = "OPM.	OPERATING MODEL",
       (standards.open.v1.fdx_options).number = "1.2.3.3",
@@ -241,6 +294,8 @@ message RT000HL16 {
       (standards.open.v1.fdx_options).description = "OPM.2.3",
       (standards.open.v1.fdx_options).conditional = "OperatingModel.RegulatedByFinancialSupervisoryAuthority?1:0"
     ];
+    // Whether the entity holds a broker (trading) licence. Only answered when
+    // `regulated_by_financial_supervisory_authority` is `Y`.
     YesNo licenses_in_place_broker_trading = 8 [
       (standards.open.v1.fdx_options).h1 = "OPM.	OPERATING MODEL",
       (standards.open.v1.fdx_options).number = "1.2.3.3",
@@ -248,6 +303,9 @@ message RT000HL16 {
       (standards.open.v1.fdx_options).description = "OPM.2.4",
       (standards.open.v1.fdx_options).conditional = "OperatingModel.RegulatedByFinancialSupervisoryAuthority?1:0"
     ];
+    // 1.2.3.4 Whether the entity holds another licence not listed above,
+    // described in `licenses_in_place_broker_other_specify`. Only answered when
+    // `regulated_by_financial_supervisory_authority` is `Y`.
     YesNo licenses_in_place_broker_other = 9 [
       (standards.open.v1.fdx_options).h1 = "OPM.	OPERATING MODEL",
       (standards.open.v1.fdx_options).number = "1.2.3.4",
@@ -255,6 +313,8 @@ message RT000HL16 {
       (standards.open.v1.fdx_options).description = "OPM.2.4",
       (standards.open.v1.fdx_options).conditional = "OperatingModel.RegulatedByFinancialSupervisoryAuthority?1:0"
     ];
+    // 1.2.3.4 Details of the other licence the entity holds. Only answered when
+    // `licenses_in_place_broker_other` is `Y`.
     string licenses_in_place_broker_other_specify = 10 [
       (standards.open.v1.fdx_options).h1 = "GI.	GENERAL INFORMATION",
       (standards.open.v1.fdx_options).number = "1.2.3.4.specify",
@@ -262,6 +322,8 @@ message RT000HL16 {
       (standards.open.v1.fdx_options).description = "OPM.2.4.1 - If Yes, please specify",
       (standards.open.v1.fdx_options).conditional = "OperatingModel.LicensesInPlaceBrokerOther?1:0"
     ];
+    // 1.2.4 Registration or regulatory licence number of the entity. Only
+    // answered when `regulated_by_financial_supervisory_authority` is `Y`.
     string license_number = 11 [
       (standards.open.v1.fdx_options).h1 = "OPM.	OPERATING MODEL",
       (standards.open.v1.fdx_options).number = "1.2.4",
@@ -269,6 +331,8 @@ message RT000HL16 {
       (standards.open.v1.fdx_options).description = "OPM.2.4",
       (standards.open.v1.fdx_options).conditional = "OperatingModel.RegulatedByFinancialSupervisoryAuthority?1:0"
     ];
+    // 1.2.5 Website of the entity's regulator. Only answered when
+    // `regulated_by_financial_supervisory_authority` is `Y`.
     string regulator_website = 12 [
       (standards.open.v1.fdx_options).h1 = "OPM.	OPERATING MODEL",
       (standards.open.v1.fdx_options).number = "1.2.5",
@@ -280,7 +344,7 @@ message RT000HL16 {
 
   // Y / N requiring no further explanation
   enum YesNo {
-    // Not Applicable
+    // Not answered.
     YES_NO_NA_UNSPECIFIED = 0;
     // Yes
     Y = 1;

@@ -1,5 +1,26 @@
 syntax = "proto3";
 
+// Holds the Portfolio Exchange (PX) attributes of a financial instrument: how
+// its points data (prices and total returns) is sourced and synced, how it
+// maps to portfolio branches, and the health of its data.
+//
+// The package defines no service. Its main types are:
+//
+// - `Instrument` (`instruments/{instrument_id}`): extends the IN instrument
+//   (`alis.open.in.v1.Instrument`, which embeds it as `engines.px`) with price
+//   and total return proxies, look-through and aggregation mappings, cash
+//   placeholder handling, a per-source `PointsSyncConfig`, and a
+//   `HealthCheckConfig`. An instrument must be defined in IN before PX can
+//   use it.
+// - `InstrumentHealthState`: the outcome of an instrument's health checks,
+//   grouped into reference data, points coverage, and points quality checks.
+//   Each check reports a `HealthCheckResult` of pass, pass with warnings, or
+//   fail, with a reason and notes.
+// - `Source`: the data sources PX syncs instruments and points from, such as
+//   Datastream, Bloomberg, JSE, and Rezco Fund Accounting.
+//
+// Portfolio branches are referenced by name in the format
+// `portfolios/{portfolio}/branches/{branch}`.
 package alis.open.px.v1;
 
 import "google/protobuf/timestamp.proto";
@@ -39,7 +60,7 @@ message Instrument {
   // If this is set, the position's weight_close and quantity_close
   // will be aggregated to the supplied instrument on days calculation
   //
-  // Format instrument/{instrument}
+  // Format instruments/{instrument}
   string aggregation_mapping = 7;
   // Instrument display name
   string display_name = 8;
@@ -465,8 +486,8 @@ message InstrumentHealthState {
   HealthCheckResult result = 1;
   // The reason the instrument is invalid
   string reason = 2;
-  // Notes on the invalid position
-  // May contain additional information on why the position is invalid and how to resolve the issue
+  // Notes on the invalid instrument
+  // May contain additional information on why the instrument is invalid and how to resolve the issue
   string notes = 3;
 
   // Reference data checks
@@ -482,8 +503,8 @@ message InstrumentHealthState {
     HealthCheckResult result = 1;
     // The reason the instrument is invalid
     string reason = 2;
-    // Notes on the invalid position
-    // May contain additional information on why the position is invalid and how to resolve the issue
+    // Notes on the invalid instrument
+    // May contain additional information on why the instrument is invalid and how to resolve the issue
     string notes = 3;
 
     // Checks if the instrument exists in alis.IN
@@ -500,8 +521,8 @@ message InstrumentHealthState {
       HealthCheckResult result = 1;
       // The reason the instrument is invalid
       string reason = 2;
-      // Notes on the invalid position
-      // May contain additional information on why the position is invalid and how to resolve the issue
+      // Notes on the invalid instrument
+      // May contain additional information on why the instrument is invalid and how to resolve the issue
       string notes = 3;
     }
 
@@ -511,8 +532,8 @@ message InstrumentHealthState {
       HealthCheckResult result = 1;
       // The reason the instrument is invalid
       string reason = 2;
-      // Notes on the invalid position
-      // May contain additional information on why the position is invalid and how to resolve the issue
+      // Notes on the invalid instrument
+      // May contain additional information on why the instrument is invalid and how to resolve the issue
       string notes = 3;
     }
 
@@ -522,8 +543,8 @@ message InstrumentHealthState {
       HealthCheckResult result = 1;
       // The reason the instrument is invalid
       string reason = 2;
-      // Notes on the invalid position
-      // May contain additional information on why the position is invalid and how to resolve the issue
+      // Notes on the invalid instrument
+      // May contain additional information on why the instrument is invalid and how to resolve the issue
       string notes = 3;
       // Source check
       // Checks if the instrument has a valid dataset mapping for each source
@@ -534,8 +555,8 @@ message InstrumentHealthState {
         HealthCheckResult result = 1;
         // The reason the instrument is invalid
         string reason = 2;
-        // Notes on the invalid position
-        // May contain additional information on why the position is invalid and how to resolve the issue
+        // Notes on the invalid instrument
+        // May contain additional information on why the instrument is invalid and how to resolve the issue
         string notes = 3;
         // Source
         Source source = 4;
@@ -549,8 +570,8 @@ message InstrumentHealthState {
     HealthCheckResult result = 1;
     // The reason the instrument is invalid
     string reason = 2;
-    // Notes on the invalid position
-    // May contain additional information on why the position is invalid and how to resolve the issue
+    // Notes on the invalid instrument
+    // May contain additional information on why the instrument is invalid and how to resolve the issue
     string notes = 3;
 
     // Check for missing points
@@ -561,8 +582,8 @@ message InstrumentHealthState {
       HealthCheckResult result = 1;
       // The reason the instrument is invalid
       string reason = 2;
-      // Notes on the invalid position
-      // May contain additional information on why the position is invalid and how to resolve the issue
+      // Notes on the invalid instrument
+      // May contain additional information on why the instrument is invalid and how to resolve the issue
       string notes = 3;
       // Missing points
       // Fully qualified point name
@@ -580,8 +601,8 @@ message InstrumentHealthState {
       HealthCheckResult result = 1;
       // The reason the instrument is invalid
       string reason = 2;
-      // Notes on the invalid position
-      // May contain additional information on why the position is invalid and how to resolve the issue
+      // Notes on the invalid instrument
+      // May contain additional information on why the instrument is invalid and how to resolve the issue
       string notes = 3;
       // Points with missing fields
       repeated PointMissingFields points_missing_fields = 4;
@@ -607,8 +628,8 @@ message InstrumentHealthState {
     HealthCheckResult result = 1;
     // The reason the instrument is invalid
     string reason = 2;
-    // Notes on the invalid position
-    // May contain additional information on why the position is invalid and how to resolve the issue
+    // Notes on the invalid instrument
+    // May contain additional information on why the instrument is invalid and how to resolve the issue
     string notes = 3;
 
     // Fill forwarded points check
@@ -620,8 +641,8 @@ message InstrumentHealthState {
       HealthCheckResult result = 1;
       // The reason the instrument is invalid
       string reason = 2;
-      // Notes on the invalid position
-      // May contain additional information on why the position is invalid and how to resolve the issue
+      // Notes on the invalid instrument
+      // May contain additional information on why the instrument is invalid and how to resolve the issue
       string notes = 3;
       // Fill forwarded points
       // Fully qualified point name
@@ -640,8 +661,8 @@ message InstrumentHealthState {
       HealthCheckResult result = 1;
       // The reason the instrument is invalid
       string reason = 2;
-      // Notes on the invalid position
-      // May contain additional information on why the position is invalid and how to resolve the issue
+      // Notes on the invalid instrument
+      // May contain additional information on why the instrument is invalid and how to resolve the issue
       string notes = 3;
       // Points with zero return fields
       repeated PointZeroReturnFields points_zero_return_fields = 4;
@@ -678,7 +699,7 @@ message InstrumentHealthState {
   }
 }
 
-// Data sources
+// Data sources from which PX syncs instruments and points data.
 enum Source {
   // Source not specified by the user.
   SOURCE_UNSPECIFIED = 0;

@@ -1,5 +1,19 @@
 syntax = "proto3";
 
+// A long-running operation resource that also carries the server-side state
+// needed to run and resume the work.
+//
+// `Operation` keeps the fields of `google.longrunning.Operation` (`name`,
+// `metadata`, `done`, and the `result` oneof of `error` or `response`) with
+// the same field numbers, and adds:
+//
+// - `method`: the RPC that started the operation, e.g.
+//   `/alis.open.iam.v1.UsersService/SyncUser`.
+// - `checkpoint` and `internal_state`: progress used to pause and resume the
+//   operation. `internal_state` is not returned to clients.
+// - `runner`: what runs the operation, currently a Google Cloud Tasks task
+//   (`CloudTask`).
+// - `create_time` and `update_time`.
 package alis.open.operations.v1;
 
 import "google/protobuf/any.proto";

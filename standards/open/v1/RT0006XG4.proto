@@ -15,8 +15,7 @@ option go_package = "go.alis.build/common/standards/open/v1";
 
 // Share Class Unit Price
 message RT0006XG4 {
-    // The effective date of the holding.
-    // The holdings are as of market close on the effective date
+    // The effective date of the unit price (NAV per share).
     google.type.Date effective_date = 1;
     // The legal identifier of the umbrella
     // Should conform to: https://openfunds.org/OFST005010 (Umbrella)
@@ -65,5 +64,6 @@ message RT0006XG4 {
 
 // Batch set of RT0006XG4 responses
 message RT0006XG4_batch {
+    // The RT0006XG4 responses in the batch.
     repeated RT0006XG4 response = 1;
 }

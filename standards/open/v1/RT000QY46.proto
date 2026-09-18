@@ -18,9 +18,13 @@ option go_package = "go.alis.build/common/standards/open/v1";
 message RT000QY46 {
     // Response where a NO requires further information
     message YesNoExplain {
+        // Yes or no answer.
         enum Response {
+            // No answer given.
             RESPONSE_UNSPECIFIED = 0;
+            // Yes.
             YES = 1;
+            // No. Give the reason in `explanation`.
             NO = 2;
         }
         // Yes / No response.
@@ -30,9 +34,13 @@ message RT000QY46 {
     }
     // Response where a YES requires further information
     message YesExplainNo {
+        // Yes or no answer.
         enum Response {
+            // No answer given.
             RESPONSE_UNSPECIFIED = 0;
+            // Yes. Give details in `explanation`.
             YES = 1;
+            // No.
             NO = 2;
         }
         // Yes / No response.
@@ -42,9 +50,13 @@ message RT000QY46 {
     }
     // Response where further information is required regardless of whether a Yes or No is provided
     message YesNoAndExplain {
+        // Yes or no answer.
         enum Response {
+            // No answer given.
             RESPONSE_UNSPECIFIED = 0;
+            // Yes. Give further information in `explanation`.
             YES = 1;
+            // No. Give further information in `explanation`.
             NO = 2;
         }
         // Yes / No response.
@@ -66,7 +78,7 @@ message RT000QY46 {
     string reviewer_position = 6;
     // The reviewer's email
     string reviewer_email = 7;
-    // The date the questionnaire was prepared
+    // The date the questionnaire was reviewed
     google.type.Date review_date = 8;
     // Definition of Document Attachment Checklist
     message DocumentAttachmentChecklist {
@@ -137,7 +149,7 @@ message RT000QY46 {
         message TradedSecurityIdentifier {
             // Enumerations of financial identifiers
             enum FinancialInstrumentIdentifier {
-                // Source not specified by the user.
+                // Identifier type not specified.
                 IDENTIFIER_UNSPECIFIED = 0;
                 // FIGI (Financial Instrument Global Identifier). To look up the FIGI navigate to https://www.openfigi.com/.
                 FIGI = 1;
@@ -153,7 +165,7 @@ message RT000QY46 {
         TradedSecurityIdentifier security_identifier = 7;
         // The definition of a beneficial owner resource
         message SignificantShareholder {
-            // The resource name of the client
+            // The display name of the significant shareholder
             string display_name = 1;
             // Types of account holders
             enum BeneficialOwnerType {
@@ -195,7 +207,7 @@ message RT000QY46 {
                 string LEI = 3;
                 // The directors or managers of the legal entity
                 repeated NaturalPerson directors_or_managers = 4;
-                // The own
+                // The ownership type of the legal entity
                 OwnershipType ownership_type = 6;
                 // If PRIVATE, then the shareholders owning more than 10% or more of the entity
                 //        repeated SignificantShareholder shareholders = 7;
@@ -237,6 +249,7 @@ message RT000QY46 {
         string jurisdiction_of_licensing_authority_and_regulator_of_ultimate_parent = 1;
         // Enumeration of regulatory bodies
         enum Regulator {
+            // Regulator not specified.
             REGULATOR_UNSPECIFIED = 0;
             // The Commission de Surveillance du Secteur Financier in Luxembourg
             LUX_CSSF = 1;
@@ -648,7 +661,7 @@ message RT000QY46 {
         string disaster_recovery_backup_procedures = 6;
         // How often is the DRP tested?
         string frequency_drp_tested = 7;
-        // Describe and provide a copy of the latest bcp test report
+        // Describe and provide a copy of the latest DRP test report
         string latest_drp_test_results = 8;
     }
     // Section 12. Business Continuity and Disaster Recovery information
@@ -682,6 +695,7 @@ message RT000QY46 {
             string describe_escalation_procedure = 3;
             // Definition of automation levels
             enum AutomationLevels {
+                // Automation level not specified.
                 AUTOMATION_LEVEL_UNSPECIFIED = 0;
                 // The process is performed manually
                 MANUAL = 1;
@@ -732,6 +746,7 @@ message RT000QY46 {
         message Review {
             // Enumerations of the review status
             enum ReviewStatus {
+                // Review status not specified.
                 STATUS_UNSPECIFIED = 0;
                 // The review is in progress
                 UNDER_REVIEW = 1;
@@ -744,6 +759,7 @@ message RT000QY46 {
             ReviewStatus review_status = 1;
             // Enumerations of the reviewers risk assessment of the section
             enum RiskAssessment {
+                // Risk assessment not specified.
                 RISK_ASSESSMENT_UNSPECIFIED = 0;
                 // Assessed as low risk
                 LOW_RISK = 1;
@@ -800,5 +816,6 @@ message RT000QY46 {
 
 // Batch set of RT000QY46 responses
 message RT000QY46_batch {
+    // The RT000QY46 responses in the batch.
     repeated RT000QY46 response = 1;
 }
