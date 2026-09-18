@@ -3,7 +3,7 @@ package alis.open.iam.v1;
 
 import "google/protobuf/timestamp.proto";
 
-option go_package = "open.alis.services/protobuf/alis/open/iam/v1";
+option go_package = "go.alis.build/common/alis/open/iam";
 
 // The definition of a role in the context of a product
 message Role {

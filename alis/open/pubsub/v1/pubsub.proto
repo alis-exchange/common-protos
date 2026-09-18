@@ -16,7 +16,7 @@ package alis.open.pubsub.v1;
 
 import "google/protobuf/timestamp.proto";
 
-option go_package = "open.alis.services/protobuf/alis/open/pubsub/v1";
+option go_package = "go.alis.build/common/alis/open/pubsub";
 
 // PubSubMessage is the body/payload/data attribute from a Pub/Sub push HTTP request.
 // As we are using Pub/Sub for many of our events, we declare this message in

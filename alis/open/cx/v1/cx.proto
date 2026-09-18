@@ -25,7 +25,7 @@ package alis.open.cx.v1;
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/wrappers.proto";
 
-option go_package = "open.alis.services/protobuf/alis/open/cx/v1";
+option go_package = "go.alis.build/common/alis/open/cx";
 
 // Instrument is a resource within the Compliance Exchange product.
 message Instrument {

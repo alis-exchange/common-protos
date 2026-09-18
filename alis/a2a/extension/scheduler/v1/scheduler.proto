@@ -25,7 +25,7 @@ import "google/protobuf/timestamp.proto";
 import "google/protobuf/field_mask.proto";
 import "google/protobuf/empty.proto";
 
-option go_package = "go.alis.build/a2a/extension/scheduler";
+option go_package = "go.alis.build/common/alis/a2a/extension/scheduler";
 
 // Manages scheduled invocations of an A2A agent via Cron Jobs
 service SchedulerService {

@@ -1,7 +1,7 @@
 syntax = "proto3";
 package alis.open.iam.v1;
 
-option go_package = "open.alis.services/protobuf/alis/open/iam/v1";
+option go_package = "go.alis.build/common/alis/open/iam";
 
 // The request message for the AddIamBindings method
 message AddIamBindingsRequest {

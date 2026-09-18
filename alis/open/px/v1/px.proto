@@ -28,7 +28,7 @@ import "google/protobuf/wrappers.proto";
 import "google/type/date.proto";
 import "google/type/timeofday.proto";
 
-option go_package = "open.alis.services/protobuf/alis/open/px/v1";
+option go_package = "go.alis.build/common/alis/open/px";
 
 // Instrument is an extension of the IN Instrument resource, and is used to hold additional
 // attributes that are not defined in IN, but are useful in PX.

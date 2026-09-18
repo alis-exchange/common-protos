@@ -10,7 +10,7 @@ import "google/protobuf/empty.proto";
 import "google/protobuf/field_mask.proto";
 import "google/protobuf/timestamp.proto";
 
-option go_package = "open.alis.services/protobuf/alis/open/support/v1";
+option go_package = "go.alis.build/common/alis/open/support";
 
 // IssueSubscribersService provides RPCs for managing IssueSubscriber resources.
 service IssueSubscribersService {

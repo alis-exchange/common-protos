@@ -31,7 +31,7 @@ import "google/protobuf/struct.proto";
 import "google/protobuf/timestamp.proto";
 import "google/rpc/status.proto";
 
-option go_package = "go.alis.build/evals";
+option go_package = "go.alis.build/common/alis/evals";
 
 // Executes post-deploy tests and evaluations. Each RPC starts a long-running
 // operation that runs bundled cases for one kind of test. One operation may

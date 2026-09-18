@@ -25,7 +25,7 @@ package alis.usage.v1;
 
 import "google/protobuf/timestamp.proto";
 
-option go_package = "go.alis.build/common/alis/usage/v1";
+option go_package = "go.alis.build/common/alis/usage";
 
 // A product-level API usage snapshot, derived from the Cloud Run request logs
 // of all the product's deployments. Every Alis service is a gRPC service, so

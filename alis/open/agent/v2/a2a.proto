@@ -31,7 +31,7 @@ import "google/protobuf/empty.proto";
 import "google/protobuf/struct.proto";
 import "google/protobuf/timestamp.proto";
 
-option go_package = "open.alis.services/protobuf/alis/open/agent/v2";
+option go_package = "go.alis.build/common/alis/open/agent/v2";
 
 // A2AService defines the gRPC version of the A2A protocol. This has a slightly
 // different shape than the JSONRPC version to better conform to AIP-127,

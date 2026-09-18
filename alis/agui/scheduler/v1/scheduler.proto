@@ -31,7 +31,7 @@ import "google/protobuf/field_mask.proto";
 import "google/protobuf/struct.proto";
 import "google/protobuf/timestamp.proto";
 
-option go_package = "go.alis.build/agui/scheduler";
+option go_package = "go.alis.build/common/alis/agui/scheduler";
 
 // Manages scheduled AG-UI agent runs (recurring and one-shot).
 service SchedulerService {

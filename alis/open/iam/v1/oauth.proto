@@ -5,7 +5,7 @@ package alis.open.iam.v1;
 import "alis/open/iam/v1/user.proto";
 import "google/protobuf/duration.proto";
 
-option go_package = "open.alis.services/protobuf/alis/open/iam/v1";
+option go_package = "go.alis.build/common/alis/open/iam";
 
 // Optional IAM config to use on a product deployment which, if set, will create an alis managed oauth reverse proxy endpoint
 // This endpoint can be used by backend-for-frontend services to authenticate users

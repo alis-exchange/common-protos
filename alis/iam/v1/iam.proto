@@ -22,7 +22,7 @@ syntax = "proto3";
 // `builders` or `admins:alis.os`; roles use the `roles/*` format.
 package alis.iam.v1;
 
-option go_package = "go.alis.build/common/alis/iam/v1";
+option go_package = "go.alis.build/common/alis/iam";
 
 // The request message for the AddIamBindings method
 message AddIamBindingsRequest {

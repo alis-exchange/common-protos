@@ -5,7 +5,7 @@ package alis.open.notifications.v1;
 import "alis/open/validation/v1/validation.proto";
 import "google/iam/v1/iam_policy.proto";
 
-option go_package = "open.alis.services/protobuf/alis/open/notifications/v1";
+option go_package = "go.alis.build/common/alis/open/notifications";
 
 // NotificationsService provides RPCs for sending notifications to users or topics.
 service NotificationsService {

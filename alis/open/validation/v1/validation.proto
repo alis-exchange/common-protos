@@ -1,7 +1,7 @@
 syntax = "proto3";
 package alis.open.validation.v1;
 
-option go_package = "open.alis.services/protobuf/alis/open/validation/v1";
+option go_package = "go.alis.build/common/alis/open/validation";
 
 // Validates protobuf messages against their validation rules and returns
 // those rules.

@@ -9,7 +9,7 @@ package alis.open.config.v1;
 
 import "alis/open/iam/v1/role.proto";
 
-option go_package = "open.alis.services/protobuf/alis/open/config/v1";
+option go_package = "go.alis.build/common/alis/open/config";
 
 // The definition of a product config which is passed in as an environment variable
 message ProductConfig {

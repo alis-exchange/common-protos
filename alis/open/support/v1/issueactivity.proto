@@ -8,7 +8,7 @@ import "google/protobuf/empty.proto";
 import "google/protobuf/field_mask.proto";
 import "google/protobuf/timestamp.proto";
 
-option go_package = "open.alis.services/protobuf/alis/open/support/v1";
+option go_package = "go.alis.build/common/alis/open/support";
 
 // IssueActivitiesService provides RPCs for managing IssueActivity resources.
 service IssueActivitiesService {

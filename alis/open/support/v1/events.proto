@@ -5,7 +5,7 @@ package alis.open.support.v1;
 import "alis/open/pubsub/v1/pubsub.proto";
 import "google/protobuf/empty.proto";
 
-option go_package = "open.alis.services/protobuf/alis/open/support/v1";
+option go_package = "go.alis.build/common/alis/open/support";
 
 // Service for handling events.
 service EventsService {

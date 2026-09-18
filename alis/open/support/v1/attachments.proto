@@ -29,7 +29,7 @@ syntax = "proto3";
 // change, and when a comment is added to it.
 package alis.open.support.v1;
 
-option go_package = "open.alis.services/protobuf/alis/open/support/v1";
+option go_package = "go.alis.build/common/alis/open/support";
 
 // The service that manages uploading public attachments for use
 // in the context of Support resources.

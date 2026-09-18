@@ -6,7 +6,7 @@ import "alis/open/validation/v1/validation.proto";
 import "google/protobuf/field_mask.proto";
 import "google/protobuf/timestamp.proto";
 
-option go_package = "open.alis.services/protobuf/alis/open/support/v1";
+option go_package = "go.alis.build/common/alis/open/support";
 
 // GuidesService provides RPCs for managing Guide resources.
 service GuidesService {

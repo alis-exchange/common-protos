@@ -28,7 +28,7 @@ import "google/protobuf/field_mask.proto";
 import "google/protobuf/timestamp.proto";
 import "google/type/date.proto";
 
-option go_package = "open.alis.services/protobuf/alis/open/validation/v1";
+option go_package = "go.alis.build/common/alis/open/validation";
 
 // A sample book API defined for testing. It is not part of the validation
 // contract.

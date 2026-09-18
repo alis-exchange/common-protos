@@ -33,7 +33,7 @@ import "google/protobuf/struct.proto";
 import "google/protobuf/timestamp.proto";
 import "google/type/date.proto";
 
-option go_package = "go.alis.build/common/alis/adk/sessions;sessions";
+option go_package = "go.alis.build/common/alis/adk/sessions";
 
 // SessionService manages agent sessions and session events.
 service SessionService {
