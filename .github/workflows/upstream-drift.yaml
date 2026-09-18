@@ -1,0 +1,72 @@
+name: Upstream drift
+on:
+  schedule:
+    - cron: '0 6 * * 1' # Mondays 06:00 UTC
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'google/**'
+      - 'lf/**'
+      - '.github/scripts/upstream-drift.sh'
+      - '.github/workflows/upstream-drift.yaml'
+  # Pull requests only get the report in the run summary; the issue tracks main.
+  pull_request:
+    paths:
+      - 'google/**'
+      - 'lf/**'
+      - '.github/scripts/upstream-drift.sh'
+      - '.github/workflows/upstream-drift.yaml'
+permissions:
+  contents: read
+  issues: write
+concurrency:
+  group: upstream-drift-${{ github.ref }}
+jobs:
+  drift:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: bufbuild/buf-action@v1
+        with:
+          setup_only: true
+      - name: Compare vendored protos with upstream
+        id: check
+        run: |
+          status=0
+          .github/scripts/upstream-drift.sh report.md || status=$?
+          # 1 means drift was found, which the issue tracks; anything else is a failure.
+          if [ "$status" -gt 1 ]; then exit "$status"; fi
+          echo "drift=$([ "$status" -eq 1 ] && echo true || echo false)" >>"$GITHUB_OUTPUT"
+          cat report.md >>"$GITHUB_STEP_SUMMARY"
+      - name: Update tracking issue
+        if: github.event_name != 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DRIFT: ${{ steps.check.outputs.drift }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          label=upstream-drift
+          gh label create "$label" --force --color C5DEF5 --description "Vendored protos differ from upstream"
+          issue=$(gh issue list --label "$label" --state open --limit 1 --json number --jq '.[0].number // empty')
+
+          if [ "$DRIFT" != true ]; then
+            if [ -n "$issue" ]; then gh issue close "$issue" --comment "No drift left as of [this run]($RUN_URL)."; fi
+            exit 0
+          fi
+
+          { cat report.md; printf '\n---\n_Updated weekly by [Upstream drift](%s). Closes itself once no drift is left._\n' "$RUN_URL"; } >body.md
+          # Issue bodies are capped at 65,536 characters.
+          if [ "$(wc -c <body.md)" -gt 65000 ]; then
+            { grep -m1 '^\*\*' report.md; printf '\nThe full report is too long for an issue. See the [run summary](%s).\n' "$RUN_URL"; } >body.md
+          fi
+
+          if [ -z "$issue" ]; then
+            gh issue create --title "Upstream proto drift" --label "$label" --body-file body.md
+            exit 0
+          fi
+          # Body edits do not notify anyone, so post a comment when the totals move.
+          before=$(gh issue view "$issue" --json body --jq .body | grep -m1 '^\*\*' || true)
+          after=$(grep -m1 '^\*\*' report.md)
+          gh issue edit "$issue" --body-file body.md
+          if [ "$before" != "$after" ]; then gh issue comment "$issue" --body "Drift changed: $after"; fi
