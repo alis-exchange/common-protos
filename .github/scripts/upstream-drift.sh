@@ -20,13 +20,12 @@ SOURCES=(
   "lf/a2a/v1|a2aproject/A2A|main|specification"
 )
 
-# Descriptor fields ignored when comparing, as "file|field path"; "*" matches
-# every file.
+# Descriptor fields ignored when comparing, as "file|field path|reason"; "*"
+# matches every file. The report lists each one with its reason, so readers of
+# the drift issue can tell a deliberate difference from an overlooked one.
 IGNORED=(
-  # A no-op since protobuf 3.14, and upstream is deleting it file by file.
-  "*|options.ccEnableArenas"
-  # Deliberate local edit: points go_package at the published a2a-go module (c0fcdc4).
-  "lf/a2a/v1/a2a.proto|options.goPackage"
+  "*|options.ccEnableArenas|A no-op since protobuf 3.14, and upstream is deleting it file by file."
+  "lf/a2a/v1/a2a.proto|options.goPackage|Kept on the published a2a-go module so generated Go code imports github.com/a2aproject/a2a-go (c0fcdc4)."
 )
 
 trap 'echo "upstream-drift: failed at line $LINENO" >&2; exit 2' ERR
@@ -125,9 +124,27 @@ def normalize($ov): .name as $n
 | "\($n)\t\($parts | join("; "))"
 JQ
 
+# Lists each ignored field with its reason and what it currently hides.
+read -r -d '' DESCRIBE_IGNORED <<'JQ' || true
+def snake: gsub("(?<c>[A-Z])"; "_" + (.c | ascii_downcase));
+def show: if . == null then "unset" else tojson end;
+($u[0].file | map({key: .name, value: .}) | from_entries) as $U
+| $ov[] as $o
+| [$l[0].file[] | select($o.file == "*" or .name == $o.file)
+    | {a: getpath($o.path), b: ($U[.name] | getpath($o.path))} | select(.a != .b)] as $d
+| "- `\($o.path[-1] | snake)` in "
+  + (if $o.file == "*" then "every file" else "`\($o.file)`" end)
+  + ": \($o.reason) "
+  + (if ($d | length) == 0 then "No difference right now."
+     elif $o.file != "*" then "Local \($d[0].a | show), upstream \($d[0].b | show)."
+     else "Differs in \($d | length) file\(if ($d | length) == 1 then "" else "s" end)." end)
+JQ
+
+ignored_json=$(printf '%s\n' "${IGNORED[@]}" \
+  | jq -R 'split("|") | {file: .[0], path: (.[1] | split(".")), reason: (.[2:] | join("|"))}' | jq -s .)
+
 declare -A summary=()
 if ((${#candidates[@]})); then
-  ignored_json=$(printf '%s\n' "${IGNORED[@]}" | jq -R 'split("|") | {file: .[0], path: (.[1] | split("."))}' | jq -s .)
   paths=()
   for f in "${candidates[@]}"; do paths+=(--path "$f"); done
 
@@ -136,14 +153,18 @@ if ((${#candidates[@]})); then
     (cd "$work/$side" && buf build --exclude-source-info --exclude-imports "${paths[@]}" -o "$work/$side.json")
   done
 
-  # Written to a file first: a failure inside a process substitution would go
-  # unnoticed and read as "no drift".
-  jq -rn --argjson ov "$ignored_json" --slurpfile l "$work/local.json" --slurpfile u "$work/upstream.json" \
-    "$SUMMARIZE" >"$work/summary.tsv"
-  while IFS=$'\t' read -r name text; do
-    if [[ -z $text ]]; then text_only+=("$name"); else changed+=("$name"); summary[$name]=$text; fi
-  done <"$work/summary.tsv"
+else
+  echo '{"file": []}' | tee "$work/local.json" >"$work/upstream.json"
 fi
+
+# Written to files first: a failure inside a process substitution would go
+# unnoticed and read as "no drift".
+jq_args=(-rn --argjson ov "$ignored_json" --slurpfile l "$work/local.json" --slurpfile u "$work/upstream.json")
+jq "${jq_args[@]}" "$SUMMARIZE" >"$work/summary.tsv"
+jq "${jq_args[@]}" "$DESCRIBE_IGNORED" >"$work/ignored.md"
+while IFS=$'\t' read -r name text; do
+  if [[ -z $text ]]; then text_only+=("$name"); else changed+=("$name"); summary[$name]=$text; fi
+done <"$work/summary.tsv"
 
 # Prints the GitHub URL of a local file's upstream counterpart.
 upstream_url() {
@@ -170,6 +191,12 @@ list_md() {
   printf '%s' "$sources_md"
   echo
   echo "**${#changed[@]} changed · ${#added[@]} added upstream · ${#removed[@]} removed upstream** · ${#text_only[@]} text only (not counted)"
+  echo
+  echo "### Ignored on purpose"
+  echo
+  echo "These differences are deliberate and never counted as drift. The list and its reasons live in \`IGNORED\` in \`.github/scripts/upstream-drift.sh\`."
+  echo
+  cat "$work/ignored.md"
 
   if ((${#changed[@]})); then
     echo

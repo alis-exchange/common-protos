@@ -99,33 +99,8 @@ If a proto imports:
 - `lf/a2a/v1/...`, resolve it from this repo's `lf/` tree
 - `alis/...`, resolve it from this repo's first-party packages
 
-## Contribution Rules
+## Contributing
 
-Change the namespace you own:
-
-- Update `alis/` and other first-party packages here as part of normal API work.
-- Treat `google/` and `lf/` as vendored upstream sources unless there is a very
-  deliberate reason to patch them locally.
-- If an upstream dependency is refreshed, keep the README for that namespace in
-  sync with the source and intent of the imported package set.
-
-The weekly `Upstream drift` workflow compares the vendored `google/` and `lf/`
-packages with upstream and keeps an `upstream-drift` issue open while their
-definitions differ. It compares compiled definitions, so comment-only changes
-are not flagged, and it only looks at packages already vendored here. Run
-`.github/scripts/upstream-drift.sh` to see the same report locally, and list
-deliberate local edits in its `IGNORED` array.
-
-## Compatibility
-
-For first-party packages in this repo:
-
-- prefer additive changes
-- avoid reusing field numbers
-- version packages when making breaking changes
-- document deprecations before removal
-
-For vendored upstream packages:
-
-- preserve upstream package names and import paths
-- avoid local edits that drift from the upstream source unnecessarily
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for which namespaces to change,
+compatibility rules, the checks to run, publishing to the Buf Schema Registry,
+and how vendored upstream protos are kept in sync.
