@@ -109,6 +109,13 @@ Change the namespace you own:
 - If an upstream dependency is refreshed, keep the README for that namespace in
   sync with the source and intent of the imported package set.
 
+The weekly `Upstream drift` workflow compares the vendored `google/` and `lf/`
+packages with upstream and keeps an `upstream-drift` issue open while their
+definitions differ. It compares compiled definitions, so comment-only changes
+are not flagged, and it only looks at packages already vendored here. Run
+`.github/scripts/upstream-drift.sh` to see the same report locally, and list
+deliberate local edits in its `IGNORED` array.
+
 ## Compatibility
 
 For first-party packages in this repo:
