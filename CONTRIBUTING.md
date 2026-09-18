@@ -26,6 +26,26 @@ For vendored upstream packages:
 - preserve upstream package names and import paths
 - avoid local edits that drift from the upstream source unnecessarily
 
+## Documenting protos
+
+The Buf Schema Registry builds this module's reference documentation from the
+comments in the `.proto` files, and code generators copy the same comments
+into generated code. CI does not check for them, so review them like code.
+
+- Put a `//` comment directly above every service, RPC, message, field, oneof,
+  enum and enum value. Say what it is for, and give formats, units and what an
+  empty value means where they are not obvious.
+- Leave no blank line between a comment and its element. A separated comment
+  is detached and does not appear in the docs. Do not use trailing comments.
+- Give every package an overview in a comment directly above its `package`
+  line. When a package spans several files, the BSR sorts them by path and uses
+  the first one that has a package comment, so keep the overview in that file
+  only and update it when the package changes.
+- Comments render as Markdown (CommonMark and GitHub Flavored Markdown), so use
+  backticks for identifiers and lists where they help.
+- When you add a package, add it to the table in `alis/README.md` or
+  `standards/README.md`.
+
 ## Checks before you open a pull request
 
 ```bash

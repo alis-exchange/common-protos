@@ -40,13 +40,14 @@ build from it confidently, and deploy with fewer surprises.
 
 ## At a Glance
 
-This repository now has three distinct roles:
+This repository has four namespaces:
 
-| Namespace | Ownership        | Purpose                                       |
-| --------- | ---------------- | --------------------------------------------- |
-| `alis/`   | Alis Build       | First-party shared APIs and extensions        |
-| `google/` | Google           | Vendored Google API and common support protos |
-| `lf/`     | Linux Foundation | Vendored Agent2Agent protocol definitions     |
+| Namespace    | Ownership        | Purpose                                                   |
+| ------------ | ---------------- | --------------------------------------------------------- |
+| `alis/`      | Alis Build       | First-party shared APIs and extensions                    |
+| `standards/` | Alis Build       | First-party models of financial industry data standards   |
+| `google/`    | Google           | Vendored Google API and common support protos             |
+| `lf/`        | Linux Foundation | Vendored Agent2Agent protocol definitions                 |
 
 The important distinction is that not every proto in this repository is
 authored here. Some packages are maintained upstream and mirrored locally so
@@ -58,9 +59,10 @@ that code generation and dependency resolution stay simple and reproducible.
 
 These are the packages that belong to Alis Build and should evolve here:
 
-- `alis/a2a/...`
-- `alis/open/...`
-- `common/...`
+- `alis/...`: shared platform APIs, agent and A2A extensions, IAM, support,
+  and custom options. See [alis/README.md](./alis/README.md).
+- `standards/...`: questionnaires, regulatory returns and fund data file
+  layouts. See [standards/README.md](./standards/README.md).
 
 ### Vendored upstream protos
 
@@ -81,6 +83,21 @@ alis/a2a/extension/history/v1/history.proto
 
 That package builds on both first-party and vendored definitions, including
 imports from `lf/a2a/v1` and `google/api`.
+
+## Using the Buf Schema Registry Module
+
+Everything here except `google/` is published as
+[`buf.build/alis-build/common-protos`](https://buf.build/alis-build/common-protos),
+where each package has generated reference documentation. Add it as a
+dependency in your `buf.yaml`:
+
+```yaml
+deps:
+  - buf.build/alis-build/common-protos
+```
+
+Imports of `google/...` resolve through `buf.build/googleapis/googleapis`,
+which the module depends on.
 
 ## Working Model
 
