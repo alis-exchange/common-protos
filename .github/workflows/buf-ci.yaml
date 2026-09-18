@@ -1,0 +1,34 @@
+name: Buf CI
+on:
+  push:
+    paths:
+      - '**.proto'
+      - '**/buf.yaml'
+      - '**/buf.lock'
+      - '.github/workflows/buf-ci.yaml'
+  pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+    paths:
+      - '**.proto'
+      - '**/buf.yaml'
+      - '**/buf.lock'
+      - '.github/workflows/buf-ci.yaml'
+  delete:
+permissions:
+  contents: read
+  pull-requests: write
+jobs:
+  buf:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: bufbuild/buf-action@v1
+        with:
+          token: ${{ secrets.BUF_TOKEN }}
+          # The existing protos predate any lint or format policy and would fail
+          # both checks. Re-enable once they have been cleaned up.
+          lint: false
+          format: false
+          # The module already exists on the BSR; fail rather than auto-create a
+          # private one if the name in buf.yaml is ever mistyped.
+          push_disable_create: true

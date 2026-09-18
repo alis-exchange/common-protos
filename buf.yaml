@@ -1,0 +1,11 @@
+version: v2
+modules:
+  - path: .
+    name: buf.build/alis-build/common-protos
+    # google/ is a vendored copy of upstream googleapis. Publishing it here would
+    # clash with buf.build/googleapis/googleapis for any consumer that depends on
+    # both, so those imports resolve through the dependency below instead.
+    excludes:
+      - google
+deps:
+  - buf.build/googleapis/googleapis
