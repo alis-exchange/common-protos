@@ -3,7 +3,6 @@ syntax = "proto3";
 package standards.open.v1;
 
 import "google/protobuf/wrappers.proto";
-import "google/type/date.proto";
 // import "standards/open/v1/RT0001C86.proto";
 // import "standards/open/v1/RT0007VM1.proto";
 import "standards/open/v1/fieldOptionsExtentions.proto";

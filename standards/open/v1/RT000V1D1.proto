@@ -2,9 +2,6 @@ syntax = "proto3";
 
 package standards.open.v1;
 
-import "google/type/money.proto";
-import "google/protobuf/descriptor.proto";
-import "standards/open/v1/yesno.proto";
 import "standards/open/v1/fieldOptionsExtentions.proto";
 
 option go_package = "go.alis.build/common/standards/open/v1";
