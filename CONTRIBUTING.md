@@ -50,12 +50,18 @@ into generated code. CI does not check for them, so review them like code.
 
 ```bash
 buf build
+buf lint
+buf format -w
 buf breaking --against '.git#branch=main'
 ```
 
-The `Buf CI` workflow runs the same build and breaking-change checks on every
-pull request that touches protos. Lint and format checks are off until the
-existing protos are cleaned up.
+The `Buf CI` workflow runs the same build, lint, format and breaking-change
+checks on every pull request that touches protos.
+
+The lint policy lives in `buf.yaml`: the `STANDARD` rules, minus the few that
+conflict with Google's resource-oriented API design. Names that
+predate the policy are exempt under `ignore_only`, because renaming them would
+break consumers. Do not add new code to those exemptions.
 
 If a breaking change is intended, add the `buf skip breaking` label to the pull
 request and explain why in its description.
@@ -88,6 +94,8 @@ When refreshing a vendored package:
 
 - Copy the upstream files as they are, then re-apply only the local edits listed
   in the script's `IGNORED` array.
+- Run `buf format -w`. CI checks formatting across the whole module, and the
+  drift check does not count formatting-only differences as drift.
 - Check `go_package` changes before merging. Upstream has been moving Google's Go
   packages from `google.golang.org/genproto/...` to `cloud.google.com/go/...`,
   which changes the import paths that Go code generation produces.

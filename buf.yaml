@@ -9,3 +9,48 @@ modules:
       - google
 deps:
   - buf.build/googleapis/googleapis
+lint:
+  use:
+    - STANDARD
+  except:
+    # The APIs follow Google's resource-oriented design (google.aip.dev):
+    # standard methods return the resource itself, google.protobuf.Empty or a
+    # google.longrunning.Operation, so response types are shared between RPCs
+    # and not named after them.
+    - RPC_REQUEST_RESPONSE_UNIQUE
+    - RPC_RESPONSE_STANDARD_NAME
+    # Pub/Sub push handlers take alis.open.pubsub.v1.PubSubMessage, and A2A
+    # streaming reuses SendMessageRequest, as the A2A specification does.
+    - RPC_REQUEST_STANDARD_NAME
+    # AIP-126: enum values are not prefixed with the enum name.
+    - ENUM_VALUE_PREFIX
+  ignore:
+    # Vendored upstream protos stay as upstream wrote them.
+    - lf
+  # Names that predate this lint policy. Renaming a published element is a
+  # breaking change, so these stay until the package gets a new version.
+  ignore_only:
+    # Data standards are named after their source: RT codes such as
+    # RT000MBG3.proto, `RT..._batch` messages, and vendor file layouts such as
+    # APEX_FTRDIST.
+    FILE_LOWER_SNAKE_CASE:
+      - standards
+    MESSAGE_PASCAL_CASE:
+      - standards
+    ENUM_ZERO_VALUE_SUFFIX:
+      - alis/build/v1/monitoring.proto
+      - alis/build/v1/repos.proto
+      - standards/open/v1/RT0009DB1.proto
+      - standards/open/v1/RT000F0J4.proto
+      - standards/open/v1/RT000V1D1.proto
+      - standards/open/v1/yesno.proto
+    FIELD_LOWER_SNAKE_CASE:
+      - alis/open/cx/v1/cx.proto
+      - standards/open/v1/RT0005M37.proto
+      - standards/open/v1/RT00085Z9.proto
+      - standards/open/v1/RT0008FD7.proto
+      - standards/open/v1/RT000F0J4.proto
+      - standards/open/v1/RT000QY46.proto
+    SERVICE_SUFFIX:
+      - alis/build/v1/monitoring.proto
+      - alis/build/v1/repos.proto

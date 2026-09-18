@@ -25,10 +25,6 @@ jobs:
       - uses: bufbuild/buf-action@v1
         with:
           token: ${{ secrets.BUF_TOKEN }}
-          # The existing protos predate any lint or format policy and would fail
-          # both checks. Re-enable once they have been cleaned up.
-          lint: false
-          format: false
           # The module already exists on the BSR; fail rather than auto-create a
           # private one if the name in buf.yaml is ever mistyped.
           push_disable_create: true
