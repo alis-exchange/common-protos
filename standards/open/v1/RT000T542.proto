@@ -203,7 +203,6 @@ message RT000T542 {
       ESTIMATE_CASH_REPORTS_TIMELINESS = 123;
       // The number of accounts with balances
       NUMBER_OF_ACCOUNTS_WITH_BALANCES = 124;
-
     }
     // The identifier of what the metric measures
     MetricID metric_id = 8;

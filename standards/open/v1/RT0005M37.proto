@@ -2,8 +2,8 @@ syntax = "proto3";
 
 package standards.open.v1;
 
-import "google/type/money.proto";
 import "google/type/date.proto";
+import "google/type/money.proto";
 
 option go_package = "go.alis.build/common/standards/open/v1";
 
@@ -173,7 +173,7 @@ message RT0005M37 {
         // The ownership type of the legal entity
         OwnershipType ownership_type = 6;
         // If PRIVATE, then the shareholders owning more than 10% or more of the entity
-//        repeated SignificantShareholder shareholders = 7;
+        //        repeated SignificantShareholder shareholders = 7;
       }
       // Complete if the `SignificantShareholder` is a legal entity
       LegalEntity legal_entity_ownership_details = 5;
@@ -248,7 +248,7 @@ message RT0005M37 {
     YesNoAndExplain offers_correspondent_banking_and_allows_domestic_clients_to_provide_downstream_relationships = 3;
     // Q17a4 If TRUE to Q17a. Does the entity offer Correspondent banking, does the Entity have processes and procedures
     // in place to identify downstream relationships with domestic banks?
-    YesNoAndExplain   offers_correspondent_banking_and_has_procedures_in_place_to_identify_downstream_relationships_with_domestic_banks = 4;
+    YesNoAndExplain offers_correspondent_banking_and_has_procedures_in_place_to_identify_downstream_relationships_with_domestic_banks = 4;
     // Q17a5 If TRUE to Q17a. Does the entity offer Correspondent banking, does the Entity offer Correspondent
     // Banking services to foreign banks?
     YesNoAndExplain offers_correspondent_banking_to_foreign_banks = 5;
@@ -434,7 +434,6 @@ message RT0005M37 {
     YesNoExplain representative_of_branches = 25;
     // Q39b. If appropriate, provide any further information / context to the answers in this section.
     string further_information = 26;
-
   }
   // Section 4. Information related to the Anti Bribery and Corruption section program
   AntiBriberyAndCorruption anti_bribery_and_corruption = 6;

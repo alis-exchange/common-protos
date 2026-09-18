@@ -2,8 +2,8 @@ syntax = "proto3";
 
 package standards.open.v1;
 
-import "google/type/date.proto";
 import "google/protobuf/wrappers.proto";
+import "google/type/date.proto";
 
 option go_package = "go.alis.build/common/standards/open/v1";
 
@@ -242,7 +242,7 @@ message RT000NVJ3 {
       // Total Contributions
       google.protobuf.DoubleValue total_contributions = 2;
       // Total Withdrawals
-      google.protobuf.DoubleValue  total_withdrawals = 3;
+      google.protobuf.DoubleValue total_withdrawals = 3;
       // Adjustment for market movement (+/-)
       google.protobuf.DoubleValue market_movement = 4;
       // Closing Market Value

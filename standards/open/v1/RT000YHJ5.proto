@@ -2,7 +2,6 @@ syntax = "proto3";
 
 package standards.open.v1;
 
-
 option go_package = "go.alis.build/common/standards/open/v1";
 
 // CSSF report containing identifiers of registered UCITS

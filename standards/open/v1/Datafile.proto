@@ -40,8 +40,8 @@ syntax = "proto3";
 package standards.open.v1;
 
 import "google/api/field_behavior.proto";
-import "google/protobuf/timestamp.proto";
 import "google/protobuf/any.proto";
+import "google/protobuf/timestamp.proto";
 
 option go_package = "go.alis.build/common/standards/open/v1";
 
@@ -70,7 +70,7 @@ message DataFile {
   // for a field, its review status, comments and supporting attachments.
   map<string, FieldAnnotation> field_annotations = 7;
   // Attachments
-  repeated FileAttachment  file_attachments = 8;
+  repeated FileAttachment file_attachments = 8;
   // File Attachment message definition
   message FileAttachment {
     // Previously deleted fields
@@ -161,12 +161,10 @@ message DataFile {
     }
   }
 
-
   // DataRoom Reference
   string dataroom_reference = 9;
   // The reference to the user who is owner of the dataRoomFile.
   string owner = 10;
 }
-
 
 // only support excel & pdf type

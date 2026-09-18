@@ -221,7 +221,6 @@ message RT000HL16 {
       (standards.open.v1.fdx_options).description = "GEN.12 - If Other, please specify",
       (standards.open.v1.fdx_options).conditional = "GeneralInformation.FundBusinessDescription?99:0"
     ];
-
   }
   // General Information
   GeneralInformation general_information = 1;

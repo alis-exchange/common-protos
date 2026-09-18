@@ -63,16 +63,12 @@ service A2AService {
   }
   // Get the current state of a task from the agent.
   rpc GetTask(GetTaskRequest) returns (Task) {
-    option (google.api.http) = {
-      get: "/v1/{name=tasks/*}"
-    };
+    option (google.api.http) = {get: "/v1/{name=tasks/*}"};
     option (google.api.method_signature) = "name";
   }
   // List tasks with optional filtering and pagination.
   rpc ListTasks(ListTasksRequest) returns (ListTasksResponse) {
-    option (google.api.http) = {
-      get: "/v1/tasks"
-    };
+    option (google.api.http) = {get: "/v1/tasks"};
   }
   // Cancel a task from the agent. If supported one should expect no
   // more task updates for the task.
@@ -86,15 +82,11 @@ service A2AService {
   // update events. This attaches the stream to an existing in process task.
   // If the task is complete the stream will return the completed task (like
   // GetTask) and close the stream.
-  rpc TaskSubscription(TaskSubscriptionRequest)
-  returns (stream StreamResponse) {
-    option (google.api.http) = {
-      get: "/v1/{name=tasks/*}:subscribe"
-    };
+  rpc TaskSubscription(TaskSubscriptionRequest) returns (stream StreamResponse) {
+    option (google.api.http) = {get: "/v1/{name=tasks/*}:subscribe"};
   }
   // Set a push notification config for a task.
-  rpc CreateTaskPushNotificationConfig(CreateTaskPushNotificationConfigRequest)
-  returns (TaskPushNotificationConfig) {
+  rpc CreateTaskPushNotificationConfig(CreateTaskPushNotificationConfigRequest) returns (TaskPushNotificationConfig) {
     option (google.api.http) = {
       post: "/v1/{parent=tasks/*/pushNotificationConfigs}"
       body: "config"
@@ -102,33 +94,22 @@ service A2AService {
     option (google.api.method_signature) = "parent,config";
   }
   // Get a push notification config for a task.
-  rpc GetTaskPushNotificationConfig(GetTaskPushNotificationConfigRequest)
-  returns (TaskPushNotificationConfig) {
-    option (google.api.http) = {
-      get: "/v1/{name=tasks/*/pushNotificationConfigs/*}"
-    };
+  rpc GetTaskPushNotificationConfig(GetTaskPushNotificationConfigRequest) returns (TaskPushNotificationConfig) {
+    option (google.api.http) = {get: "/v1/{name=tasks/*/pushNotificationConfigs/*}"};
     option (google.api.method_signature) = "name";
   }
   // Get a list of push notifications configured for a task.
-  rpc ListTaskPushNotificationConfig(ListTaskPushNotificationConfigRequest)
-  returns (ListTaskPushNotificationConfigResponse) {
-    option (google.api.http) = {
-      get: "/v1/{parent=tasks/*}/pushNotificationConfigs"
-    };
+  rpc ListTaskPushNotificationConfig(ListTaskPushNotificationConfigRequest) returns (ListTaskPushNotificationConfigResponse) {
+    option (google.api.http) = {get: "/v1/{parent=tasks/*}/pushNotificationConfigs"};
     option (google.api.method_signature) = "parent";
   }
   // GetAgentCard returns the agent card for the agent.
   rpc GetAgentCard(GetAgentCardRequest) returns (AgentCard) {
-    option (google.api.http) = {
-      get: "/v1/card"
-    };
+    option (google.api.http) = {get: "/v1/card"};
   }
   // Delete a push notification config for a task.
-  rpc DeleteTaskPushNotificationConfig(DeleteTaskPushNotificationConfigRequest)
-  returns (google.protobuf.Empty) {
-    option (google.api.http) = {
-      delete: "/v1/{name=tasks/*/pushNotificationConfigs/*}"
-    };
+  rpc DeleteTaskPushNotificationConfig(DeleteTaskPushNotificationConfigRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {delete: "/v1/{name=tasks/*/pushNotificationConfigs/*}"};
     option (google.api.method_signature) = "name";
   }
 }
@@ -227,15 +208,15 @@ message Part {
   // The content carried by this part.
   oneof part {
     // Plain text content.
-    string              text = 1;
+    string text = 1;
     // A file, provided by URI or as inline bytes.
-    FilePart            file = 2;
+    FilePart file = 2;
     // Structured data, such as a JSON object.
-    DataPart            data = 3;
+    DataPart data = 3;
     // An arbitrary protobuf message, packed as `google.protobuf.Any`. Only
     // this package offers this option; `alis.open.agent.v2` and the A2A
     // `Part` in `lf.a2a.v1` have no equivalent.
-    google.protobuf.Any any  = 20;
+    google.protobuf.Any any = 20;
   }
   // Optional metadata associated with this part.
   google.protobuf.Struct metadata = 4;
@@ -250,15 +231,15 @@ message FilePart {
   oneof file {
     // A URI from which the agent can read the file content. Suited to large
     // files.
-    string file_with_uri   = 1;
+    string file_with_uri = 1;
     // The file content as raw bytes. Suited to small files. In JSON this is
     // encoded as a base64 string.
-    bytes  file_with_bytes = 2;
+    bytes file_with_bytes = 2;
   }
   // The MIME type of the file, for example `image/png`.
   string mime_type = 3;
   // An optional name for the file, for example `document.pdf`.
-  string name      = 4;
+  string name = 4;
 }
 
 // DataPart represents a structured blob. This is most commonly a JSON payload.
@@ -532,7 +513,6 @@ message AgentSkill {
   // that must be used together (a logical AND).
   repeated Security security = 8;
   // protolint:enable REPEATED_FIELD_NAMES_PLURALIZED
-
 }
 
 // AgentCardSignature represents a JWS signature of an AgentCard.
@@ -583,15 +563,15 @@ message SecurityScheme {
   // The type of security scheme and its settings.
   oneof scheme {
     // API key-based authentication.
-    APIKeySecurityScheme        api_key_security_scheme         = 1;
+    APIKeySecurityScheme api_key_security_scheme = 1;
     // HTTP authentication, such as Basic or Bearer.
-    HTTPAuthSecurityScheme      http_auth_security_scheme       = 2;
+    HTTPAuthSecurityScheme http_auth_security_scheme = 2;
     // OAuth 2.0 authentication.
-    OAuth2SecurityScheme        oauth2_security_scheme          = 3;
+    OAuth2SecurityScheme oauth2_security_scheme = 3;
     // OpenID Connect authentication.
     OpenIdConnectSecurityScheme open_id_connect_security_scheme = 4;
     // Mutual TLS authentication.
-    MutualTlsSecurityScheme     mtls_security_scheme            = 5;
+    MutualTlsSecurityScheme mtls_security_scheme = 5;
   }
 }
 
@@ -657,9 +637,9 @@ message OAuthFlows {
     // Configuration for the Client Credentials flow.
     ClientCredentialsOAuthFlow client_credentials = 2;
     // Configuration for the Implicit flow.
-    ImplicitOAuthFlow          implicit           = 3;
+    ImplicitOAuthFlow implicit = 3;
     // Configuration for the Resource Owner Password Credentials flow.
-    PasswordOAuthFlow          password           = 4;
+    PasswordOAuthFlow password = 4;
   }
 }
 
@@ -724,8 +704,10 @@ message PasswordOAuthFlow {
 // methods.
 message SendMessageRequest {
   // The message to send to the agent.
-  Message request = 1
-  [(google.api.field_behavior) = REQUIRED, json_name = "message"];
+  Message request = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    json_name = "message"
+  ];
   // Configuration for the send request.
   SendMessageConfiguration configuration = 2;
   // Optional metadata for the request.
@@ -794,8 +776,7 @@ message CreateTaskPushNotificationConfigRequest {
   // The ID for the new config.
   string config_id = 2 [(google.api.field_behavior) = REQUIRED];
   // The configuration to create.
-  TaskPushNotificationConfig config = 3
-  [(google.api.field_behavior) = REQUIRED];
+  TaskPushNotificationConfig config = 3 [(google.api.field_behavior) = REQUIRED];
 }
 
 // Represents a request for the `TaskSubscription` method.
@@ -836,9 +817,9 @@ message SendMessageResponse {
   // The result of the message: a task, or a direct reply from the agent.
   oneof payload {
     // The task created or updated by the message.
-    Task    task = 1;
+    Task task = 1;
     // A message from the agent.
-    Message msg  = 2 [json_name = "message"];
+    Message msg = 2 [json_name = "message"];
   }
 }
 
@@ -855,12 +836,12 @@ message StreamResponse {
   oneof payload {
     // The task and its current state. Sent first when the response is a task
     // lifecycle.
-    Task                    task            = 1;
+    Task task = 1;
     // A message from the agent. When the response is a message, this is the
     // only item in the stream.
-    Message                 msg             = 2 [json_name = "message"];
+    Message msg = 2 [json_name = "message"];
     // An update to the task's status.
-    TaskStatusUpdateEvent   status_update   = 3;
+    TaskStatusUpdateEvent status_update = 3;
     // An artifact generated or updated by the task.
     TaskArtifactUpdateEvent artifact_update = 4;
   }

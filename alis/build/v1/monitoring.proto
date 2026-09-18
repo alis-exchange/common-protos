@@ -1,10 +1,5 @@
 syntax = "proto3";
 
-import "alis/open/options/v1/options.proto";
-
-option go_package = "go.alis.build/common/alis/build";
-option (alis.open.options.v1.file).json_schema.generate = true;
-
 // Manages the Git repositories of an Alis Build landing zone and searches
 // the logs of Google Cloud projects.
 //
@@ -25,6 +20,11 @@ option (alis.open.options.v1.file).json_schema.generate = true;
 // Both files set `(alis.open.options.v1.file).json_schema.generate`, so a
 // JSON Schema is generated for every message in the package.
 package alis.build.v1;
+
+import "alis/open/options/v1/options.proto";
+
+option go_package = "go.alis.build/common/alis/build";
+option (alis.open.options.v1.file).json_schema.generate = true;
 
 // Searches the logs of Google Cloud projects.
 service Monitoring {
@@ -59,7 +59,7 @@ message SearchLogsRequest {
     // `SearchLogsRequest`, it means no severity filtering is done.
     DEFAULT = 0;
     // Information useful for debugging or tracing.
-    DEBUG	= 100;
+    DEBUG = 100;
     // Routine, expected status or performance information.
     INFO = 200;
     // Normal, but significant operational events (e.g., startups/shutdowns).
@@ -71,9 +71,9 @@ message SearchLogsRequest {
     // Severe problems, outages, or vulnerabilities.
     CRITICAL = 600;
     // Immediate human action and intervention is required.
-    ALERT	= 700;
+    ALERT = 700;
     // Extreme critical event; one or more systems are entirely unusable.
-    EMERGENCY	= 800;
+    EMERGENCY = 800;
   }
 }
 
@@ -162,4 +162,3 @@ message SearchLogsResponse {
     }
   }
 }
-

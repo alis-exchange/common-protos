@@ -4,6 +4,5 @@ package standards.open.v1;
 
 option go_package = "go.alis.build/common/standards/open/v1";
 
-
 // This report provides Return and Total Net Asset data to Morningstar for certain Rezco funds
 message RT0001G09 {}

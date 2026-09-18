@@ -2,7 +2,6 @@ syntax = "proto3";
 
 package standards.open.v1;
 
-
 option go_package = "go.alis.build/common/standards/open/v1";
 
 // Openfunds Fund definition
@@ -12,7 +11,7 @@ message RT000DWL9 {
   // This field's OF-ID can also include a language tag, i.e. OFST010020(zh-Hant) for Legal Fund Name Including Umbrella written in traditional Chinese. For more information please refer to https://www.openfunds.org/en/language-tags."
   //
   // Openfunds: OFST010020 (https://openfunds.org/OFST010020)
-  string legal_fund_name_including_umbrella = 1; 
+  string legal_fund_name_including_umbrella = 1;
   // "Name of fund or sub-fund, as listed in prospectus. Neither an available umbrella, nor the specifications of the share class such as currency, distribution policy etc. must be included. In case the fund is not part of an umbrella structure, please maintain the indication of the fund name as listed in the prospectus.
   // In case the umbrella name is part of the sub-fund name in official legal documents such as prospectus, openfunds recommends listing the unique sub-fund name only, without repeating the umbrella name. The intention of the OFST010110 Legal Fund Name Only is to provide an option for generating the OFST010020 Legal Fund Name Including Umbrella by combining OFST010110 Legal Fund Name Only and OFST005010 Umbrella.
   // This field's OF-ID can also include a language tag, i.e. OFST010110(zh-Hant) for Legal Fund Name Only written in traditional Chinese. For more information please refer to https://www.openfunds.org/en/language-tags."
@@ -55,5 +54,5 @@ message RT000DWL9 {
   // Is it possible to subscribe or redeem shares of the fund on a regular basis, i.e. daily? If yes, it is an open-ended fund. If no, it is a closed-ended fund.
   // "open-ended fund" / "closed-ended fund"
   // Openfunds: OFST010420 (https://openfunds.org/OFST010420)
-  OpenEndedOrClosedEndedStructure open_ended_or_closed_ended_fund_structure = 8; 
+  OpenEndedOrClosedEndedStructure open_ended_or_closed_ended_fund_structure = 8;
 }

@@ -93,13 +93,9 @@ message RT000MBG3 {
     // rights.
     message UltimateBeneficialOwnerShareholder {
       // Main shareholder (UBO)
-      string main_shareholder = 1 [
-        (standards.open.v1.fdx_options).question = "Give the name of the shareholder"
-      ];
+      string main_shareholder = 1 [(standards.open.v1.fdx_options).question = "Give the name of the shareholder"];
       // Percentage controlled
-      double percentage_controlled = 2 [
-        (standards.open.v1.fdx_options).question = "Percentage controlled of the main shareholder"
-      ];
+      double percentage_controlled = 2 [(standards.open.v1.fdx_options).question = "Percentage controlled of the main shareholder"];
     }
     // 1.7.a Natural persons who directly or indirectly hold 25 percent or more
     // of the firm's shares or voting rights. Only answered when
@@ -120,13 +116,9 @@ message RT000MBG3 {
     // A controlling person or senior managing official of the firm.
     message ControllingPerson {
       // Controlling person / Senior managing official
-      string controlling_person = 1 [
-        (standards.open.v1.fdx_options).question = "Give the name of the Controlling person / Senior managing official"
-      ];
+      string controlling_person = 1 [(standards.open.v1.fdx_options).question = "Give the name of the Controlling person / Senior managing official"];
       // Percentage controlled
-      double percentage_controlled = 2 [
-        (standards.open.v1.fdx_options).question = "Percentage controlled or position"
-      ];
+      double percentage_controlled = 2 [(standards.open.v1.fdx_options).question = "Percentage controlled or position"];
     }
     // 1.8.b Senior managing officials of the firm: executive directors with
     // significant responsibility for managing the legal entity and the power to
@@ -557,7 +549,7 @@ message RT000MBG3 {
       // Yes, the documents are provided and made available.
       YES = 1;
       // Yes, the documents are provided by a sub-distributor.
-      YES_PROVIDED_BY_SUB_DISTRIBUTOR  = 2;
+      YES_PROVIDED_BY_SUB_DISTRIBUTOR = 2;
       // No, the documents are not provided or made available.
       NO = 3;
     }
@@ -765,7 +757,7 @@ message RT000MBG3 {
       // The firm has been sanctioned.
       YES = 1;
       // The firm has not been sanctioned.
-      NO  = 2;
+      NO = 2;
       // The relevant information is publicly available.
       RELEVANT_INFORMATION_PUBLICLY_AVAILABLE = 3;
     }
@@ -1013,29 +1005,17 @@ message RT000MBG3 {
   // Section 7: Declarations and Execution
   message DeclarationsAndExecution {
     // Name of the person signing the declaration.
-    string name = 1 [
-      (standards.open.v1.fdx_options).question = "Name:"
-    ];
+    string name = 1 [(standards.open.v1.fdx_options).question = "Name:"];
     // Job title of the person signing the declaration.
-    string title = 2 [
-      (standards.open.v1.fdx_options).question = "Title:"
-    ];
+    string title = 2 [(standards.open.v1.fdx_options).question = "Title:"];
     // Electronic signature of the person signing the declaration.
-    ElectronicSignature signature = 3 [
-      (standards.open.v1.fdx_options).question = "Signature:"
-    ];
+    ElectronicSignature signature = 3 [(standards.open.v1.fdx_options).question = "Signature:"];
     // Date the declaration is signed. Free text; no format is enforced.
-    string date = 4 [
-      (standards.open.v1.fdx_options).question = "Date:"
-    ];
+    string date = 4 [(standards.open.v1.fdx_options).question = "Date:"];
     // Email address of the person signing the declaration.
-    string email = 5 [
-      (standards.open.v1.fdx_options).question = "Email address:"
-    ];
+    string email = 5 [(standards.open.v1.fdx_options).question = "Email address:"];
     // Telephone number of the person signing the declaration.
-    string telephone = 6 [
-      (standards.open.v1.fdx_options).question = "Telephone number:"
-    ];
+    string telephone = 6 [(standards.open.v1.fdx_options).question = "Telephone number:"];
   }
   // Section 7: Declarations and Execution
   DeclarationsAndExecution declarations_and_execution = 7 [
@@ -1123,7 +1103,7 @@ message RT000MBG3 {
     ];
   }
   // Information populated by the reviewer of the questionnaire
-  ReviewerInformation reviewer_information = 8  [
+  ReviewerInformation reviewer_information = 8 [
     (standards.open.v1.fdx_options).number = "7",
     (standards.open.v1.fdx_options).question = "Optional section completed by the recipient viewer of the questionnaire in keeping with a risk based approach"
   ];
